@@ -5,6 +5,10 @@
 > **Vision**: Dakkah CityOS is a Universal Super App — a Conversational City Experience OS where
 > ALL capabilities are accessed through an AI copilot. The mobile app (this project) will eventually
 > move to `apps/superapp` inside the CMS monorepo after all implementations are complete.
+>
+> **Backend**: `https://github.com/dakkah-core/dakkah-cityos-cms.git`
+>
+> **Reference Chat**: `https://github.com/dakkah-core/dakkah-cityos-chat-app.git`
 
 ---
 
@@ -26,13 +30,15 @@
 14. [CMS Domain Packages (65+)](#14-cms-domain-packages)
 15. [Medusa Commerce Modules (129)](#15-medusa-commerce-modules)
 16. [CMS Block Types (920+)](#16-cms-block-types)
-17. [Multi-Surface Apps (14 surfaces)](#17-multi-surface-apps)
+17. [Multi-Surface Apps (18 App Families)](#17-multi-surface-apps)
 18. [SDUI Protocol & Capability Negotiation](#18-sdui-protocol)
-19. [Microservices & Infrastructure](#19-microservices--infrastructure)
-20. [Current App Exclusive Features](#20-current-app-exclusive-features)
-21. [Additional Recommended Capabilities](#21-additional-recommended-capabilities)
-22. [Summary Scorecard](#22-summary-scorecard)
-23. [Prioritized Roadmap](#23-prioritized-roadmap)
+19. [Design System & Tokens](#19-design-system--tokens)
+20. [Shared Packages](#20-shared-packages)
+21. [Microservices & Infrastructure](#21-microservices--infrastructure)
+22. [Current App Exclusive Features](#22-current-app-exclusive-features)
+23. [Additional Recommended Capabilities](#23-additional-recommended-capabilities)
+24. [Summary Scorecard](#24-summary-scorecard)
+25. [Prioritized Roadmap](#25-prioritized-roadmap)
 
 ---
 
@@ -50,7 +56,7 @@
 | **Monorepo** | pnpm workspace (3 artifacts) | Standalone Vite app | pnpm + Turborepo (30+ apps, 65+ packages) | GAP |
 | **Multi-tenancy** | None | None | Hierarchical 5-tier (Master→City) | GAP |
 | **Localization** | en + ar (60+ keys, RTL) | en only | en + fr + ar (full RTL, logical CSS) | PARTIAL MATCH |
-| **Design System** | constants/colors.ts | Tailwind + shadcn/ui | Token Bridge + 51 components + SCSS | GAP |
+| **Design System** | constants/colors.ts | Tailwind + shadcn/ui | @cityos/design-system + @cityos/design-tokens + @cityos/universal-ui | GAP |
 
 ---
 
@@ -127,6 +133,7 @@ Each BFF includes:
 | **Admin** | 5+ | collections, integration-log, tree-view, keycloak MFA enforcement | NOT CONNECTED |
 | **Health** | 3 | system health, integration health, workflow health | NOT CONNECTED |
 | **Webhooks** | 5+ | CMS webhooks, system webhooks, webhook signatures | NOT CONNECTED |
+| **SDUI** | 2 | `/api/sdui/[screenId]` (layout fetch), `/api/sdui/action` (action dispatch) | NOT CONNECTED |
 
 ---
 
@@ -147,6 +154,9 @@ Each BFF includes:
 | AI context enrichment | ❌ | ❌ | BFF AI context endpoint | GAP |
 | AI content moderation | ❌ | ❌ | BFF AI moderation endpoint | GAP |
 | AI recommendations | ❌ | ❌ | BFF AI recommendations endpoint | GAP |
+| Generative SDUI (AI builds UI blocks live) | ❌ | ❌ | ai-orchestrator service | GAP |
+| Multimodal block streaming | ❌ | ❌ | Vercel AI SDK streaming | GAP |
+| Sandboxed agent execution (safe mutations) | ❌ | ❌ | SdAction validation layer | GAP |
 
 ---
 
@@ -430,50 +440,367 @@ Block rendering pipeline: `BlockRenderer → DomainAwareBlockRenderer` (with dom
 
 ---
 
-## 17. MULTI-SURFACE APPS (14 Surfaces)
+## 17. MULTI-SURFACE APPS (18 App Families — 80+ Surfaces)
 
-The CMS monorepo contains apps for 14+ different "surfaces" (user interfaces):
+The CMS architecture defines **18 deployable app families** across 80+ unique surfaces. All consume the same SDUI protocol from the Experience Composer. The resolution formula is:
 
-| App | Technology | Purpose | Current App Status |
+```
+Final_UI_AST = f( Screen_ID + Hardware_Surface + Tenant_ID + User_Role + Live_Backend_State )
+```
+
+### 17A. CONSUMER EXPERIENCE FAMILY
+
+| # | App | Technology | Target Users | CMS Code | Replit Artifact | Build Status |
+|---|---|---|---|---|---|---|
+| 1 | **Super App** | Expo React Native | Citizens, Consumers (iOS/Android/Tablet) | 9 files scaffold (`apps/superapp`) | `artifacts/mobile` (Mobile) | IN DEVELOPMENT |
+| 2 | **Consumer Web Platform** | Next.js → React Vite | Desktop/Mobile browser users | 10 files scaffold (`apps/web-platform`) | Web artifact | NOT STARTED |
+| 3 | **PWA Desktop App** | React Vite + Service Worker | Installable desktop, offline-first | Not yet built in CMS | Web artifact | NOT STARTED |
+| 4 | **AI Assistant Widget** | React embeddable widget | Any website/app (floating chat) | 2 files scaffold (`apps/ai-assistant`) | Web artifact | NOT STARTED |
+
+**Consumer Web Platform details** (from CMS architecture doc):
+- Browser counterpart to the Super App with full feature parity
+- SSR/Edge rendering for SEO via Next.js Server Components
+- SDUI blocks rendered server-side → pre-compiled semantic HTML
+- Perfect Lighthouse SEO scores
+- Tailwind CSS mapping: `SdNode` modifiers → utility classes
+
+**PWA Desktop App details** (from CMS architecture doc):
+- Installable desktop application via PWA manifest
+- Service Workers for aggressive caching of SDUI structural frames
+- Offline navigation with queued synchronization
+- Graceful degradation: native-only features (AR, Bluetooth) negotiated away by capability-negotiator
+
+**AI Assistant details** (from CMS architecture doc):
+- Multimodal block streaming — AI constructs SDUI AST blocks dynamically
+- Generative SDUI: user speaks intent → LLM orchestrates parallel queries → returns rich `SdMap` + `SdGrid` widgets inline in conversation
+- Sandboxed agent execution: AI generates intent, deterministic backend enforces transaction
+- Embeddable as `@dakkah/assistant-widget` React context provider — floating action button in Super App, Kiosk, Merchant POS
+
+### 17B. COMMERCE FAMILY
+
+| # | App | Technology | Target Users | CMS Code | Replit Artifact | Build Status |
+|---|---|---|---|---|---|---|
+| 5 | **Storefront** | TanStack Router (React) | Online shoppers | 1,169 files built (`apps/storefront`) | Web artifact | NOT STARTED |
+| 6 | **POS / Counter Runtime** | Expo RN or Electron | Android POS, Self-Order Terminals, Cash Registers | Not yet built in CMS | Mobile/Web artifact | NOT STARTED |
+
+**Storefront details** (from CMS codebase):
+- Fully built: 1,169 TSX files
+- 6 pages: home, store, product, cart, checkout, order-confirmation
+- 26+ component directories: account, admin, ai, auctions, auth, b2b, blocks, blog, bookings, business, campaigns, cart, checkout, cityos, cms, commerce, compare, consent, consignment, content, etc.
+- Account dashboard: subscriptions, downloads, installments, loyalty, wallet, store-credits, verification, consents
+- Admin panel: analytics, bulk actions, advanced filters, audit log, channel mapping, tenant settings, user management
+- Uses TanStack Router + Medusa JS SDK
+
+**POS / Counter Runtime details** (from CMS architecture doc):
+- Designed for tablets at physical storefronts, restaurants, fulfillment centers
+- Hardware bridge: NFC scanning, thermal receipt printing via Bluetooth, barcode scanning via `expo-camera`
+- SDUI node types: `SdScannerInput` (mounts camera for barcode), `SdPeripheral` (printer/NFC commands)
+- Medusa commerce execution: capture payments, process orders via `SdAction` mutations
+- Optimistic UI: server returns patched SDUI sub-tree reflecting new state instantly
+- Offline tolerance: action queueing via AsyncStorage/SQLite, background sync on reconnect
+- Telemetry: `x-cityos-surface: tablet`, `x-cityos-os: ios`
+
+### 17C. BUSINESS & MERCHANT FAMILY
+
+| # | App | Technology | Target Users | CMS Code | Replit Artifact | Build Status |
+|---|---|---|---|---|---|---|
+| 7 | **Merchant App** | Expo React Native | Shop owners, Restaurant staff, Vendors | 10 files scaffold (`apps/merchant-app`) | Mobile artifact | NOT STARTED |
+| 8 | **Business Dashboard** | Next.js → React Vite | Retail offices, Analytics teams | 12 files scaffold (`apps/business-dashboard`) | Web artifact | NOT STARTED |
+
+**Merchant App details** (from CMS codebase):
+- Scaffold: LoginScreen, RegisterScreen, DynamicScreen, SduiRenderer, AuthContext
+- Auth connects to Payload CMS `/api/users/login`
+- SDUI fetches from `/api/sdui/tablet_pos`
+- Listing ops, booking notifications, campaign participation
+
+**Business Dashboard details** (from CMS codebase):
+- Scaffold: AuthGuard + SduiRenderer + Keycloak auth callback
+- Fetches SDUI from `/api/sdui/merchant_overview?surface=dashboard`
+- Title: "CityOS Merchant Console — Fully Server-Driven"
+- Catalog management, reporting, campaigns
+
+### 17D. GOVERNMENT / PLATFORM FAMILY
+
+| # | App | Technology | Target Users | CMS Code | Replit Artifact | Build Status |
+|---|---|---|---|---|---|---|
+| 9 | **City Dashboard** | Next.js → React Vite | City operations managers, Control rooms | 12 files scaffold (`apps/city-dashboard`) | Web artifact | NOT STARTED |
+| 10 | **Smart City Portal** | Next.js → React Vite | Citizens accessing government services | 2 files scaffold (`apps/smart-city-portal`) | Web artifact | NOT STARTED |
+| 11 | **Dev Portal** | Next.js → React Vite | Third-party developers, Partners | 8 files scaffold (`apps/dev-portal`) | Web artifact | NOT STARTED |
+
+**City Dashboard details** (from CMS codebase):
+- Scaffold: AuthGuard + SduiRenderer + dark theme (slate-900)
+- Fetches SDUI from `/api/sdui/city_analytics?surface=desktop_wide`
+- Title: "CityOS Macro Analytics — Real-Time SDUI Stream"
+- Queries Elasticsearch/TimescaleDB for live city analytics
+- Generates `SdDataGrid`, `SdLineChart`, `SdPieChart` blocks in real-time
+
+**Dev Portal details** (from CMS architecture doc):
+- Developer-centric: API key generation, SDK integration tracking
+- `SdForm` for token generation → `SdAction: generate_api_token` → `SdCopyText` code block
+- Docs, API keys, schemas, integrations sandbox
+
+### 17E. LOGISTICS / FIELD FAMILY
+
+| # | App | Technology | Target Users | CMS Code | Replit Artifact | Build Status |
+|---|---|---|---|---|---|---|
+| 12 | **Driver App** | Expo React Native | Delivery drivers, Fleet drivers, Field agents | 9 files scaffold (`apps/driver-app`) | Mobile artifact | NOT STARTED |
+| 13 | **FleetOps Dashboard** | Next.js → React Vite | Fleet managers, Dispatch operators | 141 files built (`apps/fleetops`) | Web artifact | NOT STARTED |
+
+**Driver App details** (from CMS codebase):
+- Scaffold: LoginScreen, DynamicScreen, SduiRenderer, AuthContext
+- Auth connects to Payload CMS `/api/users/login`
+- Title: "Driver Portal"
+- Role-based SDUI: courier role → `SdList` of waypoints when working, "Go Online" `SdButton` when off-duty
+- Rugged Android/vehicle mount optimized
+
+**FleetOps Dashboard details** (from CMS codebase):
+- 141 files — substantial operational fleet management dashboard
+- Connected to Fleetbase backend for real-time fleet tracking
+- Driver dispatch, route optimization, fleet analytics
+
+### 17F. PUBLIC / AMBIENT FAMILY
+
+| # | App | Technology | Target Users | CMS Code | Replit Artifact | Build Status |
+|---|---|---|---|---|---|---|
+| 14 | **Kiosk Runtime** | Electron → React Vite | Airport terminals, Museums, Mall directories | Empty scaffold (`apps/kiosk-runtime`) | Web artifact | NOT STARTED |
+| 15 | **TV App** | React Native TV → Web sim | Digital signage, Smart TVs, Menu boards | 2 files scaffold (`apps/tv-app`) | Web artifact (simulator) | NOT STARTED |
+| 16 | **Car App** | CarPlay/Android Auto → Web sim | Fleet vehicle dashboards, Navigation | 2 files scaffold (`apps/car-app`) | Web artifact (simulator) | NOT STARTED |
+| 17 | **Watch App** | Native Swift/Kotlin | Apple Watch, Wear OS — glanceable alerts | Empty scaffold (`apps/watch-app`) | Cannot build (native only) | NOT POSSIBLE IN REPLIT |
+
+**Kiosk Runtime details** (from CMS architecture doc):
+- Electron or React Native Windows/macOS packaged app
+- `x-cityos-surface: kiosk` capability header
+- Hardware bridge: serial ports for receipt printing (`SdPrintNode`), NFC scanners
+- OS-level app-pinning (MDM lockout), no URL navigation — only SDUI actions
+- Guest mode, safe browsing, wayfinding
+- Web Platform already has `/kiosk` page for testing
+
+**TV App details** (from CMS architecture doc):
+- `x-cityos-surface: tv_1080p` capability header
+- Spatial navigation: D-Pad input (Up/Down/Left/Right/Select) — no touch
+- Composer restructures arrays: 100-item web grid → horizontal `SdCarousel` for 10-foot viewing
+- React Native TV / Tizen / WebOS targets
+
+**Car App details** (from CMS architecture doc):
+- Apple CarPlay `CPListTemplate` + Android Auto `ItemList` mapping
+- `SdList` → native car OS templates; `grid`/`card` layouts flattened or ignored
+- Hyper-strict safety templates mandated by driving laws
+- No custom UI rendering allowed by Apple/Google — must use OS templates
+
+**Watch App details** (from CMS architecture doc):
+- NOT React Native — pure SwiftUI (iOS) + Jetpack Compose (Android)
+- JS engines battery-prohibitive on watches
+- Capability-negotiator strips: complex hierarchies, images >100kb, wide tables
+- Flattens to text `SdStack` nodes only
+- Use cases: driver "Next Stop" glance, merchant "New Order" buzz
+
+### 17G. DEV TOOLS
+
+| # | App | Technology | Target Users | CMS Code | Replit Artifact | Build Status |
+|---|---|---|---|---|---|---|
+| 18 | **Storybook** | Vite + Storybook 10 | Developers, Designers | 20 files (`apps/storybook`) | Web artifact | NOT STARTED |
+
+**Storybook details** (from CMS codebase):
+- Design system documentation with Chromatic visual testing
+- Uses `@cityos/design-tokens` for theming
+- Domain story generation scripts
+- Fixture validation
+- Accessibility addon (`@storybook/addon-a11y`)
+
+### 17H. BACKEND / ADMIN (Not buildable as Replit artifacts — part of CMS infrastructure)
+
+| App | Technology | Purpose | Notes |
 |---|---|---|---|
-| **superapp** | Expo React Native | Universal consumer app (THIS PROJECT) | IN DEVELOPMENT |
-| **storefront** | Next.js | Web commerce front | NOT CONNECTED |
-| **city-dashboard** | Next.js | City operations dashboard | NOT CONNECTED |
-| **business-dashboard** | Next.js | Business analytics dashboard | NOT CONNECTED |
-| **smart-city-portal** | Next.js | Citizen-facing portal | NOT CONNECTED |
-| **web-platform** | Next.js | General web platform | NOT CONNECTED |
-| **dev-portal** | Next.js | Developer documentation portal | NOT CONNECTED |
-| **driver-app** | Expo React Native | Driver/delivery companion | NOT CONNECTED |
-| **merchant-app** | Expo React Native | Merchant management app | NOT CONNECTED |
-| **tv-app** | React Native | Smart TV interface | NOT CONNECTED |
-| **car-app** | React Native | In-car dashboard (CarPlay/Android Auto) | NOT CONNECTED |
-| **watch-app** | — | Smartwatch companion | SCAFFOLD ONLY |
-| **kiosk-runtime** | — | Public kiosk interface | SCAFFOLD ONLY |
-| **ai-assistant** | React | Embedded AI assistant widget | NOT CONNECTED |
-| **storybook** | Storybook | Component documentation | NOT CONNECTED |
-| **payload-cms** | Next.js + Payload | Admin panel | NOT CONNECTED |
+| **Payload CMS Admin** | Next.js + Payload 3 | Backend admin panel, collection management | Runs as part of CMS |
+| **Medusa Backend** | Medusa v2 | Commerce engine (3,087 files) | Runs as separate service |
+| **Keycloak Admin** | Java | Identity & access management | External service |
+| **Kuzzle Admin Console** | Node.js | IoT platform administration | External service |
+| **Node-RED** | Node.js | Visual IoT flow programming | External service |
+
+### 17I. COMPLETE APP INVENTORY SUMMARY
+
+| Category | Apps | Buildable in Replit | Technology |
+|---|---|---|---|
+| **Consumer** | Super App, Consumer Web, PWA Desktop, AI Assistant | 4/4 | 1 Expo + 3 React Vite |
+| **Commerce** | Storefront, POS/Counter | 2/2 | 1 React Vite + 1 Expo |
+| **Business** | Merchant App, Business Dashboard | 2/2 | 1 Expo + 1 React Vite |
+| **Government** | City Dashboard, Smart City Portal, Dev Portal | 3/3 | 3 React Vite |
+| **Logistics** | Driver App, FleetOps Dashboard | 2/2 | 1 Expo + 1 React Vite |
+| **Ambient** | Kiosk, TV (sim), Car (sim), Watch | 3/4 | 3 React Vite (watch = native only) |
+| **Dev Tools** | Storybook | 1/1 | React Vite |
+| **TOTAL** | **18 app families** | **17/18 buildable** | **4 Expo + 13 React Vite** |
 
 ---
 
 ## 18. SDUI PROTOCOL & CAPABILITY NEGOTIATION
 
-The CMS includes a **Server-Driven UI** protocol for rendering content across all surfaces:
+The CMS includes a **Server-Driven UI** protocol (`@dakkah/sdui-protocol`) — the backbone of the entire multi-surface architecture:
+
+### 18A. SDUI Node Types
+
+| Node Type | Schema | Description |
+|---|---|---|
+| `text` | `SdTextNodeSchema` | Typography: h1-h4, body, caption, label; color + alignment |
+| `button` | `SdButtonNodeSchema` | Interactive: solid/outline/ghost/link variants; icon, loading, disabled |
+| `image` | `SdImageNodeSchema` | Media: URL, aspect ratio, cover/contain/stretch |
+| `stack` | recursive | Layout container: horizontal/vertical, alignment, spacing, wrap |
+| `card` | recursive | Touchable container with children + onPress action |
+| `carousel` | `SdCarouselNodeSchema` | Scrollable item list with autoPlay + loop |
+| `grid` | `SdGridNodeSchema` | Column-based layout with gap control |
+| `map` | `SdMapNodeSchema` | Geographic: lat/lng, zoom, markers with onPress |
+
+### 18B. SDUI Actions
+
+| Action Type | Description |
+|---|---|
+| `navigate` | In-app screen navigation |
+| `api_mutation` | Backend state change (orders, payments, bookings) |
+| `open_url` | External URL launch |
+| `copy_text` | Clipboard copy |
+| `share` | Native share sheet |
+| `trigger_workflow` | Temporal workflow execution |
+| `deep_link` | Cross-app deep link |
+| `copy_clipboard` | Clipboard copy (alternate) |
+| `request_hardware_access` | Camera, NFC, Bluetooth, printer |
+
+### 18C. SDUI Modifiers
+
+All visual nodes support universal modifiers:
+- `padding` / `margin` (xs/sm/md/lg/xl/full)
+- `backgroundColor` (primary/secondary/success/danger/warning/info/surface/transparent)
+- `cornerRadius` (xs/sm/md/lg/xl/full)
+- `hidden` (boolean)
+
+### 18D. Capability Negotiation
+
+| Capability | Options |
+|---|---|
+| **OS** | ios, android, web, watchos, wearos, tvos, carplay, android_auto, kiosk |
+| **Screen Class** | mobile, tablet, desktop, watch, tv, ambient |
+| **Input Methods** | touch, mouse, keyboard, voice, dpad, remote |
+
+### 18E. SDUI Resolution Pipeline
+
+```
+Client Request → Experience Composer → Capability Negotiator → Payload CMS DB → Live Hydration Hooks → JSON AST Response
+
+Headers: x-cityos-surface, x-cityos-os, x-tenant-id, Authorization (Keycloak JWT)
+Endpoint: GET /api/sdui/{screenId}?surface={target}&tenant={tenantId}&user={userId}
+```
+
+**Live Hydration**: Template strings like `{{ fleetbase.active_trips.count }}` in SDUI JSON are replaced server-side with live backend data before shipping to client.
 
 | Feature | Description | Current App Status |
 |---|---|---|
 | **SDUI Protocol** (`@dakkah/sdui-protocol`) | Typed JSON protocol for server-driven layouts | NOT IMPLEMENTED |
-| **Capability Negotiator** (`@cityos/capability-negotiator`) | Downgrades complex layouts for constrained devices (watch, car, TV) | NOT IMPLEMENTED |
-| **Experience Composer** (`@cityos/experience-composer`) | Composes SDUI payloads from block data | NOT IMPLEMENTED |
-| **Tenant Router** (`@cityos/tenant-router`) | Routes SDUI requests per tenant configuration | NOT IMPLEMENTED |
-| **Node types** | stack, grid, carousel, card, text, image, map, video | NOT IMPLEMENTED |
-| **Device targets** | iOS, Android, Web, tvOS, watchOS, CarPlay, Kiosk | NOT IMPLEMENTED |
+| **Capability Negotiator** | Downgrades complex layouts for constrained devices | NOT IMPLEMENTED |
+| **Experience Composer** | Composes SDUI payloads from block data + live hydration | NOT IMPLEMENTED |
+| **Tenant Router** | Routes SDUI requests per tenant configuration | NOT IMPLEMENTED |
+| **SduiRenderer** (Mobile) | React Native renderer for SDUI nodes | NOT IMPLEMENTED |
+| **SduiRenderer** (Web) | React DOM renderer with Tailwind mapping | NOT IMPLEMENTED |
+| **Live Hydration Hooks** | Template injection from Fleetbase/Medusa/ERPNext | NOT IMPLEMENTED |
+| **Generative SDUI** | AI-composed SDUI blocks via LLM tool-calling | NOT IMPLEMENTED |
 
 ---
 
-## 19. MICROSERVICES & INFRASTRUCTURE
+## 19. DESIGN SYSTEM & TOKENS
+
+The CMS has a comprehensive design system consisting of 3 shared packages:
+
+### 19A. `@cityos/design-tokens`
+
+| Token Category | File | Values |
+|---|---|---|
+| **Colors** | `tokens/colors.ts` | primary (navy #0a1628), accent (blue #3182ce), extended (purple, teal, amber, rose), semantic (success/warning/error/info), neutral (gray50-900), surface (light/dark), text (light/dark), border (light/dark) |
+| **Spacing** | `tokens/spacing.ts` | xs:4px, sm:8px, md:16px, lg:24px, xl:32px, 2xl:48px, 3xl:64px |
+| **Typography** | `tokens/typography.ts` | Inter font family, sizes xs-5xl, weights 400-800, line-heights 1-2 |
+| **Borders** | `tokens/borders.ts` | Border radii and styles |
+| **Breakpoints** | `tokens/breakpoints.ts` | Responsive breakpoints |
+| **Elevation** | `tokens/elevation.ts` | Shadow levels |
+| **Motion** | `tokens/motion.ts` | Animation timing |
+| **Shadows** | `tokens/shadows.ts` | Box shadow tokens |
+| **Layout** | `tokens/layout.ts` | Container widths, grid gaps |
+| **Semantic** | `tokens/semantic.ts` | Contextual color mappings |
+| **Z-Index** | `tokens/z-index.ts` | Stacking order |
+| **Native** | `native/index.ts` | React Native-specific token exports |
+
+### 19B. `@cityos/design-system`
+
+| Component | File | Description |
+|---|---|---|
+| **Alert** | `ui/alert.tsx` | Status alerts with variants |
+| **Avatar** | (stories only) | User avatars |
+| **Badge** | `ui/badge.tsx` | Status badges |
+| **Button** | `ui/button.tsx` | Action buttons with CVA variants |
+| **Card** | `ui/card.tsx` | Content cards |
+| **Checkbox** | `ui/checkbox.tsx` | Boolean inputs |
+| **Dialog** | `ui/dialog.tsx` | Modal dialogs |
+| **Feedback** | `ui/feedback.tsx` | User feedback components |
+| **Input** | `ui/input.tsx` | Text inputs |
+| **Label** | `ui/label.tsx` | Form labels |
+| **Progress** | (stories only) | Progress indicators |
+| **Select** | `ui/select.tsx` | Dropdown selects |
+| **Skeleton** | (stories only) | Loading skeletons |
+| **Switch** | `ui/switch.tsx` | Toggle switches |
+| **Table** | `ui/table.tsx` | Data tables |
+| **Tabs** | `ui/tabs.tsx` | Tab navigation |
+| **Textarea** | `ui/textarea.tsx` | Multi-line text inputs |
+| **Tooltip** | `ui/tooltip.tsx` | Hover tooltips |
+
+Built with: `class-variance-authority` + `clsx` + `tailwind-merge`
+
+### 19C. `@cityos/universal-ui`
+
+Cross-platform UI components that work on both web and React Native. Uses same token system as design-system.
+
+### 19D. CityOS Blocks (Storybook)
+
+The Storybook app includes `CityOSBlocks.tsx` — a visual catalog of all domain-specific SDUI block types with stories for testing.
+
+| Current App Status | Gap |
+|---|---|
+| Uses custom `constants/colors.ts` with teal `#0A9396` + navy `#0D1B2A` | Need to adopt `@cityos/design-tokens` color palette |
+| No shared component library | Need to implement `@cityos/universal-ui` for React Native |
+| No Storybook | Need component documentation |
+
+---
+
+## 20. SHARED PACKAGES
+
+The CMS monorepo contains shared packages that all apps consume:
+
+| Package | Purpose | Current App Status |
+|---|---|---|
+| `@cityos/design-tokens` | Colors, spacing, typography, motion, elevation | NOT USING |
+| `@cityos/design-system` | 18 web UI components (button, card, input, etc.) | NOT USING |
+| `@cityos/design-runtime` | Runtime token resolution | NOT USING |
+| `@cityos/universal-ui` | Cross-platform (web + RN) components | NOT USING |
+| `@cityos/auth` | Keycloak PKCE auth context + types | NOT USING |
+| `@dakkah/sdui-protocol` | SDUI Zod schemas, node types, action types, capabilities | NOT USING |
+| `@dakkah/assistant-widget` | Embeddable AI assistant React context provider | NOT USING |
+| `@cityos/api-client` | Shared API fetchers for BFF/CMS | NOT USING |
+| `@cityos/context-sdk` | NodeContext validation | NOT USING |
+| `@cityos/analytics-sdk` | Event tracking | NOT USING |
+| `@cityos/feature-flags` | Feature flag evaluation | NOT USING |
+| `@cityos/offline-sync` | Offline action queueing + sync | NOT USING |
+| `@cityos/localization` | i18n with en/fr/ar | NOT USING |
+| `@cityos/observability` | Logging, tracing, metrics | NOT USING |
+| `@cityos/surface-capabilities` | Device capability schema definitions | NOT USING |
+| `@cityos/block-registry` | Shared SDUI block definitions | NOT USING |
+| `packages/bff-core` | Express.js BFF framework (auth, tenant, correlation middleware) | NOT USING |
+
+---
+
+## 21. MICROSERVICES & INFRASTRUCTURE
 
 | Service | Description | Current App Status |
 |---|---|---|
+| **Experience Composer** (`services/experience-composer`) | Translates requests into SDUI block payloads | NOT CONNECTED |
+| **AI Orchestrator** (`services/ai-orchestrator`) | Conversational block manipulation via LLM | NOT CONNECTED |
+| **Capability Negotiator** (`services/capability-negotiator`) | Validates device OS/app limitations against schema | NOT CONNECTED |
+| **Tenant Router** (`services/tenant-router`) | Routes requests per tenant configuration | NOT CONNECTED |
+| **Node Router** (`services/node-router`) | Hierarchical node-based routing | NOT CONNECTED |
+| **Policy Gateway** (`services/policy-gateway`) | Authorization policy enforcement | NOT CONNECTED |
 | **BFF Core** (`packages/bff-core`) | Express.js BFF framework with auth, tenant, correlation middleware | NOT CONNECTED |
 | **Kuzzle IoT** | Real-time IoT data platform with WebSocket + MQTT | NOT CONNECTED |
 | **Temporal Cloud** | Workflow orchestration (multi-step processes) | NOT CONNECTED |
@@ -489,7 +816,7 @@ The CMS includes a **Server-Driven UI** protocol for rendering content across al
 
 ---
 
-## 20. CURRENT APP EXCLUSIVE FEATURES (Not in Reference App)
+## 22. CURRENT APP EXCLUSIVE FEATURES (Not in Reference App)
 
 | Feature | Description |
 |---|---|
@@ -507,7 +834,7 @@ The CMS includes a **Server-Driven UI** protocol for rendering content across al
 
 ---
 
-## 21. ADDITIONAL RECOMMENDED CAPABILITIES (Beyond Both Apps)
+## 23. ADDITIONAL RECOMMENDED CAPABILITIES (Beyond Both Apps)
 
 | Capability | Description | Priority |
 |---|---|---|
@@ -534,7 +861,7 @@ The CMS includes a **Server-Driven UI** protocol for rendering content across al
 
 ---
 
-## 22. SUMMARY SCORECARD
+## 24. SUMMARY SCORECARD
 
 | Dimension | Current App | Reference Chat App | CMS Backend |
 |---|---|---|---|
@@ -548,6 +875,9 @@ The CMS includes a **Server-Driven UI** protocol for rendering content across al
 | **CMS Collections** | 0 | 0 | 180+ |
 | **Domain Packages** | 0 | 0 | 65+ |
 | **Commerce Modules** | 0 | 0 | 129 (Medusa) |
+| **App Families** | 1 | 1 | 18 (80+ surfaces) |
+| **Design Token Categories** | 1 (colors) | — | 11 (colors, spacing, typography, borders, breakpoints, elevation, motion, shadows, layout, semantic, z-index) |
+| **Shared UI Components** | 0 | — | 18 (design-system) + universal-ui |
 | **Chat Features** | 16/16 | 16/16 | — |
 | **Dark Mode** | ✅ | ❌ | ✅ (tokens) |
 | **i18n (Arabic/RTL)** | ✅ | ❌ | ✅ (en/fr/ar) |
@@ -557,56 +887,76 @@ The CMS includes a **Server-Driven UI** protocol for rendering content across al
 | **Real Backend** | ❌ | ✅ (partial) | ✅ (full stack) |
 | **Multi-tenancy** | ❌ | ❌ | ✅ (5-tier) |
 | **SDUI Protocol** | ❌ | ❌ | ✅ |
-| **Multi-Surface** | 1 surface | 1 surface | 14+ surfaces |
+| **Multi-Surface** | 1 surface | 1 surface | 18 app families |
 | **IoT Real-time** | ❌ | ❌ | ✅ (Kuzzle) |
 | **Workflow Orchestration** | ❌ | ❌ | ✅ (Temporal) |
+| **PWA / Desktop** | ❌ | ❌ | ✅ (planned) |
+| **POS / Counter** | ❌ | ❌ | ✅ (designed) |
 
 ---
 
-## 23. PRIORITIZED ROADMAP
+## 25. PRIORITIZED ROADMAP
 
-### Phase 1: CRITICAL GAPS (Connect to CMS Backend)
+### Phase 0: SHARED FOUNDATION
+1. **Adopt CMS Design Tokens** — Port `@cityos/design-tokens` (colors, spacing, typography, motion, elevation) into our workspace
+2. **Implement Universal UI** — Create React Native versions of `@cityos/universal-ui` components
+3. **SDUI Protocol Package** — Port `@dakkah/sdui-protocol` Zod schemas + TypeScript types
+4. **SduiRenderer (Mobile)** — Build React Native renderer for SDUI node types (text, button, image, stack, card, carousel, grid, map)
+5. **SduiRenderer (Web)** — Build React DOM renderer with Tailwind CSS mapping
+6. **Auth SDK** — Port `@cityos/auth` Keycloak PKCE client
+
+### Phase 1: SUPER APP COMPLETION (Connect to CMS Backend)
 1. **Keycloak Auth Integration** — Replace AsyncStorage auth with Keycloak OIDC
 2. **BFF Platform Connection** — Connect to bff-platform (port 4006) for auth, tenancy
 3. **Server-side Thread Persistence** — Store conversations in CMS PostgreSQL
 4. **Copilot Gateway** — Connect AI chat to CMS `/api/ai/chat` and `/api/ai/execute`
-5. **Copilot Settings Dialog** — AI tuning (temperature, model, privacy mode)
-6. **Toast Notifications** — User feedback system
-7. **Push Notifications** — Expo push notification setup
+5. **SDUI Integration** — Fetch and render SDUI screens from Experience Composer
+6. **Copilot Settings Dialog** — AI tuning (temperature, model, privacy mode)
+7. **Toast Notifications** — User feedback system
+8. **Push Notifications** — Expo push notification setup
 
-### Phase 2: COMMERCE & CITY SERVICES
+### Phase 2: COMMERCE APPS
 1. **BFF Commerce Connection** — Products, cart, checkout, orders via bff-commerce (port 4001)
 2. **Stripe Payments** — Real payment processing via CMS Stripe integration
-3. **15 HIGH priority artifacts** — logistics-map, fleet-health-matrix, telehealth, property-listing, bill-pay, toll-pass, hotel-concierge, mini-video, smart-filters, comparison-grid, kyc-verification, emr-patient-record, tax-summary, demand-forecast
-4. **Meilisearch Integration** — Universal cross-domain search
-5. **Content-Enriched Products** — Product data + CMS editorial content merged
+3. **Storefront App** — Adapt 1,169-file storefront from TanStack Router to React Vite
+4. **POS / Counter App** — New Expo mobile artifact with hardware bridge (NFC, barcode, thermal printer)
+5. **Meilisearch Integration** — Universal cross-domain search
+6. **15 HIGH priority artifacts** — logistics-map, fleet-health-matrix, telehealth, property-listing, bill-pay, toll-pass, hotel-concierge, mini-video, smart-filters, comparison-grid, kyc-verification, emr-patient-record, tax-summary, demand-forecast
 
-### Phase 3: TRANSPORT & LOGISTICS
-1. **BFF Transport Connection** — Fleet tracking, delivery, ride-hailing via bff-transport (port 4004)
-2. **Fleetbase Integration** — Real-time fleet tracking, driver dispatch
-3. **40+ Logistics Artifacts** — Fleet management, driver hub, supply chain
-4. **Real-time WebSocket** — Kuzzle connection for live tracking
+### Phase 3: BUSINESS & MERCHANT APPS
+1. **Merchant App** — New Expo mobile artifact; POS tablet operations, booking notifications, campaigns
+2. **Business Dashboard** — New React Vite artifact; SDUI-based merchant console
+3. **BFF Transport Connection** — Fleet tracking, delivery, ride-hailing via bff-transport (port 4004)
+4. **Fleetbase Integration** — Real-time fleet tracking, driver dispatch
 
-### Phase 4: GOVERNMENT & HEALTH
-1. **BFF Governance Connection** — Permits, proposals, citizen services via bff-governance (port 4002)
-2. **BFF Healthcare Connection** — Appointments, records via bff-healthcare (port 4003)
-3. **Walt.id DID** — Verifiable credentials, digital identity
-4. **ERPNext Connection** — Invoices, inventory, HR
+### Phase 4: GOVERNMENT, HEALTH & LOGISTICS APPS
+1. **City Dashboard** — New React Vite artifact; macro analytics, dark theme, SDUI real-time
+2. **Smart City Portal** — New React Vite artifact; citizen government services
+3. **Dev Portal** — New React Vite artifact; API docs, key generation, SDK tracking
+4. **Driver App** — New Expo mobile artifact; role-based SDUI (courier waypoints / go-online)
+5. **FleetOps Dashboard** — New React Vite artifact; adapt 141-file dashboard
+6. **BFF Governance Connection** — Permits, proposals, citizen services via bff-governance (port 4002)
+7. **BFF Healthcare Connection** — Appointments, records via bff-healthcare (port 4003)
+8. **Walt.id DID** — Verifiable credentials, digital identity
 
-### Phase 5: EVENTS, SOCIAL, IOT
-1. **BFF Events Connection** — Events, sports, tourism via bff-events (port 4005)
-2. **BFF Social Connection** — Social media, engagement via bff-social (port 4008)
-3. **BFF IoT Connection** — IoT sensors, agriculture via bff-iot (port 4007)
-4. **Temporal Workflows** — Multi-step process orchestration
+### Phase 5: CONSUMER WEB, PWA & AI
+1. **Consumer Web Platform** — New React Vite artifact; browser counterpart to Super App with SEO
+2. **PWA Desktop App** — New React Vite artifact; service worker, offline-first, installable desktop
+3. **AI Assistant Widget** — New React Vite artifact; embeddable chat with generative SDUI
+4. **Generative SDUI** — AI constructs SDUI blocks dynamically via LLM tool-calling
+5. **BFF Events Connection** — Events, sports, tourism via bff-events (port 4005)
+6. **BFF Social Connection** — Social media, engagement via bff-social (port 4008)
+7. **BFF IoT Connection** — IoT sensors, agriculture via bff-iot (port 4007)
 
-### Phase 6: SDUI & MULTI-SURFACE
-1. **SDUI Protocol Integration** — Render server-driven UI from CMS blocks
-2. **Capability Negotiation** — Adapt UI for phone/tablet/TV/watch/car
-3. **Experience Composer** — Dynamic layout composition
-4. **All remaining 100+ artifacts** — Domain verticals
-5. **Migration to `apps/superapp`** — Move codebase into CMS monorepo
+### Phase 6: AMBIENT & SPECIALTY APPS
+1. **Kiosk Runtime** — New React Vite artifact; full-screen kiosk with hardware bridge simulation
+2. **TV App** — New React Vite artifact; spatial navigation simulator, carousel-optimized
+3. **Car App** — New React Vite artifact; list-based CarPlay/Android Auto simulator
+4. **Storybook** — New React Vite artifact; design system documentation with all component stories
+5. **Temporal Workflows** — Multi-step process orchestration
+6. **All remaining 100+ artifacts** — Domain verticals
 
-### Phase 7: NATIVE PLATFORM FEATURES
+### Phase 7: NATIVE PLATFORM FEATURES & MIGRATION
 1. **Biometric Auth** — FaceID/TouchID
 2. **NFC/QR Scanner** — Passes, tickets, payments
 3. **Apple/Google Pay** — Native payment methods
@@ -614,3 +964,4 @@ The CMS includes a **Server-Driven UI** protocol for rendering content across al
 5. **Widgets** — Home screen widgets
 6. **Accessibility** — Full VoiceOver/TalkBack support
 7. **Expo OTA Updates** — Over-the-air deployments
+8. **Migration to CMS Monorepo** — Move all completed apps into `apps/` in `dakkah-cityos-cms`
