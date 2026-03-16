@@ -96,11 +96,16 @@ export async function aiExecute(
   }
 }
 
-export async function fetchSduiScreen(screenId: string, surface?: string, tenant?: string): Promise<{ screen: Record<string, unknown>; source?: string } | null> {
+export async function fetchSduiScreen(screenId: string, surface?: string, tenant?: string, extraParams?: Record<string, string>): Promise<{ screen: Record<string, unknown>; source?: string } | null> {
   try {
     const url = new URL(`${API_BASE}/sdui/${screenId}`);
     if (surface) url.searchParams.set("surface", surface);
     if (tenant) url.searchParams.set("tenant", tenant);
+    if (extraParams) {
+      for (const [key, value] of Object.entries(extraParams)) {
+        url.searchParams.set(key, value);
+      }
+    }
     const res = await fetch(url.toString());
     const data = await res.json();
     return data.success ? data.data : null;

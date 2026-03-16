@@ -9,19 +9,22 @@ interface Props {
   tenant?: string;
   theme?: "light" | "dark";
   onAction?: (action: string) => void;
+  extraParams?: Record<string, string>;
 }
 
-export function DynamicScreen({ screenId, surface, tenant, theme = "dark", onAction }: Props) {
+export function DynamicScreen({ screenId, surface, tenant, theme = "dark", onAction, extraParams }: Props) {
   const [screen, setScreen] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const extraParamsKey = extraParams ? JSON.stringify(extraParams) : "";
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError(null);
 
-    fetchSduiScreen(screenId, surface, tenant)
+    fetchSduiScreen(screenId, surface, tenant, extraParams)
       .then((result) => {
         if (cancelled) return;
         if (result?.screen) {
@@ -40,7 +43,7 @@ export function DynamicScreen({ screenId, surface, tenant, theme = "dark", onAct
     return () => {
       cancelled = true;
     };
-  }, [screenId, surface, tenant]);
+  }, [screenId, surface, tenant, extraParamsKey]);
 
   if (loading) {
     return (

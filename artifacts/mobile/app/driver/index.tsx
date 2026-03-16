@@ -78,14 +78,15 @@ export default function DriverHomeScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />}
       >
         <View style={styles.sduiContainer}>
-            <DynamicScreen
-              screenId="driver_home"
-              surface="mobile"
-              onAction={(action) => {
-                if (action === "view_earnings") router.push("/driver/earnings");
-                else if (action === "start_inspection") router.push("/driver/inspection");
-              }}
-            />
+          <DynamicScreen
+            screenId="driver_home"
+            surface="mobile"
+            extraParams={{ driverStatus: status }}
+            onAction={(action) => {
+              if (action === "view_earnings") router.push("/driver/earnings");
+              else if (action === "start_inspection") router.push("/driver/inspection");
+            }}
+          />
         </View>
 
         <View style={styles.statsRow}>

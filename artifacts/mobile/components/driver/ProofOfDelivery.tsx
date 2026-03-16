@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Pressable, TextInput, Image, Alert, Platform } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import { SignaturePad } from "./SignaturePad";
 import { COLORS } from "@/constants/colors";
 
 interface ProofOfDeliveryProps {
@@ -16,9 +17,8 @@ interface ProofOfDeliveryProps {
 export function ProofOfDelivery({ onSubmit, isSubmitting }: ProofOfDeliveryProps) {
   const [recipientName, setRecipientName] = useState("");
   const [photoUri, setPhotoUri] = useState<string | null>(null);
-  const [hasSignature, setHasSignature] = useState(false);
-  const [signatureData, setSignatureData] = useState<string>("");
-  const [signaturePoints, setSignaturePoints] = useState<string[]>([]);
+  const [signatureData, setSignatureData] = useState<string | null>(null);
+  const [showSignaturePad, setShowSignaturePad] = useState(false);
 
   const handleTakePhoto = async () => {
     try {
@@ -36,8 +36,7 @@ export function ProofOfDelivery({ onSubmit, isSubmitting }: ProofOfDeliveryProps
       });
 
       if (!result.canceled && result.assets[0]) {
-        const asset = result.assets[0];
-        setPhotoUri(asset.uri);
+        setPhotoUri(result.assets[0].uri);
       }
     } catch {
       if (Platform.OS === "web") {
@@ -57,39 +56,29 @@ export function ProofOfDelivery({ onSubmit, isSubmitting }: ProofOfDeliveryProps
     }
   };
 
-  const handleSignature = () => {
-    const timestamp = Date.now();
-    const points = [
-      `M10,80 C40,10 65,10 95,80`,
-      `S150,150 180,80`,
-      `L200,${60 + Math.floor(Math.random() * 20)}`,
-    ];
-    setSignaturePoints(points);
-    const sig = `SVG_SIG_${timestamp}_${points.join("|")}`;
-    setSignatureData(sig);
-    setHasSignature(true);
+  const handleSignatureCapture = (svgPathData: string) => {
+    setSignatureData(svgPathData);
+    setShowSignaturePad(false);
   };
 
-  const clearSignature = () => {
-    setSignaturePoints([]);
-    setSignatureData("");
-    setHasSignature(false);
+  const handleSignatureClear = () => {
+    setSignatureData(null);
   };
 
   const handleSubmit = () => {
-    const proofType: "signature" | "photo" | "both" =
-      hasSignature && photoUri ? "both" :
-      hasSignature ? "signature" :
-      "photo";
-
-    if (!hasSignature && !photoUri) {
+    if (!signatureData && !photoUri) {
       Alert.alert("Proof Required", "Please capture at least a photo or signature before completing.", [{ text: "OK" }]);
       return;
     }
 
+    const proofType: "signature" | "photo" | "both" =
+      signatureData && photoUri ? "both" :
+      signatureData ? "signature" :
+      "photo";
+
     onSubmit({
       proofType,
-      signatureData: hasSignature ? signatureData : undefined,
+      signatureData: signatureData || undefined,
       photoUri: photoUri || undefined,
       recipientName: recipientName || undefined,
     });
@@ -107,45 +96,56 @@ export function ProofOfDelivery({ onSubmit, isSubmitting }: ProofOfDeliveryProps
         onChangeText={setRecipientName}
       />
 
-      <View style={styles.proofRow}>
-        <Pressable style={[styles.proofBtn, photoUri && styles.proofBtnDone]} onPress={handleTakePhoto}>
-          {photoUri ? (
+      <Pressable style={[styles.photoBtn, photoUri && styles.photoBtnDone]} onPress={handleTakePhoto}>
+        {photoUri ? (
+          <View style={styles.photoPreviewWrap}>
             <Image source={{ uri: photoUri }} style={styles.photoPreview} />
-          ) : (
-            <>
-              <Text style={styles.proofBtnIcon}>📷</Text>
-              <Text style={styles.proofBtnText}>Take Photo</Text>
-            </>
-          )}
-        </Pressable>
+            <Text style={styles.photoRetakeText}>Tap to retake</Text>
+          </View>
+        ) : (
+          <>
+            <Text style={styles.photoBtnIcon}>📷</Text>
+            <Text style={styles.photoBtnText}>Take Delivery Photo</Text>
+          </>
+        )}
+      </Pressable>
 
-        <Pressable style={[styles.proofBtn, hasSignature && styles.proofBtnDone]} onPress={hasSignature ? clearSignature : handleSignature}>
-          {hasSignature && signaturePoints.length > 0 ? (
-            <View style={styles.sigPreview}>
-              <Text style={styles.sigPreviewText}>✍️ Signed</Text>
-              <Text style={styles.sigClearText}>Tap to re-sign</Text>
-            </View>
-          ) : (
-            <>
-              <Text style={styles.proofBtnIcon}>✍️</Text>
-              <Text style={styles.proofBtnText}>Get Signature</Text>
-            </>
-          )}
+      {!showSignaturePad && !signatureData && (
+        <Pressable style={styles.sigOpenBtn} onPress={() => setShowSignaturePad(true)}>
+          <Text style={styles.sigOpenBtnIcon}>✍️</Text>
+          <Text style={styles.sigOpenBtnText}>Capture Signature</Text>
         </Pressable>
-      </View>
+      )}
 
-      {(photoUri || hasSignature) && (
+      {showSignaturePad && (
+        <SignaturePad
+          onCapture={handleSignatureCapture}
+          onClear={handleSignatureClear}
+          height={150}
+        />
+      )}
+
+      {signatureData && !showSignaturePad && (
+        <View style={styles.sigDoneRow}>
+          <Text style={styles.sigDoneText}>✅ Signature captured</Text>
+          <Pressable onPress={() => { setSignatureData(null); setShowSignaturePad(true); }}>
+            <Text style={styles.sigRedoText}>Re-sign</Text>
+          </Pressable>
+        </View>
+      )}
+
+      {(photoUri || signatureData) && (
         <View style={styles.proofSummary}>
           <Text style={styles.proofSummaryText}>
-            Proof collected: {[photoUri && "Photo", hasSignature && "Signature"].filter(Boolean).join(" + ")}
+            Proof collected: {[photoUri && "Photo", signatureData && "Signature"].filter(Boolean).join(" + ")}
           </Text>
         </View>
       )}
 
       <Pressable
-        style={[styles.submitBtn, isSubmitting && styles.submitBtnDisabled, (!photoUri && !hasSignature) && styles.submitBtnDisabled]}
+        style={[styles.submitBtn, isSubmitting && styles.submitBtnDisabled, (!photoUri && !signatureData) && styles.submitBtnDisabled]}
         onPress={handleSubmit}
-        disabled={isSubmitting || (!photoUri && !hasSignature)}
+        disabled={isSubmitting || (!photoUri && !signatureData)}
       >
         <Text style={styles.submitBtnText}>{isSubmitting ? "Completing..." : "Complete Delivery"}</Text>
       </Pressable>
@@ -157,15 +157,19 @@ const styles = StyleSheet.create({
   container: { margin: 16, backgroundColor: COLORS.surfaceWhite, borderRadius: 14, padding: 16, borderWidth: 1, borderColor: COLORS.border },
   title: { fontSize: 16, fontWeight: "700", color: COLORS.text, marginBottom: 12 },
   input: { backgroundColor: COLORS.surface, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14, color: COLORS.text, borderWidth: 1, borderColor: COLORS.border, marginBottom: 12 },
-  proofRow: { flexDirection: "row", gap: 10, marginBottom: 12 },
-  proofBtn: { flex: 1, paddingVertical: 16, borderRadius: 12, backgroundColor: COLORS.surface, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: COLORS.border, borderStyle: "dashed", minHeight: 90 },
-  proofBtnDone: { backgroundColor: "#ecfdf5", borderColor: "#34d399", borderStyle: "solid" },
-  proofBtnIcon: { fontSize: 28, marginBottom: 6 },
-  proofBtnText: { fontSize: 13, fontWeight: "600", color: COLORS.textSecondary },
-  photoPreview: { width: "100%", height: 80, borderRadius: 8 },
-  sigPreview: { alignItems: "center", gap: 4 },
-  sigPreviewText: { fontSize: 16, fontWeight: "600", color: "#059669" },
-  sigClearText: { fontSize: 10, color: COLORS.textSecondary },
+  photoBtn: { paddingVertical: 20, borderRadius: 12, backgroundColor: COLORS.surface, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: COLORS.border, borderStyle: "dashed", marginBottom: 12 },
+  photoBtnDone: { backgroundColor: "#ecfdf5", borderColor: "#34d399", borderStyle: "solid", paddingVertical: 8 },
+  photoBtnIcon: { fontSize: 32, marginBottom: 6 },
+  photoBtnText: { fontSize: 14, fontWeight: "600", color: COLORS.textSecondary },
+  photoPreviewWrap: { alignItems: "center", gap: 4 },
+  photoPreview: { width: 120, height: 90, borderRadius: 8 },
+  photoRetakeText: { fontSize: 11, color: "#059669" },
+  sigOpenBtn: { paddingVertical: 16, borderRadius: 12, backgroundColor: COLORS.surface, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: COLORS.border, borderStyle: "dashed", marginBottom: 12, flexDirection: "row", gap: 8 },
+  sigOpenBtnIcon: { fontSize: 22 },
+  sigOpenBtnText: { fontSize: 14, fontWeight: "600", color: COLORS.textSecondary },
+  sigDoneRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: "#ecfdf5", borderRadius: 10, padding: 12, marginBottom: 12 },
+  sigDoneText: { fontSize: 14, fontWeight: "600", color: "#059669" },
+  sigRedoText: { fontSize: 13, fontWeight: "600", color: "#3182ce" },
   proofSummary: { backgroundColor: "#ecfdf5", borderRadius: 8, padding: 10, marginBottom: 12 },
   proofSummaryText: { fontSize: 12, color: "#059669", fontWeight: "600", textAlign: "center" },
   submitBtn: { backgroundColor: "#0d9488", paddingVertical: 14, borderRadius: 12, alignItems: "center" },

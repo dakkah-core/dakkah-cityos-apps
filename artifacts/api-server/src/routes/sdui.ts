@@ -4,9 +4,121 @@ const router = Router();
 
 const BFF_PLATFORM_PORT = process.env.BFF_PLATFORM_PORT || 4006;
 
+function buildDriverHomeSdui(status: string): Record<string, unknown> {
+  if (status === "online") {
+    return {
+      type: "stack",
+      direction: "vertical",
+      spacing: "md",
+      children: [
+        {
+          type: "card",
+          title: "You're Online",
+          subtitle: "Ready to receive delivery requests",
+          badge: "Active",
+          children: [
+            {
+              type: "stack",
+              direction: "horizontal",
+              spacing: "sm",
+              children: [
+                { type: "stat", label: "Today's Earnings", value: "285.50 SAR", icon: "💰" },
+                { type: "stat", label: "Completed", value: "12", icon: "✅" },
+                { type: "stat", label: "Rating", value: "4.9", icon: "⭐" },
+              ],
+            },
+          ],
+        },
+        {
+          type: "card",
+          title: "Active Waypoints",
+          subtitle: "Your current delivery routes",
+          children: [
+            {
+              type: "button",
+              label: "View Earnings",
+              variant: "outline",
+              action: { type: "callback", id: "view_earnings" },
+            },
+          ],
+        },
+        {
+          type: "list",
+          title: "Quick Actions",
+          items: [
+            { title: "Vehicle Inspection", subtitle: "Pre-trip safety checklist", icon: "🔧", action: { type: "callback", id: "start_inspection" } },
+            { title: "View Earnings", subtitle: "Daily / weekly breakdown", icon: "💰", action: { type: "callback", id: "view_earnings" } },
+          ],
+        },
+      ],
+    };
+  }
+
+  if (status === "break") {
+    return {
+      type: "stack",
+      direction: "vertical",
+      spacing: "md",
+      children: [
+        {
+          type: "card",
+          title: "On Break",
+          subtitle: "Take your time — go online when you're ready",
+          badge: "Break",
+          children: [
+            {
+              type: "stack",
+              direction: "horizontal",
+              spacing: "sm",
+              children: [
+                { type: "stat", label: "Today's Earnings", value: "285.50 SAR", icon: "💰" },
+                { type: "stat", label: "Completed", value: "12", icon: "✅" },
+                { type: "stat", label: "Break Time", value: "15 min", icon: "☕" },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+  }
+
+  return {
+    type: "stack",
+    direction: "vertical",
+    spacing: "md",
+    children: [
+      {
+        type: "card",
+        title: "Go Online",
+        subtitle: "Start receiving delivery requests in your area",
+        children: [
+          {
+            type: "stack",
+            direction: "horizontal",
+            spacing: "sm",
+            children: [
+              { type: "stat", label: "Yesterday", value: "285 SAR", icon: "💰" },
+              { type: "stat", label: "This Week", value: "1,420 SAR", icon: "📊" },
+              { type: "stat", label: "Rating", value: "4.9", icon: "⭐" },
+            ],
+          },
+        ],
+      },
+      {
+        type: "list",
+        title: "Before You Start",
+        items: [
+          { title: "Vehicle Inspection", subtitle: "Complete your pre-trip checklist", icon: "🔧", action: { type: "callback", id: "start_inspection" } },
+          { title: "View Earnings", subtitle: "Check your earnings history", icon: "💰", action: { type: "callback", id: "view_earnings" } },
+        ],
+      },
+    ],
+  };
+}
+
 router.get("/:screenId", async (req, res) => {
   const { screenId } = req.params;
-  const { surface, tenant } = req.query;
+  const { surface, tenant, driverStatus } = req.query;
 
   const bffHost = process.env.BFF_HOST || "localhost";
   try {
@@ -47,52 +159,7 @@ router.get("/:screenId", async (req, res) => {
         },
       ],
     },
-    "driver_home": {
-      type: "stack",
-      direction: "vertical",
-      spacing: "md",
-      children: [
-        {
-          type: "card",
-          title: "Driver Dashboard",
-          subtitle: "Manage your deliveries and earnings",
-          children: [
-            {
-              type: "stack",
-              direction: "horizontal",
-              spacing: "sm",
-              children: [
-                { type: "stat", label: "Today's Earnings", value: "285.50 SAR", icon: "💰" },
-                { type: "stat", label: "Completed", value: "12", icon: "✅" },
-                { type: "stat", label: "Rating", value: "4.9", icon: "⭐" },
-              ],
-            },
-          ],
-        },
-        {
-          type: "card",
-          title: "Active Delivery",
-          subtitle: "Al-Medina Fresh Market → Ahmad Al-Rashid",
-          badge: "In Transit",
-          children: [
-            {
-              type: "button",
-              label: "View Details",
-              variant: "solid",
-              action: { type: "navigate", target: "job/active" },
-            },
-          ],
-        },
-        {
-          type: "list",
-          title: "Available Jobs",
-          items: [
-            { title: "Delivery — Heritage Spices", subtitle: "5.4 km • 12 min • 22 SAR", icon: "📦" },
-            { title: "Pickup — Al-Batha Market", subtitle: "3.2 km • 8 min • 18 SAR", icon: "📦" },
-          ],
-        },
-      ],
-    },
+    "driver_home": buildDriverHomeSdui(String(driverStatus || "offline")),
     "product-grid": {
       type: "grid",
       columns: 2,

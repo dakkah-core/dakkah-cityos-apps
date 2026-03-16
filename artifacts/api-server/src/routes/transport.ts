@@ -1,5 +1,7 @@
 import { Router, type Request } from "express";
-import { requireAuth, type AuthenticatedRequest } from "../middleware/auth";
+import { requireAuth, requireRole, type AuthenticatedRequest } from "../middleware/auth";
+
+const DRIVER_ROLES = ["driver", "courier", "fleet_driver", "field_agent"];
 
 const router = Router();
 
@@ -69,7 +71,7 @@ function generateMockJobs(): DriverJob[] {
   ];
 }
 
-router.get("/transport/driver/status", requireAuth, (req, res) => {
+router.get("/transport/driver/status", requireAuth, requireRole(...DRIVER_ROLES), (req, res) => {
   const driverId = (req as AuthenticatedRequest).userId!;
   const status = driverStatuses.get(driverId) || "offline";
   const jobs = activeJobs.get(driverId) || [];
@@ -87,7 +89,7 @@ router.get("/transport/driver/status", requireAuth, (req, res) => {
   });
 });
 
-router.post("/transport/driver/status", requireAuth, (req, res) => {
+router.post("/transport/driver/status", requireAuth, requireRole(...DRIVER_ROLES), (req, res) => {
   const driverId = (req as AuthenticatedRequest).userId!;
   const { status } = req.body as { status: "online" | "offline" | "break" };
 
@@ -112,7 +114,7 @@ router.post("/transport/driver/status", requireAuth, (req, res) => {
   });
 });
 
-router.get("/transport/driver/jobs", requireAuth, (req, res) => {
+router.get("/transport/driver/jobs", requireAuth, requireRole(...DRIVER_ROLES), (req, res) => {
   const driverId = (req as AuthenticatedRequest).userId!;
   let jobs = activeJobs.get(driverId);
 
@@ -127,7 +129,7 @@ router.get("/transport/driver/jobs", requireAuth, (req, res) => {
   res.json({ success: true, data: { jobs: filtered, total: filtered.length } });
 });
 
-router.get("/transport/driver/jobs/:jobId", requireAuth, (req, res) => {
+router.get("/transport/driver/jobs/:jobId", requireAuth, requireRole(...DRIVER_ROLES), (req, res) => {
   const driverId = (req as AuthenticatedRequest).userId!;
   const jobs = activeJobs.get(driverId) || [];
   const job = jobs.find((j) => j.id === req.params.jobId);
@@ -140,7 +142,7 @@ router.get("/transport/driver/jobs/:jobId", requireAuth, (req, res) => {
   res.json({ success: true, data: { job } });
 });
 
-router.post("/transport/driver/jobs/:jobId/accept", requireAuth, (req, res) => {
+router.post("/transport/driver/jobs/:jobId/accept", requireAuth, requireRole(...DRIVER_ROLES), (req, res) => {
   const driverId = (req as AuthenticatedRequest).userId!;
   const jobs = activeJobs.get(driverId) || [];
   const job = jobs.find((j) => j.id === req.params.jobId);
@@ -159,7 +161,7 @@ router.post("/transport/driver/jobs/:jobId/accept", requireAuth, (req, res) => {
   res.json({ success: true, data: { job } });
 });
 
-router.post("/transport/driver/jobs/:jobId/reject", requireAuth, (req, res) => {
+router.post("/transport/driver/jobs/:jobId/reject", requireAuth, requireRole(...DRIVER_ROLES), (req, res) => {
   const driverId = (req as AuthenticatedRequest).userId!;
   const jobs = activeJobs.get(driverId) || [];
   const job = jobs.find((j) => j.id === req.params.jobId);
@@ -173,7 +175,7 @@ router.post("/transport/driver/jobs/:jobId/reject", requireAuth, (req, res) => {
   res.json({ success: true, data: { job } });
 });
 
-router.post("/transport/driver/jobs/:jobId/pickup", requireAuth, (req, res) => {
+router.post("/transport/driver/jobs/:jobId/pickup", requireAuth, requireRole(...DRIVER_ROLES), (req, res) => {
   const driverId = (req as AuthenticatedRequest).userId!;
   const jobs = activeJobs.get(driverId) || [];
   const job = jobs.find((j) => j.id === req.params.jobId);
@@ -204,7 +206,7 @@ router.post("/transport/driver/jobs/:jobId/pickup", requireAuth, (req, res) => {
   });
 });
 
-router.post("/transport/driver/jobs/:jobId/arrive", requireAuth, (req, res) => {
+router.post("/transport/driver/jobs/:jobId/arrive", requireAuth, requireRole(...DRIVER_ROLES), (req, res) => {
   const driverId = (req as AuthenticatedRequest).userId!;
   const jobs = activeJobs.get(driverId) || [];
   const job = jobs.find((j) => j.id === req.params.jobId);
@@ -218,7 +220,7 @@ router.post("/transport/driver/jobs/:jobId/arrive", requireAuth, (req, res) => {
   res.json({ success: true, data: { job } });
 });
 
-router.post("/transport/driver/jobs/:jobId/complete", requireAuth, (req, res) => {
+router.post("/transport/driver/jobs/:jobId/complete", requireAuth, requireRole(...DRIVER_ROLES), (req, res) => {
   const driverId = (req as AuthenticatedRequest).userId!;
   const jobs = activeJobs.get(driverId) || [];
   const job = jobs.find((j) => j.id === req.params.jobId);
@@ -247,7 +249,7 @@ router.post("/transport/driver/jobs/:jobId/complete", requireAuth, (req, res) =>
   });
 });
 
-router.post("/transport/driver/position", requireAuth, (req, res) => {
+router.post("/transport/driver/position", requireAuth, requireRole(...DRIVER_ROLES), (req, res) => {
   const driverId = (req as AuthenticatedRequest).userId!;
   const { lat, lng, heading, speed } = req.body as { lat: number; lng: number; heading: number; speed: number };
 
@@ -256,7 +258,7 @@ router.post("/transport/driver/position", requireAuth, (req, res) => {
   res.json({ success: true, data: { received: true } });
 });
 
-router.get("/transport/driver/earnings", requireAuth, (req, res) => {
+router.get("/transport/driver/earnings", requireAuth, requireRole(...DRIVER_ROLES), (req, res) => {
   const driverId = (req as AuthenticatedRequest).userId!;
   const period = (req.query.period as string) || "today";
 
@@ -287,7 +289,7 @@ router.get("/transport/driver/earnings", requireAuth, (req, res) => {
   });
 });
 
-router.post("/transport/driver/inspection", requireAuth, (req, res) => {
+router.post("/transport/driver/inspection", requireAuth, requireRole(...DRIVER_ROLES), (req, res) => {
   const driverId = (req as AuthenticatedRequest).userId!;
   const { vehicleId, checks } = req.body as {
     vehicleId: string;
@@ -311,7 +313,7 @@ router.post("/transport/driver/inspection", requireAuth, (req, res) => {
   });
 });
 
-router.post("/transport/driver/sos", requireAuth, (req, res) => {
+router.post("/transport/driver/sos", requireAuth, requireRole(...DRIVER_ROLES), (req, res) => {
   const driverId = (req as AuthenticatedRequest).userId!;
   const { type, location, message } = req.body as {
     type: "accident" | "breakdown" | "threat" | "medical" | "other";
@@ -335,7 +337,7 @@ router.post("/transport/driver/sos", requireAuth, (req, res) => {
   });
 });
 
-router.post("/transport/driver/sync", requireAuth, (req, res) => {
+router.post("/transport/driver/sync", requireAuth, requireRole(...DRIVER_ROLES), (req, res) => {
   const driverId = (req as AuthenticatedRequest).userId!;
   const { actions } = req.body as { actions: Array<{ action: string; payload: Record<string, unknown>; timestamp: number }> };
 
