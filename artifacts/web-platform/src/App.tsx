@@ -2,6 +2,7 @@ import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { ChatProvider } from "@/hooks/use-chat";
+import { NotificationProvider } from "@/hooks/use-notifications";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import AuthCallback from "@/pages/Callback";
@@ -43,11 +44,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <ChatProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <Router />
-          </WouterRouter>
-        </ChatProvider>
+        <NotificationProvider>
+          <ChatProvider>
+            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+              <Router />
+            </WouterRouter>
+          </ChatProvider>
+        </NotificationProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

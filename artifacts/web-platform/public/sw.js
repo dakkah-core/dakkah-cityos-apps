@@ -182,6 +182,68 @@ function openIDB() {
   });
 }
 
+self.addEventListener("push", (event) => {
+  const defaults = {
+    title: "Dakkah CityOS",
+    body: "You have a new notification",
+    icon: "/web-platform/icon-192.svg",
+    badge: "/web-platform/favicon.svg",
+    tag: "dakkah-notification",
+    data: { url: "/web-platform/" },
+  };
+
+  let payload = defaults;
+  if (event.data) {
+    try {
+      const data = event.data.json();
+      payload = {
+        title: data.title || defaults.title,
+        body: data.body || defaults.body,
+        icon: data.icon || defaults.icon,
+        badge: defaults.badge,
+        tag: data.tag || defaults.tag,
+        data: { url: data.url || defaults.data.url, ...data },
+      };
+    } catch {
+      payload.body = event.data.text() || defaults.body;
+    }
+  }
+
+  event.waitUntil(
+    self.registration.showNotification(payload.title, {
+      body: payload.body,
+      icon: payload.icon,
+      badge: payload.badge,
+      tag: payload.tag,
+      data: payload.data,
+      vibrate: [200, 100, 200],
+      actions: [
+        { action: "open", title: "Open" },
+        { action: "dismiss", title: "Dismiss" },
+      ],
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  if (event.action === "dismiss") return;
+
+  const url = event.notification.data?.url || "/web-platform/";
+
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+      for (const client of clients) {
+        if (client.url.includes("/web-platform/") && "focus" in client) {
+          return client.focus();
+        }
+      }
+      return self.clients.openWindow(url);
+    })
+  );
+});
+
 self.addEventListener("message", (event) => {
   if (event.data === "skipWaiting") {
     self.skipWaiting();

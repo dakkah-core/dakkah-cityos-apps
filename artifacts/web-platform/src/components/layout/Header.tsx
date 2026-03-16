@@ -1,6 +1,6 @@
-import { Menu, Search, Bell, Compass, LogOut, User } from "lucide-react";
+import { Menu, Search, Compass, LogOut, User } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { cn } from "@/lib/utils";
+import { NotificationBell } from "./NotificationBell";
 
 interface Props {
   onToggleThreads: () => void;
@@ -29,13 +29,10 @@ export function Header({ onToggleThreads, onToggleDiscovery, onToggleSearch }: P
 
       <div className="flex-1" />
 
-      <button onClick={onToggleSearch} className="p-2 rounded-lg hover:bg-muted transition-colors" title="Search">
+      <button onClick={onToggleSearch} className="p-2 rounded-lg hover:bg-muted transition-colors" title="City Context">
         <Search className="h-5 w-5 text-muted-foreground" />
       </button>
-      <button className="p-2 rounded-lg hover:bg-muted transition-colors relative" title="Notifications">
-        <Bell className="h-5 w-5 text-muted-foreground" />
-        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
-      </button>
+      <NotificationBell />
       <button onClick={onToggleDiscovery} className="p-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors" title="Discover Services">
         <Compass className="h-5 w-5 text-primary" />
       </button>

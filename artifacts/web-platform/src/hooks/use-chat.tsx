@@ -82,9 +82,15 @@ async function fetchFromApi(text: string): Promise<{ content: string; artifacts?
     if (!res.ok) return null;
     const data = await res.json();
     if (data.reply) {
+      let resolvedArtifacts: Message["artifacts"] | undefined;
+      if (Array.isArray(data.artifacts) && data.artifacts.length > 0) {
+        resolvedArtifacts = data.artifacts;
+      } else if (data.sduiPayload) {
+        resolvedArtifacts = [{ type: "sdui-node", data: { node: data.sduiPayload } }];
+      }
       return {
         content: data.reply,
-        artifacts: data.artifacts || data.sduiPayload ? [{ type: "sdui-node", data: { node: data.sduiPayload } }] : undefined,
+        artifacts: resolvedArtifacts,
       };
     }
     return null;
