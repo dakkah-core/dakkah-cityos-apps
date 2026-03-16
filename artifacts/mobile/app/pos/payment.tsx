@@ -6,6 +6,11 @@ import { COLORS } from "@/constants/colors";
 import { usePos } from "@/context/PosContext";
 import type { PaymentMethod } from "@/types/pos";
 
+interface SplitEntry {
+  method: "cash" | "card" | "nfc";
+  amount: string;
+}
+
 export default function PaymentScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -15,10 +20,17 @@ export default function PaymentScreen() {
   const [processing, setProcessing] = useState(false);
   const [cardLast4, setCardLast4] = useState("");
   const [nfcSimulated, setNfcSimulated] = useState(false);
+  const [splitEntries, setSplitEntries] = useState<SplitEntry[]>([
+    { method: "cash", amount: "" },
+    { method: "card", amount: "" },
+  ]);
 
   const changeDue = method === "cash" && parseFloat(cashTendered) > cart.total
     ? Math.round((parseFloat(cashTendered) - cart.total) * 100) / 100
     : 0;
+
+  const splitTotal = splitEntries.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
+  const splitRemaining = Math.round((cart.total - splitTotal) * 100) / 100;
 
   const canPay = method === "cash"
     ? parseFloat(cashTendered) >= cart.total
@@ -26,25 +38,34 @@ export default function PaymentScreen() {
     ? cardLast4.length === 4
     : method === "nfc"
     ? nfcSimulated
+    : method === "split"
+    ? Math.abs(splitRemaining) < 0.01
     : false;
 
   const handlePay = useCallback(async () => {
     if (processing) return;
     setProcessing(true);
     try {
-      await checkout({
-        method,
-        ...(method === "cash" ? { amountTendered: parseFloat(cashTendered), changeDue } : {}),
-        ...(method === "card" ? { cardLast4 } : {}),
-        ...(method === "nfc" ? { nfcToken: `nfc-sim-${Date.now()}` } : {}),
-      });
+      if (method === "split") {
+        const validSplits = splitEntries
+          .filter((e) => parseFloat(e.amount) > 0)
+          .map((e) => ({ method: e.method, amount: parseFloat(e.amount) }));
+        await checkout({ method: "split", splitPayments: validSplits });
+      } else {
+        await checkout({
+          method,
+          ...(method === "cash" ? { amountTendered: parseFloat(cashTendered), changeDue } : {}),
+          ...(method === "card" ? { cardLast4 } : {}),
+          ...(method === "nfc" ? { nfcToken: `nfc-sim-${Date.now()}` } : {}),
+        });
+      }
       router.replace("/pos/receipt" as never);
-    } catch (err) {
+    } catch {
       Alert.alert("Payment Failed", "Please try again");
     } finally {
       setProcessing(false);
     }
-  }, [method, cashTendered, cardLast4, changeDue, checkout, processing, router, nfcSimulated]);
+  }, [method, cashTendered, cardLast4, changeDue, checkout, processing, router, nfcSimulated, splitEntries]);
 
   const quickCashAmounts = [
     Math.ceil(cart.total / 5) * 5,
@@ -52,6 +73,21 @@ export default function PaymentScreen() {
     Math.ceil(cart.total / 50) * 50,
     Math.ceil(cart.total / 100) * 100,
   ].filter((v, i, a) => a.indexOf(v) === i && v >= cart.total).slice(0, 4);
+
+  const addSplitEntry = () => {
+    setSplitEntries((prev) => [...prev, { method: "cash", amount: "" }]);
+  };
+
+  const updateSplitEntry = (index: number, field: keyof SplitEntry, value: string) => {
+    setSplitEntries((prev) =>
+      prev.map((e, i) => (i === index ? { ...e, [field]: value } : e))
+    );
+  };
+
+  const removeSplitEntry = (index: number) => {
+    if (splitEntries.length <= 2) return;
+    setSplitEntries((prev) => prev.filter((_, i) => i !== index));
+  };
 
   if (cart.items.length === 0) {
     router.back();
@@ -80,6 +116,7 @@ export default function PaymentScreen() {
             { key: "cash" as PaymentMethod, icon: "💵", label: "Cash" },
             { key: "card" as PaymentMethod, icon: "💳", label: "Card" },
             { key: "nfc" as PaymentMethod, icon: "📱", label: "NFC Tap" },
+            { key: "split" as PaymentMethod, icon: "✂️", label: "Split" },
           ]).map((m) => (
             <Pressable
               key={m.key}
@@ -156,6 +193,54 @@ export default function PaymentScreen() {
             </Pressable>
           </View>
         )}
+
+        {method === "split" && (
+          <View style={styles.paymentDetail}>
+            <Text style={styles.detailLabel}>Split Payment</Text>
+            {splitEntries.map((entry, idx) => (
+              <View key={idx} style={styles.splitRow}>
+                <View style={styles.splitMethodPicker}>
+                  {(["cash", "card", "nfc"] as const).map((m) => (
+                    <Pressable
+                      key={m}
+                      style={[styles.splitMethodBtn, entry.method === m && styles.splitMethodActive]}
+                      onPress={() => updateSplitEntry(idx, "method", m)}
+                    >
+                      <Text style={[styles.splitMethodText, entry.method === m && styles.splitMethodTextActive]}>
+                        {m === "cash" ? "💵" : m === "card" ? "💳" : "📱"}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+                <TextInput
+                  style={styles.splitAmountInput}
+                  value={entry.amount}
+                  onChangeText={(v) => updateSplitEntry(idx, "amount", v)}
+                  placeholder="0.00"
+                  placeholderTextColor="rgba(255,255,255,0.3)"
+                  keyboardType="decimal-pad"
+                />
+                <Text style={styles.splitCurrency}>SAR</Text>
+                {splitEntries.length > 2 && (
+                  <Pressable onPress={() => removeSplitEntry(idx)}>
+                    <Text style={styles.splitRemoveBtn}>✕</Text>
+                  </Pressable>
+                )}
+              </View>
+            ))}
+            <Pressable style={styles.addSplitBtn} onPress={addSplitEntry}>
+              <Text style={styles.addSplitText}>+ Add Payment</Text>
+            </Pressable>
+            <View style={[styles.splitRemainingBox, Math.abs(splitRemaining) < 0.01 && styles.splitBalanced]}>
+              <Text style={styles.splitRemainingLabel}>
+                {splitRemaining > 0.01 ? "Remaining" : splitRemaining < -0.01 ? "Over" : "Balanced"}
+              </Text>
+              <Text style={[styles.splitRemainingValue, Math.abs(splitRemaining) < 0.01 && styles.splitBalancedText]}>
+                {Math.abs(splitRemaining).toFixed(2)} SAR
+              </Text>
+            </View>
+          </View>
+        )}
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}>
@@ -190,11 +275,11 @@ const styles = StyleSheet.create({
   totalAmount: { fontSize: 36, fontWeight: "800", color: "#0d9488" },
   totalItems: { fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 4 },
   sectionTitle: { fontSize: 14, fontWeight: "700", color: "rgba(255,255,255,0.6)", marginBottom: 12 },
-  methodRow: { flexDirection: "row", gap: 12, marginBottom: 24 },
-  methodCard: { flex: 1, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 14, padding: 16, alignItems: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
+  methodRow: { flexDirection: "row", gap: 10, marginBottom: 24 },
+  methodCard: { flex: 1, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 14, padding: 14, alignItems: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
   methodActive: { backgroundColor: "rgba(13,148,136,0.15)", borderColor: "#0d9488" },
-  methodIcon: { fontSize: 28, marginBottom: 6 },
-  methodLabel: { fontSize: 13, fontWeight: "600", color: "rgba(255,255,255,0.6)" },
+  methodIcon: { fontSize: 24, marginBottom: 4 },
+  methodLabel: { fontSize: 11, fontWeight: "600", color: "rgba(255,255,255,0.6)" },
   methodLabelActive: { color: "#0d9488" },
   paymentDetail: { backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
   detailLabel: { fontSize: 12, fontWeight: "600", color: "rgba(255,255,255,0.5)", marginBottom: 8 },
@@ -213,6 +298,22 @@ const styles = StyleSheet.create({
   nfcSimDone: { borderColor: "#0d9488", borderStyle: "solid", backgroundColor: "rgba(13,148,136,0.15)" },
   nfcSimIcon: { fontSize: 40, marginBottom: 8 },
   nfcSimText: { fontSize: 14, fontWeight: "600", color: "rgba(255,255,255,0.6)" },
+  splitRow: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 10 },
+  splitMethodPicker: { flexDirection: "row", gap: 4 },
+  splitMethodBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.08)", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
+  splitMethodActive: { backgroundColor: "rgba(13,148,136,0.2)", borderColor: "#0d9488" },
+  splitMethodText: { fontSize: 16 },
+  splitMethodTextActive: {},
+  splitAmountInput: { flex: 1, backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 16, color: "#fff", textAlign: "right", borderWidth: 1, borderColor: "rgba(255,255,255,0.15)" },
+  splitCurrency: { fontSize: 12, color: "rgba(255,255,255,0.4)", width: 30 },
+  splitRemoveBtn: { fontSize: 16, color: "rgba(255,255,255,0.4)", paddingHorizontal: 4 },
+  addSplitBtn: { alignSelf: "flex-start", paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.08)", marginBottom: 12, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
+  addSplitText: { fontSize: 12, color: "rgba(255,255,255,0.5)", fontWeight: "600" },
+  splitRemainingBox: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: "rgba(217,119,6,0.15)", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(217,119,6,0.3)" },
+  splitBalanced: { backgroundColor: "rgba(13,148,136,0.15)", borderColor: "rgba(13,148,136,0.3)" },
+  splitRemainingLabel: { fontSize: 13, color: "rgba(255,255,255,0.6)" },
+  splitRemainingValue: { fontSize: 16, fontWeight: "700", color: "#d97706" },
+  splitBalancedText: { color: "#0d9488" },
   footer: { paddingHorizontal: 20, paddingTop: 12 },
   payBtn: { backgroundColor: "#0d9488", paddingVertical: 16, borderRadius: 14, alignItems: "center" },
   payBtnDisabled: { opacity: 0.4 },

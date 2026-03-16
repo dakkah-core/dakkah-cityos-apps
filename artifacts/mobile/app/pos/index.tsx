@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import {
   View, Text, ScrollView, Pressable, TextInput, StyleSheet,
   FlatList, Alert, ActivityIndicator,
@@ -7,8 +7,34 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { COLORS } from "@/constants/colors";
 import { usePos } from "@/context/PosContext";
-import { configureActionHandler } from "@workspace/sdui-renderer-native";
+import { SduiRenderer, configureActionHandler } from "@workspace/sdui-renderer-native";
 import type { PosProduct } from "@/types/pos";
+import { useAuth } from "@/context/AuthContext";
+
+function useSduiSurface(surface: string) {
+  const [sduiTree, setSduiTree] = useState<Record<string, unknown> | null>(null);
+  const { getAccessToken } = useAuth();
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const token = await getAccessToken();
+        const baseUrl = process.env.EXPO_PUBLIC_API_URL || "";
+        const res = await fetch(`${baseUrl}/api/sdui/${surface}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (res.ok && !cancelled) {
+          const data = await res.json();
+          setSduiTree(data.screen || data);
+        }
+      } catch {}
+    })();
+    return () => { cancelled = true; };
+  }, [surface, getAccessToken]);
+
+  return sduiTree;
+}
 
 export default function PosTerminalScreen() {
   const insets = useSafeAreaInsets();
@@ -18,13 +44,14 @@ export default function PosTerminalScreen() {
     isLoading, offlineQueueCount, addToCart, removeFromCart,
     updateQuantity, clearCart, openShift,
   } = usePos();
+  const sduiTree = useSduiSurface("tablet_pos");
 
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [search, setSearch] = useState("");
   const [showShiftDialog, setShowShiftDialog] = useState(false);
   const [openingCash, setOpeningCash] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     configureActionHandler({
       onNavigate: (screen) => {
         if (screen.startsWith("pos/")) {
@@ -122,6 +149,12 @@ export default function PosTerminalScreen() {
     );
   }
 
+  const sduiStatusBar = sduiTree ? (
+    <View style={styles.sduiBar}>
+      <SduiRenderer node={sduiTree as any} theme="dark" />
+    </View>
+  ) : null;
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
@@ -150,6 +183,7 @@ export default function PosTerminalScreen() {
         </View>
       </View>
 
+      {sduiStatusBar}
       <View style={styles.body}>
         <View style={styles.productSide}>
           <View style={styles.searchRow}>
@@ -349,4 +383,5 @@ const styles = StyleSheet.create({
   shiftInput: { backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 18, color: "#fff", width: 280, textAlign: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.2)", marginBottom: 24 },
   shiftOpenBtn: { backgroundColor: "#0d9488", paddingHorizontal: 40, paddingVertical: 14, borderRadius: 12 },
   shiftOpenBtnText: { color: "#fff", fontWeight: "700", fontSize: 16 },
+  sduiBar: { paddingHorizontal: 12, paddingVertical: 6, backgroundColor: "rgba(255,255,255,0.03)", borderBottomWidth: 1, borderBottomColor: "rgba(255,255,255,0.06)" },
 });

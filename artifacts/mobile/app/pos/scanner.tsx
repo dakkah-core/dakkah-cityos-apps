@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from "react";
-import { View, Text, Pressable, StyleSheet, TextInput, Alert, ActivityIndicator } from "react-native";
+import React, { useState, useCallback, useEffect, useRef } from "react";
+import { View, Text, Pressable, StyleSheet, TextInput, Alert, ActivityIndicator, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { COLORS } from "@/constants/colors";
 import { usePos } from "@/context/PosContext";
+import { CameraView, useCameraPermissions, type BarcodeScanningResult } from "expo-camera";
 
 export default function ScannerScreen() {
   const insets = useSafeAreaInsets();
@@ -12,9 +13,12 @@ export default function ScannerScreen() {
   const [manualCode, setManualCode] = useState("");
   const [scanning, setScanning] = useState(false);
   const [lastScanned, setLastScanned] = useState<string | null>(null);
+  const [cameraActive, setCameraActive] = useState(true);
+  const [permission, requestPermission] = useCameraPermissions();
+  const scanCooldownRef = useRef(false);
 
   const handleLookup = useCallback(async (code: string) => {
-    if (!code.trim()) return;
+    if (!code.trim() || scanning) return;
     setScanning(true);
     try {
       const product = await lookupBarcode(code.trim());
@@ -31,7 +35,23 @@ export default function ScannerScreen() {
     } finally {
       setScanning(false);
     }
-  }, [lookupBarcode, addToCart]);
+  }, [lookupBarcode, addToCart, scanning]);
+
+  const handleBarcodeScan = useCallback((result: BarcodeScanningResult) => {
+    if (scanCooldownRef.current || scanning) return;
+    scanCooldownRef.current = true;
+    setCameraActive(false);
+    handleLookup(result.data).finally(() => {
+      setTimeout(() => {
+        scanCooldownRef.current = false;
+        setCameraActive(true);
+      }, 2000);
+    });
+  }, [handleLookup, scanning]);
+
+  const isWeb = Platform.OS === "web";
+  const hasPermission = permission?.granted;
+  const canShowCamera = !isWeb && hasPermission && cameraActive;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -43,16 +63,49 @@ export default function ScannerScreen() {
       </View>
 
       <View style={styles.body}>
-        <View style={styles.cameraPlaceholder}>
-          <View style={styles.scanFrame}>
-            <View style={[styles.corner, styles.topLeft]} />
-            <View style={[styles.corner, styles.topRight]} />
-            <View style={[styles.corner, styles.bottomLeft]} />
-            <View style={[styles.corner, styles.bottomRight]} />
-          </View>
-          <Text style={styles.scanText}>Camera scanner preview</Text>
-          <Text style={styles.scanSubtext}>Point at barcode to scan automatically</Text>
-          <Text style={styles.scanNote}>Camera access requires device permissions</Text>
+        <View style={styles.cameraContainer}>
+          {canShowCamera ? (
+            <CameraView
+              style={styles.camera}
+              facing="back"
+              barcodeScannerSettings={{ barcodeTypes: ["ean13", "ean8", "upc_a", "upc_e", "code128", "code39", "qr"] }}
+              onBarcodeScanned={cameraActive ? handleBarcodeScan : undefined}
+            >
+              <View style={styles.scanOverlay}>
+                <View style={[styles.corner, styles.topLeft]} />
+                <View style={[styles.corner, styles.topRight]} />
+                <View style={[styles.corner, styles.bottomLeft]} />
+                <View style={[styles.corner, styles.bottomRight]} />
+              </View>
+            </CameraView>
+          ) : (
+            <View style={styles.cameraPlaceholder}>
+              <View style={styles.scanFrame}>
+                <View style={[styles.corner, styles.topLeft]} />
+                <View style={[styles.corner, styles.topRight]} />
+                <View style={[styles.corner, styles.bottomLeft]} />
+                <View style={[styles.corner, styles.bottomRight]} />
+              </View>
+              {isWeb ? (
+                <>
+                  <Text style={styles.scanText}>Camera scanning on device only</Text>
+                  <Text style={styles.scanSubtext}>Use manual entry below or quick scan buttons</Text>
+                </>
+              ) : !hasPermission ? (
+                <>
+                  <Text style={styles.scanText}>Camera permission required</Text>
+                  <Pressable style={styles.permBtn} onPress={requestPermission}>
+                    <Text style={styles.permBtnText}>Grant Camera Access</Text>
+                  </Pressable>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.scanText}>Scanner paused</Text>
+                  <Text style={styles.scanSubtext}>Processing last scan...</Text>
+                </>
+              )}
+            </View>
+          )}
         </View>
 
         <View style={styles.manualSection}>
@@ -108,7 +161,10 @@ const styles = StyleSheet.create({
   backIcon: { color: "#fff", fontSize: 18, fontWeight: "700" },
   title: { flex: 1, fontSize: 20, fontWeight: "800", color: "#fff" },
   body: { flex: 1, padding: 16 },
-  cameraPlaceholder: { height: 260, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 16, alignItems: "center", justifyContent: "center", marginBottom: 24, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
+  cameraContainer: { height: 260, borderRadius: 16, overflow: "hidden", marginBottom: 24, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
+  camera: { flex: 1 },
+  scanOverlay: { flex: 1, alignItems: "center", justifyContent: "center" },
+  cameraPlaceholder: { flex: 1, backgroundColor: "rgba(255,255,255,0.05)", alignItems: "center", justifyContent: "center" },
   scanFrame: { width: 200, height: 150, position: "relative", marginBottom: 16 },
   corner: { position: "absolute", width: 24, height: 24, borderColor: "#0d9488" },
   topLeft: { top: 0, left: 0, borderTopWidth: 3, borderLeftWidth: 3 },
@@ -117,7 +173,8 @@ const styles = StyleSheet.create({
   bottomRight: { bottom: 0, right: 0, borderBottomWidth: 3, borderRightWidth: 3 },
   scanText: { fontSize: 14, fontWeight: "600", color: "rgba(255,255,255,0.6)" },
   scanSubtext: { fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 4 },
-  scanNote: { fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 8, fontStyle: "italic" },
+  permBtn: { backgroundColor: "#0d9488", paddingHorizontal: 20, paddingVertical: 10, borderRadius: 8, marginTop: 12 },
+  permBtnText: { color: "#fff", fontWeight: "700", fontSize: 13 },
   manualSection: { backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 16, padding: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
   manualTitle: { fontSize: 16, fontWeight: "700", color: "#fff", marginBottom: 12 },
   manualRow: { flexDirection: "row", gap: 8, marginBottom: 20 },

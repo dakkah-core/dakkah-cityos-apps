@@ -4,6 +4,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { COLORS } from "@/constants/colors";
 import { usePos } from "@/context/PosContext";
+import { PosApi } from "@/lib/pos-api";
+import { useAuth } from "@/context/AuthContext";
 
 const RETURN_REASONS = [
   "Defective product",
@@ -18,6 +20,7 @@ export default function ReturnsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { products } = usePos();
+  const { getAccessToken } = useAuth();
   const [transactionId, setTransactionId] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [quantity, setQuantity] = useState("1");
@@ -26,6 +29,7 @@ export default function ReturnsScreen() {
   const [processing, setProcessing] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [storeCreditId, setStoreCreditId] = useState<string | null>(null);
+  const [refundedAmount, setRefundedAmount] = useState(0);
 
   const selectedProd = products.find((p) => p.id === selectedProduct);
   const refundAmount = selectedProd ? selectedProd.price * parseInt(quantity || "1") : 0;
@@ -37,33 +41,25 @@ export default function ReturnsScreen() {
     }
     setProcessing(true);
     try {
-      const { useAuth } = require("@/context/AuthContext");
-      const API_BASE = process.env.EXPO_PUBLIC_DOMAIN
-        ? `https://${process.env.EXPO_PUBLIC_DOMAIN}/api`
-        : "http://localhost:8080/api";
-      const res = await fetch(`${API_BASE}/commerce/pos/returns`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const token = await getAccessToken();
+      const data = await PosApi.processReturn(
+        {
           transactionId: transactionId.trim(),
           items: [{ productId: selectedProduct, quantity: parseInt(quantity || "1"), reason }],
           refundMethod,
           refundAmount,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setCompleted(true);
-        if (data.data.storeCreditId) setStoreCreditId(data.data.storeCreditId);
-      } else {
-        Alert.alert("Error", data.error?.message || "Return failed");
-      }
-    } catch {
-      Alert.alert("Error", "Network error");
+        },
+        token
+      );
+      setCompleted(true);
+      setRefundedAmount(refundAmount);
+      if (data.storeCreditId) setStoreCreditId(data.storeCreditId);
+    } catch (err) {
+      Alert.alert("Error", err instanceof Error ? err.message : "Return failed");
     } finally {
       setProcessing(false);
     }
-  }, [transactionId, selectedProduct, quantity, reason, refundMethod, refundAmount]);
+  }, [transactionId, selectedProduct, quantity, reason, refundMethod, refundAmount, getAccessToken]);
 
   if (completed) {
     return (
@@ -71,7 +67,7 @@ export default function ReturnsScreen() {
         <View style={styles.completedView}>
           <Text style={styles.completedIcon}>✅</Text>
           <Text style={styles.completedTitle}>Return Processed</Text>
-          <Text style={styles.completedAmount}>Refund: {refundAmount.toFixed(2)} SAR</Text>
+          <Text style={styles.completedAmount}>Refund: {refundedAmount.toFixed(2)} SAR</Text>
           <Text style={styles.completedMethod}>
             Via: {refundMethod === "cash" ? "Cash" : refundMethod === "store_credit" ? "Store Credit" : "Original Payment"}
           </Text>

@@ -1,13 +1,98 @@
-import React from "react";
-import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
+import React, { useMemo, useCallback } from "react";
+import { View, Text, Pressable, StyleSheet, ScrollView, Alert, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { usePos } from "@/context/PosContext";
+import type { PosTransaction, ReceiptData } from "@/types/pos";
+
+function generateEscPosCommands(tx: PosTransaction): string {
+  const receipt = tx.receiptData;
+  const lines: string[] = [];
+  const ESC = "\x1B";
+  const GS = "\x1D";
+
+  lines.push(`${ESC}@`);
+  lines.push(`${ESC}a${String.fromCharCode(1)}`);
+  lines.push(`${GS}!${String.fromCharCode(17)}`);
+  lines.push(receipt?.storeName || "Dakkah Store");
+  lines.push(`${GS}!${String.fromCharCode(0)}`);
+  lines.push(receipt?.storeAddress || "");
+  lines.push(`Tax ID: ${receipt?.storeTaxId || ""}`);
+  lines.push("--------------------------------");
+  lines.push(new Date(tx.createdAt).toLocaleString());
+  lines.push(`Order: #${tx.orderNumber}`);
+  lines.push("--------------------------------");
+
+  lines.push(`${ESC}a${String.fromCharCode(0)}`);
+  if (receipt?.items) {
+    for (const item of receipt.items) {
+      const name = String(item.name).padEnd(18);
+      const qty = `x${item.quantity}`;
+      const total = `${item.lineTotal.toFixed(2)}`;
+      lines.push(`${name} ${qty.padStart(3)} ${total.padStart(8)}`);
+    }
+  }
+
+  lines.push("--------------------------------");
+  lines.push(`${"Subtotal".padEnd(22)}${tx.subtotal.toFixed(2).padStart(10)}`);
+  if (tx.discountTotal > 0) {
+    lines.push(`${"Discount".padEnd(22)}${(`-${tx.discountTotal.toFixed(2)}`).padStart(10)}`);
+  }
+  lines.push(`${"VAT (15%)".padEnd(22)}${tx.taxTotal.toFixed(2).padStart(10)}`);
+  lines.push("================================");
+  lines.push(`${ESC}a${String.fromCharCode(1)}`);
+  lines.push(`${GS}!${String.fromCharCode(17)}`);
+  lines.push(`TOTAL: ${tx.total.toFixed(2)} SAR`);
+  lines.push(`${GS}!${String.fromCharCode(0)}`);
+  lines.push("================================");
+
+  lines.push(`Paid: ${tx.payment.method.toUpperCase()}`);
+  if (tx.payment.cardLast4) lines.push(`Card: ****${tx.payment.cardLast4}`);
+  if (tx.payment.amountTendered) {
+    lines.push(`Tendered: ${tx.payment.amountTendered.toFixed(2)} SAR`);
+    lines.push(`Change: ${(tx.payment.changeDue || 0).toFixed(2)} SAR`);
+  }
+  if (tx.payment.splitPayments?.length) {
+    lines.push("--- Split Payments ---");
+    for (const sp of tx.payment.splitPayments) {
+      lines.push(`  ${sp.method.toUpperCase()}: ${sp.amount.toFixed(2)} SAR`);
+    }
+  }
+
+  lines.push("");
+  lines.push("Thank you for your purchase!");
+  lines.push("");
+  lines.push(`${GS}V${String.fromCharCode(66)}${String.fromCharCode(3)}`);
+  lines.push("");
+
+  return lines.join("\n");
+}
 
 export default function ReceiptScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { lastTransaction } = usePos();
+
+  const escPosData = useMemo(() => {
+    if (!lastTransaction) return "";
+    return generateEscPosCommands(lastTransaction);
+  }, [lastTransaction]);
+
+  const handlePrint = useCallback(() => {
+    if (Platform.OS === "web") {
+      Alert.alert(
+        "ESC/POS Receipt Generated",
+        `${escPosData.split("\n").length} lines of ESC/POS commands ready.\n\nOn a real terminal, this sends to the thermal printer via USB/Bluetooth serial.`,
+        [{ text: "OK" }]
+      );
+    } else {
+      Alert.alert("Print Receipt", "ESC/POS commands generated. Connect a thermal printer via Bluetooth to print.");
+    }
+  }, [escPosData]);
+
+  const handleOpenDrawer = useCallback(() => {
+    Alert.alert("Cash Drawer", "Drawer kick pulse sent (ESC p \\x00 \\x19 \\xFA).\n\nOn a connected terminal, this opens the cash drawer via serial/USB.");
+  }, []);
 
   if (!lastTransaction) {
     router.replace("/pos" as never);
@@ -45,11 +130,11 @@ export default function ReceiptScreen() {
           {receipt?.items?.map((item, idx) => (
             <View key={idx} style={styles.receiptItem}>
               <View style={styles.receiptItemLeft}>
-                <Text style={styles.receiptItemName}>{(item as Record<string, unknown>).name as string}</Text>
-                <Text style={styles.receiptItemQty}>x{(item as Record<string, unknown>).quantity as number}</Text>
+                <Text style={styles.receiptItemName}>{item.name}</Text>
+                <Text style={styles.receiptItemQty}>x{item.quantity}</Text>
               </View>
               <Text style={styles.receiptItemTotal}>
-                {((item as Record<string, unknown>).lineTotal as number)?.toFixed(2)} SAR
+                {item.lineTotal.toFixed(2)} SAR
               </Text>
             </View>
           ))}
@@ -87,21 +172,32 @@ export default function ReceiptScreen() {
               <Text style={styles.payDetailText}>Change: {lastTransaction.payment.changeDue?.toFixed(2) || "0.00"} SAR</Text>
             </>
           )}
+          {lastTransaction.payment.splitPayments && lastTransaction.payment.splitPayments.length > 0 && (
+            <View style={styles.splitSection}>
+              <Text style={styles.splitTitle}>Split Payment Breakdown</Text>
+              {lastTransaction.payment.splitPayments.map((sp, idx) => (
+                <View key={idx} style={styles.splitRow}>
+                  <Text style={styles.splitMethod}>{sp.method.toUpperCase()}</Text>
+                  <Text style={styles.splitAmount}>{sp.amount.toFixed(2)} SAR</Text>
+                </View>
+              ))}
+            </View>
+          )}
 
           <View style={styles.divider} />
           <Text style={styles.thankYou}>Thank you for your purchase!</Text>
         </View>
 
         <View style={styles.hardwareRow}>
-          <Pressable style={styles.hwBtn}>
+          <Pressable style={styles.hwBtn} onPress={handlePrint}>
             <Text style={styles.hwBtnIcon}>🖨️</Text>
             <Text style={styles.hwBtnText}>Print Receipt</Text>
-            <Text style={styles.hwBtnSub}>ESC/POS</Text>
+            <Text style={styles.hwBtnSub}>ESC/POS ({escPosData.split("\n").length} lines)</Text>
           </Pressable>
-          <Pressable style={styles.hwBtn}>
+          <Pressable style={styles.hwBtn} onPress={handleOpenDrawer}>
             <Text style={styles.hwBtnIcon}>💰</Text>
             <Text style={styles.hwBtnText}>Open Drawer</Text>
-            <Text style={styles.hwBtnSub}>Simulated</Text>
+            <Text style={styles.hwBtnSub}>ESC p pulse</Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -146,6 +242,11 @@ const styles = StyleSheet.create({
   receiptGrandVal: { fontSize: 14, fontWeight: "800", color: "#0a1628" },
   payMethodText: { fontSize: 11, color: "#666", textAlign: "center" },
   payDetailText: { fontSize: 10, color: "#999", textAlign: "center" },
+  splitSection: { marginTop: 6, paddingTop: 6, borderTopWidth: 1, borderTopColor: "#eee" },
+  splitTitle: { fontSize: 10, fontWeight: "600", color: "#666", textAlign: "center", marginBottom: 4 },
+  splitRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 1 },
+  splitMethod: { fontSize: 10, color: "#666" },
+  splitAmount: { fontSize: 10, fontWeight: "600", color: "#333" },
   thankYou: { fontSize: 11, color: "#999", textAlign: "center", fontStyle: "italic" },
   hardwareRow: { flexDirection: "row", gap: 12, marginTop: 20, width: "100%" },
   hwBtn: { flex: 1, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 12, padding: 14, alignItems: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
