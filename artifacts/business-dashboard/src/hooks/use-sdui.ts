@@ -1,8 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
 
 export type SDUIComponent = {
-  type: "stack" | "card" | "stat" | "text" | "button" | "list" | "grid";
-  [key: string]: any;
+  type: string;
+  title?: string;
+  subtitle?: string;
+  badge?: string;
+  label?: string;
+  value?: string | number;
+  icon?: string;
+  trend?: string;
+  content?: string;
+  variant?: string;
+  direction?: string;
+  spacing?: string;
+  columns?: number;
+  children?: SDUIComponent[];
+  items?: Array<{ title: string; subtitle?: string; icon?: string; action?: Record<string, unknown> }>;
+  action?: Record<string, unknown>;
 };
 
 export type SDUIResponse = {

@@ -70,6 +70,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [signInWithKeycloak]);
 
   const signInAsGuest = useCallback(() => {
+    if (!import.meta.env.DEV && import.meta.env.VITE_DEMO_MODE !== "true") {
+      console.warn("Guest login is only available in development or demo mode");
+      return;
+    }
     const guestUser: DashboardUser = {
       id: "guest_dev_" + Math.random().toString(36).substr(2, 9),
       name: "Guest Developer",

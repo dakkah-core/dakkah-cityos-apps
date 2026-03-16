@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import Dashboard from "@/pages/Dashboard";
 import Login from "@/pages/Login";
+import AuthCallback from "@/pages/callback";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ function Router() {
     <Switch>
       <Route path="/" component={() => <ProtectedRoute component={Dashboard} />} />
       <Route path="/login" component={Login} />
+      <Route path="/callback" component={AuthCallback} />
       <Route component={NotFound} />
     </Switch>
   );

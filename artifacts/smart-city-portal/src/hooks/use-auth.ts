@@ -43,7 +43,11 @@ export const useAuth = create<AuthState>()(
     (set, get) => ({
       user: tryRestoreKeycloak(),
       isAuthenticated: !!tryRestoreKeycloak(),
-      loginAsGuest: () =>
+      loginAsGuest: () => {
+        if (!import.meta.env.DEV && import.meta.env.VITE_DEMO_MODE !== "true") {
+          console.warn("Guest login is only available in development or demo mode");
+          return;
+        }
         set({
           user: {
             id: "guest_" + Math.random().toString(36).substr(2, 9),
@@ -52,7 +56,8 @@ export const useAuth = create<AuthState>()(
             isGuest: true,
           },
           isAuthenticated: true,
-        }),
+        });
+      },
       signInWithKeycloak: async () => {
         const realm = import.meta.env.VITE_KC_REALM || "dakkah";
         const clientId = import.meta.env.VITE_KC_CLIENT_ID || "smart-city-portal";

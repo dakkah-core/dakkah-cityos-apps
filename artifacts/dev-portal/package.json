@@ -76,6 +76,9 @@
   },
   "dependencies": {
     "react-markdown": "^10.1.0",
-    "@workspace/auth": "workspace:*"
+    "@workspace/auth": "workspace:*",
+    "@workspace/sdui-renderer-web": "workspace:*",
+    "@workspace/sdui-protocol": "workspace:*",
+    "@workspace/design-tokens": "workspace:*"
   }
 }

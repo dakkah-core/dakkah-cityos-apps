@@ -1,163 +1,92 @@
-import { cn } from "@/lib/utils";
-import { SDUINode } from "@/hooks/use-sdui";
-import { ArrowRight, Box, Code, Settings2 } from "lucide-react";
-import { motion } from "framer-motion";
+import React from "react";
+import { SduiRenderer as SharedRenderer, configureActionHandler } from "@workspace/sdui-renderer-web";
+import type { SdNode } from "@workspace/sdui-protocol";
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
-};
+configureActionHandler({
+  onNavigate: (target) => console.log("Navigate:", target),
+  onMutation: (action) => console.log("Mutation:", action),
+  onHardwareAccess: (action) => console.log("Hardware:", action),
+});
 
-export function SDUIRenderer({ node, index = 0 }: { node: SDUINode; index?: number }) {
+interface StatNode {
+  type: "stat";
+  label: string;
+  value: string | number;
+  icon?: string;
+  trend?: string;
+}
+
+interface ListItem {
+  title: string;
+  subtitle?: string;
+  icon?: string;
+  action?: Record<string, unknown>;
+}
+
+interface ListNode {
+  type: "list";
+  title?: string;
+  items: ListItem[];
+}
+
+type ExtendedNode = SdNode | StatNode | ListNode | { type: string; children?: ExtendedNode[]; [key: string]: unknown };
+
+function StatRenderer({ node }: { node: StatNode }) {
+  return (
+    <div className="flex flex-col gap-1 p-3 rounded-lg bg-secondary/30 border border-border/50 min-w-[120px]">
+      {node.icon && <span className="text-xl">{node.icon}</span>}
+      <span className="text-xs text-muted-foreground font-medium">{node.label}</span>
+      <span className="text-xl font-bold text-foreground">{node.value}</span>
+      {node.trend && (
+        <span className={`text-xs font-medium ${node.trend.startsWith("+") ? "text-emerald-400" : node.trend.startsWith("-") ? "text-red-400" : "text-muted-foreground"}`}>
+          {node.trend}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function ListRenderer({ node }: { node: ListNode }) {
+  return (
+    <div className="space-y-1">
+      {node.title && <h3 className="text-lg font-semibold text-foreground mb-2">{node.title}</h3>}
+      {node.items.map((item, i) => (
+        <button
+          key={i}
+          className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors text-left"
+          onClick={() => item.action && console.log("List action:", item.action)}
+        >
+          {item.icon && <span className="text-lg">{item.icon}</span>}
+          <div className="flex-1 min-w-0">
+            <div className="font-medium text-sm text-foreground">{item.title}</div>
+            {item.subtitle && <div className="text-xs text-muted-foreground truncate">{item.subtitle}</div>}
+          </div>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export function SDUIRenderer({ node }: { node: ExtendedNode }) {
   if (!node) return null;
 
-  switch (node.type) {
-    case "stack":
-      return (
-        <div
-          className={cn(
-            "flex",
-            node.direction === "horizontal" ? "flex-row flex-wrap items-center" : "flex-col",
-            node.spacing === "sm" ? "gap-3" : node.spacing === "lg" ? "gap-8" : "gap-6",
-            "w-full"
-          )}
-        >
-          {node.children?.map((child, i) => (
-            <SDUIRenderer key={i} node={child} index={i} />
-          ))}
-        </div>
-      );
+  if (node.type === "stat") return <StatRenderer node={node as StatNode} />;
+  if (node.type === "list") return <ListRenderer node={node as ListNode} />;
 
-    case "grid":
-      return (
-        <div
-          className={cn(
-            "grid w-full",
-            node.columns === 2 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
-            node.spacing === "sm" ? "gap-3" : "gap-6"
-          )}
-        >
-          {node.children?.map((child, i) => (
-            <SDUIRenderer key={i} node={child} index={i} />
-          ))}
-        </div>
-      );
-
-    case "card":
-      return (
-        <motion.div
-          variants={itemVariants}
-          initial="hidden"
-          animate="visible"
-          className="group flex flex-col bg-card rounded-xl border border-border overflow-hidden shadow-lg hover:shadow-primary/5 hover:border-primary/30 transition-all duration-300 w-full"
-        >
-          {node.image && (
-            <div className="h-48 w-full overflow-hidden">
-              <img src={node.image} alt={node.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            </div>
-          )}
-          <div className="p-6 flex-1 flex flex-col">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                {node.title && <h3 className="text-xl font-bold text-foreground tracking-tight font-mono">{node.title}</h3>}
-                {node.subtitle && <p className="text-muted-foreground mt-1 text-sm">{node.subtitle}</p>}
-              </div>
-              {node.badge && (
-                <span className="px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium font-mono border border-primary/20">
-                  {node.badge}
-                </span>
-              )}
-            </div>
-            <div className="flex-1">
-              {node.children && (
-                <div className="mt-4 flex flex-col gap-4">
-                  {node.children.map((child, i) => (
-                    <SDUIRenderer key={i} node={child} index={i} />
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </motion.div>
-      );
-
-    case "stat":
-      return (
-        <div className="flex-1 bg-background/50 border border-border/50 rounded-lg p-4 flex flex-col justify-center min-w-[140px]">
-          <div className="flex items-center gap-2 text-muted-foreground mb-2">
-            {node.icon && <span className="text-lg">{node.icon}</span>}
-            <span className="text-sm font-medium">{node.label}</span>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-foreground font-mono">{node.value}</span>
-            {node.trend && (
-              <span className={cn(
-                "text-xs font-medium px-1.5 py-0.5 rounded font-mono",
-                node.trend.startsWith('+') ? "text-emerald-400 bg-emerald-400/10" : 
-                node.trend.startsWith('-') ? "text-rose-400 bg-rose-400/10" : 
-                "text-blue-400 bg-blue-400/10"
-              )}>
-                {node.trend}
-              </span>
-            )}
-          </div>
-        </div>
-      );
-
-    case "text":
-      return (
-        <p className={cn(
-          node.variant === "label" ? "text-sm font-medium text-muted-foreground uppercase tracking-wider" :
-          node.variant === "body" ? "text-base text-foreground/90 leading-relaxed" :
-          "text-foreground"
-        )}>
-          {node.content}
-        </p>
-      );
-
-    case "button":
-      return (
-        <button
-          onClick={() => console.log(`Triggered action:`, node.action || node.onPress)}
-          className={cn(
-            "inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all active:scale-95 font-mono",
-            node.variant === "solid" 
-              ? "bg-primary text-primary-foreground shadow-[0_0_15px_-3px_var(--color-primary)] hover:shadow-[0_0_25px_-3px_var(--color-primary)] hover:brightness-110" 
-              : "bg-secondary text-secondary-foreground border border-border hover:bg-secondary/80 hover:border-primary/50"
-          )}
-        >
-          {node.label}
-          {node.variant === "solid" && <ArrowRight className="w-4 h-4" />}
-        </button>
-      );
-
-    case "list":
-      return (
-        <div className="w-full">
-          {node.title && <h4 className="text-lg font-semibold text-foreground mb-4 font-mono flex items-center gap-2"><Code className="w-5 h-5 text-primary"/> {node.title}</h4>}
-          <ul className="space-y-3">
-            {node.items?.map((item, i) => (
-              <li key={i} className="group flex items-center justify-between p-4 rounded-lg bg-background/50 border border-border/50 hover:border-primary/40 hover:bg-secondary/50 transition-colors cursor-pointer">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-lg shadow-inner">
-                    {item.icon || <Box className="w-5 h-5 text-primary" />}
-                  </div>
-                  <div>
-                    <h5 className="font-medium text-foreground font-mono">{item.title}</h5>
-                    <p className="text-sm text-muted-foreground">{item.subtitle}</p>
-                  </div>
-                </div>
-                <button className="text-muted-foreground group-hover:text-primary transition-colors">
-                  <ArrowRight className="w-5 h-5" />
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      );
-
-    default:
-      console.warn(`Unsupported SDUI node type: ${node.type}`);
-      return null;
+  const standardTypes = ["text", "button", "image", "stack", "card", "carousel", "grid", "map"];
+  if (standardTypes.includes(node.type)) {
+    return <SharedRenderer node={node as SdNode} theme="dark" />;
   }
+
+  if ("children" in node && Array.isArray(node.children)) {
+    return (
+      <div className="space-y-3">
+        {node.children.map((child: ExtendedNode, i: number) => (
+          <SDUIRenderer key={i} node={child} />
+        ))}
+      </div>
+    );
+  }
+
+  return null;
 }

@@ -1,172 +1,92 @@
 import React from "react";
-import { cn } from "@/lib/utils";
-import { ArrowUpRight, ArrowDownRight, Minus, ChevronRight, Activity } from "lucide-react";
-import { motion } from "framer-motion";
+import { SduiRenderer as SharedRenderer, configureActionHandler } from "@workspace/sdui-renderer-web";
+import type { SdNode } from "@workspace/sdui-protocol";
 
-interface SDUIProps {
-  component: any;
-  depth?: number;
+configureActionHandler({
+  onNavigate: (target) => console.log("Navigate:", target),
+  onMutation: (action) => console.log("Mutation:", action),
+  onHardwareAccess: (action) => console.log("Hardware:", action),
+});
+
+interface StatNode {
+  type: "stat";
+  label: string;
+  value: string | number;
+  icon?: string;
+  trend?: string;
 }
 
-export function SDUIRenderer({ component, depth = 0 }: SDUIProps) {
+interface ListItem {
+  title: string;
+  subtitle?: string;
+  icon?: string;
+  action?: Record<string, unknown>;
+}
+
+interface ListNode {
+  type: "list";
+  title?: string;
+  items: ListItem[];
+}
+
+type ExtendedNode = SdNode | StatNode | ListNode | { type: string; children?: ExtendedNode[]; [key: string]: unknown };
+
+function StatRenderer({ node }: { node: StatNode }) {
+  return (
+    <div className="flex flex-col gap-1 p-3 rounded-lg bg-secondary/30 border border-border/50 min-w-[120px]">
+      {node.icon && <span className="text-xl">{node.icon}</span>}
+      <span className="text-xs text-muted-foreground font-medium">{node.label}</span>
+      <span className="text-xl font-bold text-foreground">{node.value}</span>
+      {node.trend && (
+        <span className={`text-xs font-medium ${node.trend.startsWith("+") ? "text-emerald-400" : node.trend.startsWith("-") ? "text-red-400" : "text-muted-foreground"}`}>
+          {node.trend}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function ListRenderer({ node }: { node: ListNode }) {
+  return (
+    <div className="space-y-1">
+      {node.title && <h3 className="text-lg font-semibold text-foreground mb-2">{node.title}</h3>}
+      {node.items.map((item, i) => (
+        <button
+          key={i}
+          className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors text-left"
+          onClick={() => item.action && console.log("List action:", item.action)}
+        >
+          {item.icon && <span className="text-lg">{item.icon}</span>}
+          <div className="flex-1 min-w-0">
+            <div className="font-medium text-sm text-foreground">{item.title}</div>
+            {item.subtitle && <div className="text-xs text-muted-foreground truncate">{item.subtitle}</div>}
+          </div>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export function SDUIRenderer({ component }: { component: ExtendedNode }) {
   if (!component) return null;
 
-  const { type, children, ...props } = component;
+  if (component.type === "stat") return <StatRenderer node={component as StatNode} />;
+  if (component.type === "list") return <ListRenderer node={component as ListNode} />;
 
-  // Animation variants for staggered entrance
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
-  };
+  const standardTypes = ["text", "button", "image", "stack", "card", "carousel", "grid", "map"];
+  if (standardTypes.includes(component.type)) {
+    return <SharedRenderer node={component as SdNode} theme="light" />;
+  }
 
-  const renderChildren = (customClass?: string) => {
-    if (!children || !Array.isArray(children)) return null;
+  if ("children" in component && Array.isArray(component.children)) {
     return (
-      <div className={customClass}>
-        {children.map((child: any, idx: number) => (
-          <SDUIRenderer key={`${depth}-${idx}`} component={child} depth={depth + 1} />
+      <div className="space-y-3">
+        {component.children.map((child: ExtendedNode, i: number) => (
+          <SDUIRenderer key={i} component={child} />
         ))}
       </div>
     );
-  };
-
-  switch (type) {
-    case "stack":
-      const stackClass = cn(
-        "flex",
-        props.direction === "horizontal" ? "flex-row flex-wrap items-center" : "flex-col",
-        props.spacing === "sm" ? "gap-2" : props.spacing === "md" ? "gap-4" : props.spacing === "lg" ? "gap-6" : "gap-4",
-        "w-full"
-      );
-      return renderChildren(stackClass);
-
-    case "grid":
-      const gridClass = cn(
-        "grid w-full",
-        props.columns === 2 ? "grid-cols-1 md:grid-cols-2" : props.columns === 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1",
-        props.spacing === "sm" ? "gap-2" : props.spacing === "md" ? "gap-4" : props.spacing === "lg" ? "gap-6" : "gap-4"
-      );
-      return renderChildren(gridClass);
-
-    case "card":
-      return (
-        <motion.div 
-          variants={itemVariants}
-          className="bg-card border border-border/50 rounded-2xl p-5 sm:p-6 shadow-lg shadow-black/5 hover:shadow-xl hover:border-primary/20 transition-all duration-300 w-full flex flex-col group overflow-hidden relative"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          
-          <div className="flex justify-between items-start mb-4 relative z-10">
-            <div>
-              <h3 className="text-xl font-display font-bold text-foreground">{props.title}</h3>
-              {props.subtitle && (
-                <p className="text-sm text-muted-foreground mt-1">{props.subtitle}</p>
-              )}
-            </div>
-            {props.badge && (
-              <span className="px-3 py-1 bg-accent/15 text-accent-foreground font-semibold text-xs rounded-full border border-accent/20">
-                {props.badge}
-              </span>
-            )}
-          </div>
-          
-          {props.image && (
-            <div className="w-full h-48 rounded-xl overflow-hidden mb-4 relative z-10">
-              <img src={props.image} alt={props.title} className="w-full h-full object-cover" />
-            </div>
-          )}
-          
-          <div className="flex-1 relative z-10 flex flex-col justify-end">
-            {renderChildren("w-full")}
-          </div>
-        </motion.div>
-      );
-
-    case "stat":
-      const isPositive = props.trend?.startsWith("+");
-      const isNegative = props.trend?.startsWith("-");
-      const isNeutral = props.trend === "stable";
-      
-      return (
-        <div className="flex-1 min-w-[140px] bg-secondary/30 rounded-xl p-4 border border-border/40 hover:bg-secondary/50 transition-colors">
-          <div className="flex items-center gap-2 text-muted-foreground mb-2">
-            <span className="text-lg">{props.icon}</span>
-            <span className="text-sm font-medium">{props.label}</span>
-          </div>
-          <div className="flex items-baseline gap-3">
-            <span className="text-2xl sm:text-3xl font-display font-bold text-foreground tracking-tight">
-              {props.value}
-            </span>
-            {props.trend && (
-              <span className={cn(
-                "flex items-center text-xs font-semibold px-1.5 py-0.5 rounded-md",
-                isPositive ? "text-green-500 bg-green-500/10" : 
-                isNegative ? "text-red-500 bg-red-500/10" : 
-                "text-yellow-500 bg-yellow-500/10"
-              )}>
-                {isPositive ? <ArrowUpRight className="w-3 h-3 mr-0.5" /> : 
-                 isNegative ? <ArrowDownRight className="w-3 h-3 mr-0.5" /> : 
-                 <Minus className="w-3 h-3 mr-0.5" />}
-                {props.trend.replace("+", "").replace("-", "")}
-              </span>
-            )}
-          </div>
-        </div>
-      );
-
-    case "list":
-      return (
-        <motion.div variants={itemVariants} className="w-full bg-card border border-border/50 rounded-2xl overflow-hidden shadow-md shadow-black/5">
-          {props.title && (
-            <div className="px-6 py-4 border-b border-border/50 bg-muted/20">
-              <h3 className="text-lg font-display font-bold text-foreground">{props.title}</h3>
-            </div>
-          )}
-          <div className="divide-y divide-border/50">
-            {props.items?.map((item: any, idx: number) => (
-              <button 
-                key={idx}
-                className="w-full px-6 py-4 flex items-center justify-between hover:bg-secondary/40 transition-colors text-left group"
-                onClick={() => console.log("List action triggered:", item.action)}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-xl group-hover:scale-110 group-hover:bg-primary/20 transition-all">
-                    {item.icon || <Activity className="w-5 h-5 text-primary" />}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-foreground">{item.title}</div>
-                    <div className="text-sm text-muted-foreground">{item.subtitle}</div>
-                  </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors transform group-hover:translate-x-1" />
-              </button>
-            ))}
-          </div>
-        </motion.div>
-      );
-
-    case "text":
-      const textClass = cn(
-        "text-foreground",
-        props.variant === "label" ? "text-sm font-semibold text-muted-foreground bg-secondary/50 px-3 py-1.5 rounded-lg" : 
-        props.variant === "body" ? "text-sm sm:text-base text-foreground/80 flex items-center gap-2" : "text-base"
-      );
-      return <div className={textClass}>{props.content}</div>;
-
-    case "button":
-      const btnClass = cn(
-        "font-semibold rounded-xl px-5 py-2.5 transition-all duration-200 active:scale-95 text-sm sm:text-base flex items-center justify-center gap-2",
-        props.variant === "solid" ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md shadow-primary/20" : 
-        "bg-transparent border-2 border-border hover:border-primary/50 text-foreground hover:bg-primary/5"
-      );
-      return (
-        <button className={btnClass} onClick={() => console.log("Button clicked", props.action)}>
-          {props.label}
-        </button>
-      );
-
-    default:
-      console.warn(`Unknown SDUI component type: ${type}`);
-      return null;
   }
+
+  return null;
 }

@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { Layout } from "@/components/Layout";
 import { Login } from "@/pages/Login";
 import { Dashboard } from "@/pages/Dashboard";
+import AuthCallback from "@/pages/callback";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={() => <ProtectedRoute component={Dashboard} />} />
+      <Route path="/callback" component={AuthCallback} />
       <Route>
         {/* Simple 404 Fallback that still utilizes Layout if logged in */}
         <ProtectedRoute component={() => (
