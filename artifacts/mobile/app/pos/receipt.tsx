@@ -4,6 +4,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { usePos } from "@/context/PosContext";
 import type { PosTransaction, ReceiptData } from "@/types/pos";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
 
 function generateEscPosCommands(tx: PosTransaction): string {
   const receipt = tx.receiptData;
@@ -68,6 +70,55 @@ function generateEscPosCommands(tx: PosTransaction): string {
   return lines.join("\n");
 }
 
+function generateReceiptHtml(tx: PosTransaction): string {
+  const r = tx.receiptData;
+  const itemRows = (r?.items || [])
+    .map(
+      (item) =>
+        `<tr><td>${item.name}</td><td style="text-align:center">x${item.quantity}</td><td style="text-align:right">${item.lineTotal.toFixed(2)}</td></tr>`
+    )
+    .join("");
+
+  const splitRows =
+    tx.payment.splitPayments && tx.payment.splitPayments.length > 0
+      ? tx.payment.splitPayments
+          .map((sp) => `<tr><td>${sp.method.toUpperCase()}</td><td style="text-align:right">${sp.amount.toFixed(2)} SAR</td></tr>`)
+          .join("")
+      : "";
+
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+    body{font-family:monospace;width:280px;margin:0 auto;padding:20px;font-size:12px}
+    h1{font-size:16px;text-align:center;margin:0}
+    .center{text-align:center}
+    .small{font-size:10px;color:#666}
+    hr{border:none;border-top:1px dashed #999;margin:8px 0}
+    table{width:100%;border-collapse:collapse}
+    td{padding:2px 0}
+    .total{font-size:14px;font-weight:bold}
+    .footer{text-align:center;font-style:italic;color:#999;margin-top:12px}
+  </style></head><body>
+    <h1>${r?.storeName || "Dakkah Store"}</h1>
+    <p class="center small">${r?.storeAddress || ""}<br>Tax ID: ${r?.storeTaxId || ""}</p>
+    <hr>
+    <p class="center small">${new Date(tx.createdAt).toLocaleString()}<br>Order: #${tx.orderNumber}</p>
+    <hr>
+    <table>${itemRows}</table>
+    <hr>
+    <table>
+      <tr><td>Subtotal</td><td style="text-align:right">${tx.subtotal.toFixed(2)}</td></tr>
+      ${tx.discountTotal > 0 ? `<tr><td>Discount</td><td style="text-align:right;color:green">-${tx.discountTotal.toFixed(2)}</td></tr>` : ""}
+      <tr><td>VAT (15%)</td><td style="text-align:right">${tx.taxTotal.toFixed(2)}</td></tr>
+    </table>
+    <hr>
+    <table><tr class="total"><td>TOTAL</td><td style="text-align:right">${tx.total.toFixed(2)} SAR</td></tr></table>
+    <hr>
+    <p class="center">Paid: ${tx.payment.method.toUpperCase()}${tx.payment.cardLast4 ? ` ****${tx.payment.cardLast4}` : ""}</p>
+    ${tx.payment.amountTendered ? `<p class="center small">Tendered: ${tx.payment.amountTendered.toFixed(2)} SAR<br>Change: ${(tx.payment.changeDue || 0).toFixed(2)} SAR</p>` : ""}
+    ${splitRows ? `<hr><p class="center small">Split Payments</p><table>${splitRows}</table>` : ""}
+    <p class="footer">Thank you for your purchase!</p>
+  </body></html>`;
+}
+
 export default function ReceiptScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -78,20 +129,45 @@ export default function ReceiptScreen() {
     return generateEscPosCommands(lastTransaction);
   }, [lastTransaction]);
 
-  const handlePrint = useCallback(() => {
-    if (Platform.OS === "web") {
-      Alert.alert(
-        "ESC/POS Receipt Generated",
-        `${escPosData.split("\n").length} lines of ESC/POS commands ready.\n\nOn a real terminal, this sends to the thermal printer via USB/Bluetooth serial.`,
-        [{ text: "OK" }]
-      );
-    } else {
-      Alert.alert("Print Receipt", "ESC/POS commands generated. Connect a thermal printer via Bluetooth to print.");
+  const receiptHtml = useMemo(() => {
+    if (!lastTransaction) return "";
+    return generateReceiptHtml(lastTransaction);
+  }, [lastTransaction]);
+
+  const handlePrint = useCallback(async () => {
+    try {
+      if (Platform.OS === "web") {
+        const printWindow = window.open("", "_blank");
+        if (printWindow) {
+          printWindow.document.write(receiptHtml);
+          printWindow.document.close();
+          printWindow.print();
+        } else {
+          Alert.alert("Print", "Pop-up blocked. Please allow pop-ups to print receipts.");
+        }
+      } else {
+        await Print.printAsync({ html: receiptHtml });
+      }
+    } catch {
+      Alert.alert("Print Error", "Failed to print receipt");
     }
-  }, [escPosData]);
+  }, [receiptHtml]);
+
+  const handlePdfExport = useCallback(async () => {
+    try {
+      const { uri } = await Print.printToFileAsync({ html: receiptHtml });
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri, { mimeType: "application/pdf", dialogTitle: "Receipt PDF" });
+      } else {
+        Alert.alert("PDF Generated", `Receipt saved to: ${uri}`);
+      }
+    } catch {
+      Alert.alert("PDF Error", "Failed to generate PDF receipt");
+    }
+  }, [receiptHtml]);
 
   const handleOpenDrawer = useCallback(() => {
-    Alert.alert("Cash Drawer", "Drawer kick pulse sent (ESC p \\x00 \\x19 \\xFA).\n\nOn a connected terminal, this opens the cash drawer via serial/USB.");
+    Alert.alert("Cash Drawer", "Drawer kick pulse sent (ESC p command).\n\nOn a connected terminal, this opens the cash drawer via serial/USB.");
   }, []);
 
   if (!lastTransaction) {
@@ -191,13 +267,18 @@ export default function ReceiptScreen() {
         <View style={styles.hardwareRow}>
           <Pressable style={styles.hwBtn} onPress={handlePrint}>
             <Text style={styles.hwBtnIcon}>🖨️</Text>
-            <Text style={styles.hwBtnText}>Print Receipt</Text>
-            <Text style={styles.hwBtnSub}>ESC/POS ({escPosData.split("\n").length} lines)</Text>
+            <Text style={styles.hwBtnText}>Print</Text>
+            <Text style={styles.hwBtnSub}>Thermal / OS</Text>
+          </Pressable>
+          <Pressable style={styles.hwBtn} onPress={handlePdfExport}>
+            <Text style={styles.hwBtnIcon}>📄</Text>
+            <Text style={styles.hwBtnText}>PDF</Text>
+            <Text style={styles.hwBtnSub}>Save / Share</Text>
           </Pressable>
           <Pressable style={styles.hwBtn} onPress={handleOpenDrawer}>
             <Text style={styles.hwBtnIcon}>💰</Text>
-            <Text style={styles.hwBtnText}>Open Drawer</Text>
-            <Text style={styles.hwBtnSub}>ESC p pulse</Text>
+            <Text style={styles.hwBtnText}>Drawer</Text>
+            <Text style={styles.hwBtnSub}>ESC/POS</Text>
           </Pressable>
         </View>
       </ScrollView>

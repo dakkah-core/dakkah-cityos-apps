@@ -27,7 +27,7 @@ function useSduiSurface(surface: string): SdNode | null {
       try {
         const token = await getAccessToken();
         const baseUrl = process.env.EXPO_PUBLIC_API_URL || "";
-        const res = await fetch(`${baseUrl}/api/sdui/${surface}`, {
+        const res = await fetch(`${baseUrl}/api/sdui/${surface}?surface=tablet`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
         if (res.ok && !cancelled) {

@@ -155,9 +155,6 @@ export function PosRoleGate({ children }: PosRoleGateProps) {
           <Pressable style={styles.pinBtn} onPress={handleShowPinEntry}>
             <Text style={styles.pinBtnText}>Enter PIN</Text>
           </Pressable>
-          <Pressable style={styles.skipBtn} onPress={() => setPinUnlocked(true)}>
-            <Text style={styles.skipBtnText}>Skip (Continue without PIN)</Text>
-          </Pressable>
         </View>
       )}
     </View>
@@ -175,8 +172,6 @@ const styles = StyleSheet.create({
   pinBtnText: { color: "#0d9488", fontWeight: "700", fontSize: 15 },
   backBtn: { backgroundColor: "rgba(255,255,255,0.15)", paddingHorizontal: 24, paddingVertical: 14, borderRadius: 12, width: 280, alignItems: "center", marginTop: 8 },
   backBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
-  skipBtn: { backgroundColor: "rgba(255,255,255,0.08)", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 12, width: 280, alignItems: "center" },
-  skipBtnText: { color: "rgba(255,255,255,0.4)", fontSize: 13 },
   pinActions: { gap: 12, alignItems: "center" },
   pinSection: { width: 280, marginTop: 8, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
   pinTitle: { fontSize: 14, fontWeight: "700", color: "#fff", marginBottom: 12, textAlign: "center" },
