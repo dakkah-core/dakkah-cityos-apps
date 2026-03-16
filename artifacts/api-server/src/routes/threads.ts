@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { requireAuth, optionalAuth, getUserIdFromReq } from "../middleware/auth";
 
 const router = Router();
 
@@ -30,22 +31,8 @@ interface StoredThread {
 const threadStore = new Map<string, StoredThread>();
 const userThreadIndex = new Map<string, Set<string>>();
 
-function getUserId(req: { headers: Record<string, string | string[] | undefined> }): string {
-  const auth = req.headers.authorization;
-  if (auth && typeof auth === "string" && auth.startsWith("Bearer ")) {
-    try {
-      const payload = auth.split(".")[1];
-      const decoded = JSON.parse(Buffer.from(payload, "base64").toString());
-      return decoded.sub || "anonymous";
-    } catch {
-      return "anonymous";
-    }
-  }
-  return "anonymous";
-}
-
-router.get("/threads", (req, res) => {
-  const userId = getUserId(req);
+router.get("/threads", optionalAuth, (req, res) => {
+  const userId = getUserIdFromReq(req);
   const userIds = userThreadIndex.get(userId);
   if (!userIds || userIds.size === 0) {
     res.json({ success: true, data: { threads: [] } });
@@ -67,9 +54,9 @@ router.get("/threads", (req, res) => {
   res.json({ success: true, data: { threads } });
 });
 
-router.get("/threads/:threadId", (req, res) => {
-  const userId = getUserId(req);
-  const thread = threadStore.get(req.params.threadId);
+router.get("/threads/:threadId", optionalAuth, (req, res) => {
+  const userId = getUserIdFromReq(req);
+  const thread = threadStore.get(String(req.params.threadId));
   if (!thread) {
     res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Thread not found" } });
     return;
@@ -91,8 +78,8 @@ router.get("/threads/:threadId", (req, res) => {
   });
 });
 
-router.post("/threads", (req, res) => {
-  const userId = getUserId(req);
+router.post("/threads", requireAuth, (req, res) => {
+  const userId = getUserIdFromReq(req);
   const { threadId, title, messages } = req.body;
 
   if (!threadId || !messages || !Array.isArray(messages)) {
@@ -123,9 +110,9 @@ router.post("/threads", (req, res) => {
   res.json({ success: true, data: { threadId, synced: true } });
 });
 
-router.delete("/threads/:threadId", (req, res) => {
-  const userId = getUserId(req);
-  const threadId = req.params.threadId;
+router.delete("/threads/:threadId", requireAuth, (req, res) => {
+  const userId = getUserIdFromReq(req);
+  const threadId = String(req.params.threadId);
   const thread = threadStore.get(threadId);
 
   if (!thread) {

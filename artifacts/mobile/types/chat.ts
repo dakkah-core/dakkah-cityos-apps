@@ -77,6 +77,7 @@ export type ArtifactType =
   | "flight-boarding-pass"
   | "currency-converter"
   | "sdui-node"
+  | "dynamic-screen"
   | "toast";
 
 export interface Artifact {

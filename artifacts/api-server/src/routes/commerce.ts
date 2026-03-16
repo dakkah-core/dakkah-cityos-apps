@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { optionalAuth, requireAuth, getUserIdFromReq } from "../middleware/auth";
 
 const router = Router();
 
@@ -75,16 +76,16 @@ router.get("/products/:productId", async (req, res) => {
 
 const cartStore = new Map<string, { items: { productId: string; quantity: number; price: number; name: string }[] }>();
 
-router.get("/cart", (req, res) => {
-  const userId = String(req.query.userId || "anonymous");
+router.get("/cart", optionalAuth, (req, res) => {
+  const userId = getUserIdFromReq(req);
   const cart = cartStore.get(userId) || { items: [] };
   const total = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   res.json({ success: true, data: { ...cart, total: Math.round(total * 100) / 100, currency: "SAR" } });
 });
 
-router.post("/cart/add", (req, res) => {
-  const { userId, productId, quantity } = req.body;
-  const uid = userId || "anonymous";
+router.post("/cart/add", optionalAuth, (req, res) => {
+  const { productId, quantity } = req.body;
+  const uid = getUserIdFromReq(req);
   const product = FALLBACK_PRODUCTS.find((p) => p.id === productId);
   if (!product) {
     res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Product not found" } });
@@ -104,9 +105,9 @@ router.post("/cart/add", (req, res) => {
   res.json({ success: true, data: { cart: { ...cart, total: Math.round(total * 100) / 100, currency: "SAR" } } });
 });
 
-router.post("/cart/remove", (req, res) => {
-  const { userId, productId } = req.body;
-  const uid = userId || "anonymous";
+router.post("/cart/remove", optionalAuth, (req, res) => {
+  const { productId } = req.body;
+  const uid = getUserIdFromReq(req);
   const cart = cartStore.get(uid);
   if (cart) {
     cart.items = cart.items.filter((i) => i.productId !== productId);
@@ -114,9 +115,111 @@ router.post("/cart/remove", (req, res) => {
   res.json({ success: true, data: { cart: cart || { items: [] } } });
 });
 
-router.post("/checkout", async (req, res) => {
-  const { userId } = req.body;
-  const uid = userId || "anonymous";
+router.post("/checkout/validate-address", optionalAuth, async (req, res) => {
+  const { address } = req.body;
+  if (!address || !address.street || !address.city) {
+    res.status(400).json({ success: false, error: { code: "INVALID_ADDRESS", message: "street and city required" } });
+    return;
+  }
+
+  const bffResult = await proxyToBff("/checkout/validate-address", "POST", req.body);
+  if (bffResult.ok) {
+    res.json({ success: true, data: bffResult.data });
+    return;
+  }
+
+  res.json({
+    success: true,
+    data: {
+      valid: true,
+      normalized: {
+        street: address.street,
+        city: address.city,
+        district: address.district || "Central",
+        postalCode: address.postalCode || "12345",
+        country: "SA",
+      },
+      deliveryZone: "zone_central",
+      source: "fallback",
+    },
+  });
+});
+
+router.post("/checkout/delivery-options", optionalAuth, async (req, res) => {
+  const { address } = req.body;
+  const uid = getUserIdFromReq(req);
+  const cart = cartStore.get(uid);
+  if (!cart || cart.items.length === 0) {
+    res.status(400).json({ success: false, error: { code: "EMPTY_CART", message: "Cart is empty" } });
+    return;
+  }
+
+  const bffResult = await proxyToBff("/checkout/delivery-options", "POST", req.body);
+  if (bffResult.ok) {
+    res.json({ success: true, data: bffResult.data });
+    return;
+  }
+
+  const total = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  res.json({
+    success: true,
+    data: {
+      options: [
+        { id: "express", label: "Express Delivery", eta: "30-45 min", fee: 15.0, currency: "SAR" },
+        { id: "standard", label: "Standard Delivery", eta: "1-2 hours", fee: 8.0, currency: "SAR" },
+        { id: "scheduled", label: "Scheduled Delivery", eta: "Pick a time slot", fee: 5.0, currency: "SAR" },
+      ],
+      cartTotal: Math.round(total * 100) / 100,
+      currency: "SAR",
+      source: "fallback",
+    },
+  });
+});
+
+router.post("/checkout/create-payment", optionalAuth, async (req, res) => {
+  const { deliveryOptionId, address } = req.body;
+  const uid = getUserIdFromReq(req);
+  const cart = cartStore.get(uid);
+  if (!cart || cart.items.length === 0) {
+    res.status(400).json({ success: false, error: { code: "EMPTY_CART", message: "Cart is empty" } });
+    return;
+  }
+
+  const bffResult = await proxyToBff("/checkout/create-payment", "POST", req.body);
+  if (bffResult.ok) {
+    res.json({ success: true, data: bffResult.data });
+    return;
+  }
+
+  const deliveryFees: Record<string, number> = { express: 15.0, standard: 8.0, scheduled: 5.0 };
+  const deliveryFee = deliveryFees[deliveryOptionId || "standard"] || 8.0;
+  const subtotal = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const tax = Math.round(subtotal * 0.15 * 100) / 100;
+  const total = Math.round((subtotal + deliveryFee + tax) * 100) / 100;
+
+  res.json({
+    success: true,
+    data: {
+      paymentSessionId: "ps_" + Date.now(),
+      subtotal: Math.round(subtotal * 100) / 100,
+      deliveryFee,
+      tax,
+      total,
+      currency: "SAR",
+      methods: [
+        { id: "card", label: "Credit/Debit Card", icon: "credit-card" },
+        { id: "apple_pay", label: "Apple Pay", icon: "apple" },
+        { id: "wallet", label: "Dakkah Wallet", icon: "wallet", balance: 1250.0 },
+        { id: "cod", label: "Cash on Delivery", icon: "cash" },
+      ],
+      source: "fallback",
+    },
+  });
+});
+
+router.post("/checkout", optionalAuth, async (req, res) => {
+  const { paymentMethodId, paymentSessionId, address, deliveryOptionId } = req.body;
+  const uid = getUserIdFromReq(req);
 
   const bffResult = await proxyToBff("/checkout", "POST", req.body);
   if (bffResult.ok) {
@@ -131,14 +234,25 @@ router.post("/checkout", async (req, res) => {
     return;
   }
 
-  const total = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const deliveryFees: Record<string, number> = { express: 15.0, standard: 8.0, scheduled: 5.0 };
+  const deliveryFee = deliveryFees[deliveryOptionId || "standard"] || 8.0;
+  const subtotal = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const tax = Math.round(subtotal * 0.15 * 100) / 100;
+  const total = Math.round((subtotal + deliveryFee + tax) * 100) / 100;
+
   const order = {
     orderId: "ORD-" + Date.now(),
     status: "confirmed",
     items: cart.items,
-    total: Math.round(total * 100) / 100,
+    subtotal: Math.round(subtotal * 100) / 100,
+    deliveryFee,
+    tax,
+    total,
     currency: "SAR",
-    estimatedDelivery: "30-45 min",
+    paymentMethod: paymentMethodId || "card",
+    deliveryOption: deliveryOptionId || "standard",
+    address: address || null,
+    estimatedDelivery: deliveryOptionId === "express" ? "30-45 min" : "1-2 hours",
     createdAt: new Date().toISOString(),
   };
 
@@ -146,8 +260,9 @@ router.post("/checkout", async (req, res) => {
   res.json({ success: true, data: { order, source: "fallback" } });
 });
 
-router.get("/orders", async (req, res) => {
-  const bffResult = await proxyToBff(`/orders?userId=${req.query.userId || ""}`, "GET");
+router.get("/orders", optionalAuth, async (req, res) => {
+  const uid = getUserIdFromReq(req);
+  const bffResult = await proxyToBff(`/orders?userId=${uid}`, "GET");
   if (bffResult.ok) {
     res.json({ success: true, data: bffResult.data });
     return;

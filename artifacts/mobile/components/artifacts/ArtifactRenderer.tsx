@@ -50,6 +50,7 @@ import { IssueReporter } from "./IssueReporter";
 import { FlightBoardingPass } from "./FlightBoardingPass";
 import { CurrencyConverter } from "./CurrencyConverter";
 import { SduiNodeRenderer } from "./SduiNodeRenderer";
+import { DynamicScreen } from "./DynamicScreen";
 import { ToastCard } from "./ToastCard";
 
 interface Props {
@@ -177,6 +178,8 @@ function renderArtifact(artifact: Artifact, onAction?: (action: string) => void,
       return <CurrencyConverter data={artifact.data} />;
     case "sdui-node":
       return <SduiNodeRenderer data={artifact.data as { node: Record<string, unknown>; theme?: "light" | "dark" }} />;
+    case "dynamic-screen":
+      return <DynamicScreen screenId={(artifact.data as { screenId: string }).screenId} surface={(artifact.data as { surface?: string }).surface} tenant={(artifact.data as { tenant?: string }).tenant} onAction={onAction} />;
     case "toast":
       return <ToastCard data={artifact.data as { message: string; type?: "success" | "error" | "warning" | "info"; duration?: number; action?: string; actionLabel?: string }} onAction={onAction} />;
     default:

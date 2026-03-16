@@ -1,5 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useState, useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
 import { generateId } from "@/lib/id";
 import {
   generatePKCE,
@@ -21,6 +23,29 @@ const AUTH_KEY = "dakkah_auth_profile";
 const TOKENS_KEY = "dakkah_auth_tokens";
 const PKCE_VERIFIER_KEY = "dakkah_pkce_verifier";
 const PKCE_STATE_KEY = "dakkah_pkce_state";
+
+async function secureSet(key: string, value: string): Promise<void> {
+  if (Platform.OS === "web") {
+    await AsyncStorage.setItem(key, value);
+  } else {
+    await SecureStore.setItemAsync(key, value);
+  }
+}
+
+async function secureGet(key: string): Promise<string | null> {
+  if (Platform.OS === "web") {
+    return AsyncStorage.getItem(key);
+  }
+  return SecureStore.getItemAsync(key);
+}
+
+async function secureDelete(key: string): Promise<void> {
+  if (Platform.OS === "web") {
+    await AsyncStorage.removeItem(key);
+  } else {
+    await SecureStore.deleteItemAsync(key);
+  }
+}
 
 const KEYCLOAK_BASE_URL = process.env.EXPO_PUBLIC_KEYCLOAK_URL || "https://auth.dakkah.city";
 const KEYCLOAK_REALM = process.env.EXPO_PUBLIC_KEYCLOAK_REALM || "cityos";
@@ -124,12 +149,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
         tokensRef.current = newTokens;
         setTokens(newTokens);
-        await AsyncStorage.setItem(TOKENS_KEY, JSON.stringify(newTokens));
+        await secureSet(TOKENS_KEY, JSON.stringify(newTokens));
         scheduleRefresh(newTokens);
       } catch {
         tokensRef.current = null;
         setTokens(null);
-        await AsyncStorage.removeItem(TOKENS_KEY);
+        await secureDelete(TOKENS_KEY);
         setUser(DEFAULT_PROFILE);
       }
     }, refreshIn);
@@ -141,7 +166,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const settingsData = await AsyncStorage.getItem("dakkah_copilot_settings");
         if (settingsData) setCopilotSettings(JSON.parse(settingsData));
 
-        const tokensData = await AsyncStorage.getItem(TOKENS_KEY);
+        const tokensData = await secureGet(TOKENS_KEY);
         if (tokensData) {
           const savedTokens: AuthTokens = JSON.parse(tokensData);
           if (!isTokenExpired(savedTokens, 0)) {
@@ -170,7 +195,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               });
               tokensRef.current = newTokens;
               setTokens(newTokens);
-              await AsyncStorage.setItem(TOKENS_KEY, JSON.stringify(newTokens));
+              await secureSet(TOKENS_KEY, JSON.stringify(newTokens));
               const keycloakUser = extractUser(newTokens.accessToken);
               const profileData = await AsyncStorage.getItem(AUTH_KEY);
               const profile = profileData ? JSON.parse(profileData) : DEFAULT_PROFILE;
@@ -183,7 +208,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               });
               scheduleRefresh(newTokens);
             } catch {
-              await AsyncStorage.removeItem(TOKENS_KEY);
+              await secureDelete(TOKENS_KEY);
               const data = await AsyncStorage.getItem(AUTH_KEY);
               setUser(data ? JSON.parse(data) : DEFAULT_PROFILE);
             }
@@ -227,8 +252,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { codeVerifier, codeChallenge } = await generatePKCE();
       const state = generateState();
 
-      await AsyncStorage.setItem(PKCE_VERIFIER_KEY, codeVerifier);
-      await AsyncStorage.setItem(PKCE_STATE_KEY, state);
+      await secureSet(PKCE_VERIFIER_KEY, codeVerifier);
+      await secureSet(PKCE_STATE_KEY, state);
 
       const authUrl = buildAuthorizationUrl({
         baseUrl: KEYCLOAK_BASE_URL,
@@ -246,12 +271,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const code = url.searchParams.get("code");
         const returnedState = url.searchParams.get("state");
 
-        const savedState = await AsyncStorage.getItem(PKCE_STATE_KEY);
+        const savedState = await secureGet(PKCE_STATE_KEY);
         if (!savedState || returnedState !== savedState) {
           throw new Error("PKCE state mismatch");
         }
 
-        const savedVerifier = await AsyncStorage.getItem(PKCE_VERIFIER_KEY);
+        const savedVerifier = await secureGet(PKCE_VERIFIER_KEY);
         if (!savedVerifier || !code) {
           throw new Error("Missing PKCE verifier or authorization code");
         }
@@ -267,9 +292,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         tokensRef.current = exchangedTokens;
         setTokens(exchangedTokens);
-        await AsyncStorage.setItem(TOKENS_KEY, JSON.stringify(exchangedTokens));
-        await AsyncStorage.removeItem(PKCE_VERIFIER_KEY);
-        await AsyncStorage.removeItem(PKCE_STATE_KEY);
+        await secureSet(TOKENS_KEY, JSON.stringify(exchangedTokens));
+        await secureDelete(PKCE_VERIFIER_KEY);
+        await secureDelete(PKCE_STATE_KEY);
 
         const keycloakUser = extractUser(exchangedTokens.accessToken);
         const profile: UserProfile = {
@@ -298,7 +323,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setTokens(null);
     setUser(DEFAULT_PROFILE);
     await AsyncStorage.setItem(AUTH_KEY, JSON.stringify(DEFAULT_PROFILE));
-    await AsyncStorage.removeItem(TOKENS_KEY);
+    await secureDelete(TOKENS_KEY);
     unregisterPushNotifications().catch(() => {});
 
     if (currentTokens?.idToken) {
@@ -337,13 +362,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
         tokensRef.current = newTokens;
         setTokens(newTokens);
-        await AsyncStorage.setItem(TOKENS_KEY, JSON.stringify(newTokens));
+        await secureSet(TOKENS_KEY, JSON.stringify(newTokens));
         scheduleRefresh(newTokens);
         return newTokens.accessToken;
       } catch {
         tokensRef.current = null;
         setTokens(null);
-        await AsyncStorage.removeItem(TOKENS_KEY);
+        await secureDelete(TOKENS_KEY);
         setUser(DEFAULT_PROFILE);
         return null;
       }

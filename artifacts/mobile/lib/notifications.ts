@@ -4,11 +4,16 @@ const API_BASE = process.env.EXPO_PUBLIC_DOMAIN
   ? `https://${process.env.EXPO_PUBLIC_DOMAIN}/api`
   : "http://localhost:8080/api";
 
+export type NotificationCategory = "order" | "delivery" | "city_alert" | "event" | "chat" | "health" | "transport" | "general";
+
 let pushToken: string | null = null;
 
-export async function registerForPushNotifications(userId?: string): Promise<string | null> {
+export async function registerForPushNotifications(
+  userId?: string,
+  categories?: NotificationCategory[]
+): Promise<string | null> {
   try {
-    let Notifications: any;
+    let Notifications: { getPermissionsAsync: () => Promise<{ status: string }>; requestPermissionsAsync: () => Promise<{ status: string }>; getExpoPushTokenAsync: () => Promise<{ data: string }>; setNotificationCategoryAsync?: (id: string, actions: unknown[]) => Promise<void> };
     try {
       Notifications = require("expo-notifications");
     } catch {
@@ -28,6 +33,10 @@ export async function registerForPushNotifications(userId?: string): Promise<str
       return null;
     }
 
+    if (Notifications.setNotificationCategoryAsync) {
+      await setupNotificationCategories(Notifications as { setNotificationCategoryAsync: (id: string, actions: unknown[]) => Promise<void> }).catch(() => {});
+    }
+
     const tokenData = await Notifications.getExpoPushTokenAsync();
     pushToken = tokenData.data;
 
@@ -37,13 +46,57 @@ export async function registerForPushNotifications(userId?: string): Promise<str
       body: JSON.stringify({
         userId: userId || "anonymous",
         token: pushToken,
-        platform: Platform.OS === "ios" ? "ios" : "android",
+        platform: Platform.OS === "ios" ? "ios" : Platform.OS === "android" ? "android" : "web",
+        categories: categories || ["order", "delivery", "city_alert", "event", "chat", "health", "transport", "general"],
       }),
     }).catch(() => {});
 
     return pushToken;
   } catch {
     return null;
+  }
+}
+
+async function setupNotificationCategories(
+  Notifications: { setNotificationCategoryAsync: (id: string, actions: unknown[]) => Promise<void> }
+): Promise<void> {
+  await Notifications.setNotificationCategoryAsync("order", [
+    { identifier: "VIEW_ORDER", buttonTitle: "View Order" },
+    { identifier: "TRACK", buttonTitle: "Track" },
+  ]);
+
+  await Notifications.setNotificationCategoryAsync("delivery", [
+    { identifier: "TRACK_DELIVERY", buttonTitle: "Track" },
+    { identifier: "CONTACT_DRIVER", buttonTitle: "Contact Driver" },
+  ]);
+
+  await Notifications.setNotificationCategoryAsync("city_alert", [
+    { identifier: "VIEW_DETAILS", buttonTitle: "View Details" },
+    { identifier: "DISMISS", buttonTitle: "Dismiss", options: { isDestructive: true } },
+  ]);
+
+  await Notifications.setNotificationCategoryAsync("event", [
+    { identifier: "VIEW_EVENT", buttonTitle: "View Event" },
+    { identifier: "ADD_CALENDAR", buttonTitle: "Add to Calendar" },
+  ]);
+
+  await Notifications.setNotificationCategoryAsync("chat", [
+    { identifier: "REPLY", buttonTitle: "Reply", textInput: { submitButtonTitle: "Send", placeholder: "Type a reply..." } },
+  ]);
+}
+
+export async function updateNotificationCategories(categories: NotificationCategory[]): Promise<boolean> {
+  if (!pushToken) return false;
+  try {
+    const res = await fetch(`${API_BASE}/notifications/categories`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: pushToken, categories }),
+    });
+    const data = await res.json();
+    return data.success;
+  } catch {
+    return false;
   }
 }
 

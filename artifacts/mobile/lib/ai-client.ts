@@ -14,8 +14,22 @@ interface AIChatResponse {
     model: string;
     intent?: string | null;
     bffData?: unknown;
+    sdui?: Record<string, unknown> | null;
     threadId?: string | null;
     usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
+  };
+  error?: { code: string; message: string };
+}
+
+interface AIExecuteResponse {
+  success: boolean;
+  data?: {
+    intent: string;
+    service: string;
+    action: string;
+    bffData: unknown;
+    sdui: Record<string, unknown>;
+    threadId?: string | null;
   };
   error?: { code: string; message: string };
 }
@@ -52,6 +66,46 @@ export async function aiChat(messages: AIChatMessage[], options?: ChatOptions): 
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Network error";
     return { success: false, error: { code: "NETWORK_ERROR", message } };
+  }
+}
+
+export async function aiExecute(
+  intent: string,
+  params?: Record<string, unknown>,
+  options?: { threadId?: string; accessToken?: string }
+): Promise<AIExecuteResponse> {
+  try {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (options?.accessToken) {
+      headers["Authorization"] = `Bearer ${options.accessToken}`;
+    }
+
+    const res = await fetch(`${API_BASE}/ai/execute`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        intent,
+        params,
+        threadId: options?.threadId,
+      }),
+    });
+    return await res.json();
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Network error";
+    return { success: false, error: { code: "NETWORK_ERROR", message } };
+  }
+}
+
+export async function fetchSduiScreen(screenId: string, surface?: string, tenant?: string): Promise<{ screen: Record<string, unknown>; source?: string } | null> {
+  try {
+    const url = new URL(`${API_BASE}/sdui/${screenId}`);
+    if (surface) url.searchParams.set("surface", surface);
+    if (tenant) url.searchParams.set("tenant", tenant);
+    const res = await fetch(url.toString());
+    const data = await res.json();
+    return data.success ? data.data : null;
+  } catch {
+    return null;
   }
 }
 
@@ -178,12 +232,57 @@ export async function getCart(userId?: string): Promise<unknown> {
   }
 }
 
-export async function checkout(userId?: string): Promise<unknown> {
+export async function validateAddress(address: { street: string; city: string; district?: string; postalCode?: string }): Promise<unknown> {
+  try {
+    const res = await fetch(`${API_BASE}/commerce/checkout/validate-address`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address }),
+    });
+    const data = await res.json();
+    return data.success ? data.data : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function getDeliveryOptions(userId?: string, address?: unknown): Promise<unknown> {
+  try {
+    const res = await fetch(`${API_BASE}/commerce/checkout/delivery-options`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, address }),
+    });
+    const data = await res.json();
+    return data.success ? data.data : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function createPaymentSession(userId?: string, deliveryOptionId?: string, address?: unknown): Promise<unknown> {
+  try {
+    const res = await fetch(`${API_BASE}/commerce/checkout/create-payment`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, deliveryOptionId, address }),
+    });
+    const data = await res.json();
+    return data.success ? data.data : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function checkout(
+  userId?: string,
+  options?: { paymentMethodId?: string; paymentSessionId?: string; address?: unknown; deliveryOptionId?: string }
+): Promise<unknown> {
   try {
     const res = await fetch(`${API_BASE}/commerce/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId }),
+      body: JSON.stringify({ userId, ...options }),
     });
     const data = await res.json();
     return data.success ? data.data : null;

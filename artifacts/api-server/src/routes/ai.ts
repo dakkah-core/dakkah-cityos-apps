@@ -1,5 +1,6 @@
 import { Router } from "express";
 import OpenAI from "openai";
+import { optionalAuth } from "../middleware/auth";
 
 const router = Router();
 
@@ -107,7 +108,7 @@ async function callBff(service: string, action: string, params: Record<string, u
   }
 }
 
-router.post("/chat", async (req, res) => {
+router.post("/chat", optionalAuth, async (req, res) => {
   try {
     const { messages, model, threadId, context } = req.body;
     if (!messages || !Array.isArray(messages)) {
@@ -145,11 +146,13 @@ router.post("/chat", async (req, res) => {
 
     let bffData: unknown = null;
     let resolvedIntent: string | null = null;
+    let sduiPayload: Record<string, unknown> | null = null;
 
     if (intentBlock && INTENT_MAP[intentBlock.intent]) {
       resolvedIntent = intentBlock.intent;
       const mapping = INTENT_MAP[intentBlock.intent];
       bffData = await callBff(mapping.service, mapping.action, intentBlock.params);
+      sduiPayload = generateSduiPayload(intentBlock.intent, bffData, intentBlock.params);
     }
 
     res.json({
@@ -160,6 +163,7 @@ router.post("/chat", async (req, res) => {
         usage: completion.usage,
         intent: resolvedIntent,
         bffData,
+        sdui: sduiPayload,
         threadId: threadId || null,
       },
     });
@@ -172,6 +176,163 @@ router.post("/chat", async (req, res) => {
     });
   }
 });
+
+router.post("/execute", optionalAuth, async (req, res) => {
+  try {
+    const { intent, params, threadId } = req.body;
+    if (!intent) {
+      res.status(400).json({ success: false, error: { code: "INVALID_REQUEST", message: "intent required" } });
+      return;
+    }
+
+    const mapping = INTENT_MAP[intent];
+    if (!mapping) {
+      res.status(400).json({ success: false, error: { code: "UNKNOWN_INTENT", message: `Unknown intent: ${intent}` } });
+      return;
+    }
+
+    const bffData = await callBff(mapping.service, mapping.action, params || {});
+
+    const sduiNode = generateSduiPayload(intent, bffData, params);
+
+    res.json({
+      success: true,
+      data: {
+        intent,
+        service: mapping.service,
+        action: mapping.action,
+        bffData,
+        sdui: sduiNode,
+        threadId: threadId || null,
+      },
+    });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    console.error("AI execute error:", message);
+    res.status(500).json({
+      success: false,
+      error: { code: "EXECUTE_ERROR", message },
+    });
+  }
+});
+
+function generateSduiPayload(intent: string, bffData: unknown, params?: Record<string, unknown>): Record<string, unknown> {
+  const domain = intent.split(".")[0];
+  const action = intent.split(".")[1];
+
+  switch (domain) {
+    case "product":
+      if (action === "search") {
+        return {
+          type: "grid",
+          columns: 2,
+          spacing: "md",
+          children: Array.isArray((bffData as Record<string, unknown>)?.products)
+            ? ((bffData as Record<string, unknown>).products as Array<Record<string, unknown>>).map((p) => ({
+                type: "card",
+                title: p.name,
+                subtitle: `SAR ${p.price}`,
+                image: p.image,
+                badge: p.inStock ? undefined : "Out of Stock",
+                onPress: { type: "navigate", target: `product/${p.id}` },
+              }))
+            : [],
+        };
+      }
+      return {
+        type: "card",
+        title: (bffData as Record<string, unknown>)?.name || "Product",
+        subtitle: `SAR ${(bffData as Record<string, unknown>)?.price || 0}`,
+        image: (bffData as Record<string, unknown>)?.image,
+        children: [
+          { type: "button", label: "Add to Cart", variant: "solid", action: { type: "intent", intent: "cart.add", params: { productId: params?.productId } } },
+        ],
+      };
+
+    case "cart":
+      return {
+        type: "stack",
+        direction: "vertical",
+        spacing: "sm",
+        children: [
+          { type: "text", content: "Your Cart", variant: "heading" },
+          ...(Array.isArray((bffData as Record<string, unknown>)?.items)
+            ? ((bffData as Record<string, unknown>).items as Array<Record<string, unknown>>).map((item) => ({
+                type: "card",
+                title: item.name,
+                subtitle: `${item.quantity}x SAR ${item.price}`,
+              }))
+            : []),
+          { type: "button", label: "Proceed to Checkout", variant: "solid", action: { type: "intent", intent: "order.create" } },
+        ],
+      };
+
+    case "order":
+      return {
+        type: "card",
+        title: action === "track" ? "Order Tracking" : "Order Confirmed",
+        subtitle: (bffData as Record<string, unknown>)?.orderId as string || "Processing",
+        children: [
+          { type: "text", content: `Status: ${(bffData as Record<string, unknown>)?.status || "pending"}` },
+          { type: "text", content: `Total: SAR ${(bffData as Record<string, unknown>)?.total || 0}` },
+        ],
+      };
+
+    case "ride":
+      return {
+        type: "card",
+        title: action === "request" ? "Ride Requested" : "Ride Status",
+        children: [
+          { type: "text", content: `Status: ${(bffData as Record<string, unknown>)?.status || "searching"}` },
+          { type: "text", content: `ETA: ${(bffData as Record<string, unknown>)?.eta || "calculating..."}` },
+        ],
+      };
+
+    case "event":
+      if (action === "search") {
+        return {
+          type: "stack",
+          direction: "vertical",
+          spacing: "md",
+          children: Array.isArray((bffData as Record<string, unknown>)?.events)
+            ? ((bffData as Record<string, unknown>).events as Array<Record<string, unknown>>).map((e) => ({
+                type: "card",
+                title: e.name,
+                subtitle: e.date,
+                image: e.image,
+                onPress: { type: "intent", intent: "event.book", params: { eventId: e.id } },
+              }))
+            : [],
+        };
+      }
+      return {
+        type: "card",
+        title: "Ticket Booked",
+        subtitle: (bffData as Record<string, unknown>)?.eventName as string || "Event",
+        children: [
+          { type: "text", content: `Confirmation: ${(bffData as Record<string, unknown>)?.confirmationId || "pending"}` },
+        ],
+      };
+
+    case "health":
+      return {
+        type: "card",
+        title: action === "symptoms" ? "Symptom Assessment" : "Appointment",
+        children: [
+          { type: "text", content: (bffData as Record<string, unknown>)?.recommendation as string || (bffData as Record<string, unknown>)?.details as string || "Processing..." },
+        ],
+      };
+
+    default:
+      return {
+        type: "card",
+        title: INTENT_MAP[intent]?.description || intent,
+        children: [
+          { type: "text", content: JSON.stringify(bffData || { status: "completed" }) },
+        ],
+      };
+  }
+}
 
 router.post("/transcribe", async (req, res) => {
   try {

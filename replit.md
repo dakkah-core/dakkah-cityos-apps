@@ -40,9 +40,11 @@ The project is structured as a pnpm monorepo with separate `artifacts/` for depl
 ### API Server (`artifacts/api-server`)
 
 - **Gateway Architecture**: An Express 5 API server acting as a gateway, routing requests to 11 domain services (AI, Commerce, Payments, Identity, Logistics, Health, ERP, Content, Comms, Workflows, Storage).
-- **AI Integration**: Routes for AI chat (using OpenAI gpt-5-mini) with intent routing and BFF proxy, and speech-to-text transcription. It supports server-side thread persistence.
-- **SDUI Endpoint**: Provides a proxy for Server-Driven UI screens, enabling dynamic UI updates.
-- **Commerce API**: Proxies for product, cart, and checkout functionalities.
+- **AI Integration**: Routes for AI chat (`/api/ai/chat`) using OpenAI gpt-5-mini with intent routing and BFF proxy, intent execution (`/api/ai/execute`) with SDUI payload generation, and speech-to-text transcription. Supports server-side thread persistence with JWT-verified ownership.
+- **Auth Middleware**: JWT verification via `jsonwebtoken` + `jwks-rsa` with JWKS caching, audience validation, and role-based access control. `requireAuth` for sensitive mutations, `optionalAuth` for public reads.
+- **SDUI Endpoint**: Provides a proxy for Server-Driven UI screens with fallback layouts, enabling dynamic UI updates.
+- **Commerce API**: Full checkout orchestration (validate-address → delivery-options → create-payment → checkout) with BFF proxy and fallback, auth middleware, and JWT-derived user identity.
+- **Notifications API**: Push registration with category system, auth-protected mutations, role-gated send endpoint.
 
 ### Mobile Application (`artifacts/mobile`)
 
@@ -52,8 +54,10 @@ The project is structured as a pnpm monorepo with separate `artifacts/` for depl
 - **Interactive Chat Features**: Includes message reactions, pinning, reply-to, inline editing, `@mention` system for city personas, `/slash commands`, and in-chat search.
 - **Voice & Media Input**: Microphone button for speech-to-text transcription and media picker for image/video attachments.
 - **Scenario Engine**: A local engine with 189 scenarios across 21 categories for intelligent responses, with a fallback to OpenAI.
-- **Auth System**: Keycloak PKCE authentication with token refresh, managed by `AuthProvider` and `useAuth()` hook.
-- **SDUI Renderer**: `@workspace/sdui-renderer-native` recursively renders 8 SDUI node types into React Native components.
+- **Auth System**: Keycloak PKCE authentication with token refresh, managed by `AuthProvider` and `useAuth()` hook. Tokens stored in `expo-secure-store` (native) with AsyncStorage fallback (web).
+- **Push Notifications**: Full category system (order, delivery, city_alert, event, chat, health, transport, general) with Expo Notifications integration and server-side auth enforcement.
+- **SDUI Renderer**: `@workspace/sdui-renderer-native` recursively renders 8 SDUI node types into React Native components. `DynamicScreen` component fetches SDUI screens from `/api/sdui/:screenId`.
+- **Commerce Checkout**: Full orchestration flow: address validation → delivery options → payment session → confirmation, with BFF proxy and fallback.
 
 ### Shared Libraries (`lib/`)
 
@@ -75,4 +79,5 @@ The project is structured as a pnpm monorepo with separate `artifacts/` for depl
 - **Mobile Development**: Expo (version 54) and React Native (version 0.81)
 - **Push Notifications**: Expo Notifications
 - **Keycloak OIDC PKCE Auth**: `expo-web-browser`, `@workspace/auth`
-- **Local Storage**: `@react-native-async-storage/async-storage` (for mobile)
+- **Secure Storage**: `expo-secure-store` (native token storage), `@react-native-async-storage/async-storage` (profile/settings)
+- **JWT Verification**: `jsonwebtoken`, `jwks-rsa` (server-side token validation)
