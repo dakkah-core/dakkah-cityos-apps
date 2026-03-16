@@ -138,31 +138,44 @@ self.addEventListener("sync", (event) => {
 async function drainMutationQueue() {
   try {
     const db = await openIDB();
-    const tx = db.transaction("mutation-queue", "readwrite");
-    const store = tx.objectStore("mutation-queue");
 
-    return new Promise((resolve, reject) => {
-      const req = store.getAll();
-      req.onsuccess = async () => {
-        const mutations = req.result || [];
-        const results = await Promise.allSettled(
-          mutations.map((m) =>
-            fetch(m.endpoint, {
-              method: m.method,
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(m.body),
-            })
-          )
-        );
-
-        const succeeded = results.filter((r) => r.status === "fulfilled" && r.value.ok);
-        if (succeeded.length === mutations.length) {
-          store.clear();
-        }
-        resolve();
-      };
+    const mutations = await new Promise((resolve, reject) => {
+      const tx = db.transaction("mutation-queue", "readonly");
+      const req = tx.objectStore("mutation-queue").getAll();
+      req.onsuccess = () => resolve(req.result || []);
       req.onerror = () => reject(req.error);
     });
+
+    if (mutations.length === 0) return;
+
+    const results = await Promise.allSettled(
+      mutations.map((m) =>
+        fetch(m.endpoint, {
+          method: m.method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(m.body),
+        })
+      )
+    );
+
+    const successIds = [];
+    results.forEach((r, i) => {
+      if (r.status === "fulfilled" && r.value.ok) {
+        successIds.push(mutations[i].id);
+      }
+    });
+
+    if (successIds.length > 0) {
+      const clearTx = db.transaction("mutation-queue", "readwrite");
+      const clearStore = clearTx.objectStore("mutation-queue");
+      for (const id of successIds) {
+        clearStore.delete(id);
+      }
+      await new Promise((resolve, reject) => {
+        clearTx.oncomplete = () => resolve();
+        clearTx.onerror = () => reject(clearTx.error);
+      });
+    }
   } catch (e) {
     console.warn("Background sync failed:", e);
   }

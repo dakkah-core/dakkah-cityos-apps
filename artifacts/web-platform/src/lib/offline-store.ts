@@ -94,27 +94,46 @@ export async function queueMutation(mutation: { endpoint: string; method: string
 
 export async function drainMutationQueue(): Promise<Array<{ endpoint: string; method: string; body: unknown }>> {
   const db = await openDB();
-  const tx = db.transaction(STORES.mutationQueue, "readwrite");
-  const store = tx.objectStore(STORES.mutationQueue);
-  return new Promise((resolve, reject) => {
-    const req = store.getAll();
-    req.onsuccess = async () => {
-      const mutations = req.result;
-      const results = await Promise.allSettled(
-        mutations.map((m: { endpoint: string; method: string; body: unknown }) =>
-          fetch(m.endpoint, {
-            method: m.method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(m.body),
-          })
-        )
-      );
-      const allOk = results.every((r) => r.status === "fulfilled" && (r.value as Response).ok);
-      if (allOk) {
-        store.clear();
-      }
-      resolve(mutations);
-    };
-    req.onerror = () => reject(req.error);
+
+  const mutations: Array<{ id: IDBValidKey; endpoint: string; method: string; body: unknown }> = await new Promise(
+    (resolve, reject) => {
+      const tx = db.transaction(STORES.mutationQueue, "readonly");
+      const req = tx.objectStore(STORES.mutationQueue).getAll();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    },
+  );
+
+  if (mutations.length === 0) return [];
+
+  const results = await Promise.allSettled(
+    mutations.map((m) =>
+      fetch(m.endpoint, {
+        method: m.method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(m.body),
+      }),
+    ),
+  );
+
+  const successIds: IDBValidKey[] = [];
+  results.forEach((r, i) => {
+    if (r.status === "fulfilled" && r.value.ok) {
+      successIds.push(mutations[i].id);
+    }
   });
+
+  if (successIds.length > 0) {
+    const clearTx = db.transaction(STORES.mutationQueue, "readwrite");
+    const clearStore = clearTx.objectStore(STORES.mutationQueue);
+    for (const id of successIds) {
+      clearStore.delete(id);
+    }
+    await new Promise<void>((resolve, reject) => {
+      clearTx.oncomplete = () => resolve();
+      clearTx.onerror = () => reject(clearTx.error);
+    });
+  }
+
+  return mutations;
 }
