@@ -11,6 +11,9 @@ import Privacy from "@/pages/Privacy";
 import Terms from "@/pages/Terms";
 import Contact from "@/pages/Contact";
 import WidgetDemo from "@/pages/WidgetDemo";
+import KioskApp from "@/pages/KioskApp";
+import TvApp from "@/pages/TvApp";
+import CarApp from "@/pages/CarApp";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false, retry: 1 } },
@@ -32,6 +35,9 @@ function Router() {
       <Route path="/terms" component={Terms} />
       <Route path="/contact" component={Contact} />
       <Route path="/widget-demo" component={WidgetDemo} />
+      <Route path="/kiosk" component={KioskApp} />
+      <Route path="/tv" component={TvApp} />
+      <Route path="/car" component={CarApp} />
       <Route path="/">
         {() => <ProtectedRoute component={Dashboard} />}
       </Route>

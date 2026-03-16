@@ -76,6 +76,12 @@ The project uses a pnpm monorepo with `artifacts/` for deployable applications a
 - **Port**: 5000, path `/web-platform/`. Vite proxy: `${basePath}api` → `http://localhost:8080`.
 - **Router**: wouter with `BASE_URL` base path. React Query for data fetching.
 
+### Ambient Surface Apps (Phase 5)
+- **Kiosk Runtime** (`/web-platform/kiosk`): Full-screen public terminal mode. Dark navy theme, large touch targets (64px min), guest mode (no login). Features: building directory with 8 services, queue management with print-to-PDF ticket simulation, wayfinding map (OpenStreetMap embed), event listings, search overlay, emergency alert modal. Auto-timeout to home after 60s inactivity. High contrast for ambient lighting. SDUI from `/api/sdui/kiosk_home?surface=kiosk`.
+- **TV App Simulator** (`/web-platform/tv`): Fixed 1920×1080 digital signage layout. Horizontal carousels (restaurants, events, city info, services) with auto-scroll passive mode (8s interval). D-Pad keyboard navigation (arrow keys) with visible blue focus ring. Slide indicator dots. Content cards with prominent images and badges. SDUI from `/api/sdui/tv_home?surface=tv_1080p`. Use cases: restaurant menus, hotel lobbies, public signage.
+- **Car App Simulator** (`/web-platform/car`): Ultra-simplified list-based UI (max 5 items visible). Large tap targets, text truncation. Main menu → sub-views: delivery details, navigation steps, driver status, earnings dashboard, voice command simulation. Online/offline toggle. Keyboard navigation (↑↓ select, Enter confirm, Esc back). SDUI from `/api/sdui/carplay_home?surface=carplay`. Use cases: driver deliveries, navigation, status.
+- All three surface apps are routes within `web-platform` (not separate artifacts due to 7-artifact limit). Each renders SDUI content adapted for its surface type via the `?surface=` query parameter.
+
 ### Web Dashboards & Portals (Phase 3)
 - **City Dashboard (`artifacts/city-dashboard`)**: Municipal operations center for city administrators. Dark mode command center with real-time city stats (incidents, traffic, air quality, energy), service request tracking, infrastructure health monitoring, and AI copilot chat panel. Port 20359, path `/city-dashboard/`.
 - **Business Dashboard (`artifacts/business-dashboard`)**: Multi-location business management portal for merchants. Clean professional theme with revenue/order tracking, inventory alerts, staff scheduling, marketing campaigns, customer insights, and AI copilot. Port 26079, path `/business-dashboard/`.
