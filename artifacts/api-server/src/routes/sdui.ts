@@ -221,6 +221,54 @@ router.get("/:screenId", async (req, res) => {
     },
     "driver_home": buildDriverHomeSdui(String(driverStatus || "offline")),
     "merchant_home": buildMerchantHomeSdui(),
+    "tablet_pos": {
+      type: "stack",
+      direction: "vertical",
+      spacing: "md",
+      children: [
+        {
+          type: "card",
+          title: "POS Terminal",
+          subtitle: "Point of Sale - Ready",
+          children: [
+            {
+              type: "stack",
+              direction: "horizontal",
+              spacing: "sm",
+              children: [
+                { type: "text", content: "Terminal: T-001" },
+                { type: "text", content: "Status: Online" },
+              ],
+            },
+            {
+              type: "stack",
+              direction: "horizontal",
+              spacing: "sm",
+              children: [
+                { type: "button", label: "New Sale", variant: "solid", action: { type: "navigate", screen: "pos" } },
+                { type: "button", label: "Scan Barcode", variant: "outline", action: { type: "navigate", screen: "pos/scanner" } },
+              ],
+            },
+          ],
+        },
+        {
+          type: "card",
+          title: "Quick Actions",
+          children: [
+            {
+              type: "stack",
+              direction: "vertical",
+              spacing: "sm",
+              children: [
+                { type: "button", label: "🍳 Kitchen Display", variant: "outline", action: { type: "navigate", screen: "pos/kitchen" } },
+                { type: "button", label: "↩️ Returns", variant: "outline", action: { type: "navigate", screen: "pos/returns" } },
+                { type: "button", label: "📊 End of Day", variant: "outline", action: { type: "navigate", screen: "pos/reports" } },
+              ],
+            },
+          ],
+        },
+      ],
+    },
     "product-grid": {
       type: "grid",
       columns: 2,
