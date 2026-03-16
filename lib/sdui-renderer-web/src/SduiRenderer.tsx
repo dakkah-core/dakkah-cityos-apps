@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import type {
   SdNode,
   SdTextNode,
@@ -9,6 +9,8 @@ import type {
   SdCarouselNode,
   SdGridNode,
   SdMapNode,
+  SdFormNode,
+  SdFormField,
 } from "@workspace/sdui-protocol";
 import { getSemanticColors } from "@workspace/design-tokens";
 import { modifiersToClassName, modifiersToStyle } from "./ModifierStyles";
@@ -269,6 +271,166 @@ function SdMapRenderer({ node }: { node: SdMapNode }) {
   );
 }
 
+function SdFormFieldRenderer({ field, value, onChange }: { field: SdFormField; value: string; onChange: (v: string) => void }) {
+  const labelEl = (
+    <label className="block text-sm font-medium mb-1" htmlFor={field.name}>
+      {field.label}{field.required && <span className="text-red-500 ml-0.5">*</span>}
+    </label>
+  );
+
+  const inputClass = "w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
+
+  switch (field.fieldType) {
+    case "textarea":
+      return (
+        <div className="mb-3">
+          {labelEl}
+          <textarea
+            id={field.name}
+            className={inputClass}
+            placeholder={field.placeholder}
+            required={field.required}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            rows={3}
+          />
+        </div>
+      );
+
+    case "select":
+      return (
+        <div className="mb-3">
+          {labelEl}
+          <select
+            id={field.name}
+            className={inputClass}
+            required={field.required}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+          >
+            <option value="">{field.placeholder || "Select..."}</option>
+            {field.options?.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </div>
+      );
+
+    case "checkbox":
+      return (
+        <div className="mb-3 flex items-center gap-2">
+          <input
+            type="checkbox"
+            id={field.name}
+            checked={value === "true"}
+            onChange={(e) => onChange(e.target.checked ? "true" : "false")}
+            className="rounded border-gray-300"
+          />
+          <label htmlFor={field.name} className="text-sm">{field.label}</label>
+        </div>
+      );
+
+    case "radio":
+      return (
+        <div className="mb-3">
+          {labelEl}
+          <div className="flex flex-col gap-1.5">
+            {field.options?.map((opt) => (
+              <label key={opt.value} className="flex items-center gap-2 text-sm">
+                <input
+                  type="radio"
+                  name={field.name}
+                  value={opt.value}
+                  checked={value === opt.value}
+                  onChange={() => onChange(opt.value)}
+                  className="border-gray-300"
+                />
+                {opt.label}
+              </label>
+            ))}
+          </div>
+        </div>
+      );
+
+    default:
+      return (
+        <div className="mb-3">
+          {labelEl}
+          <input
+            type={field.fieldType}
+            id={field.name}
+            className={inputClass}
+            placeholder={field.placeholder}
+            required={field.required}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+          />
+        </div>
+      );
+  }
+}
+
+function SdFormRenderer({ node, theme }: { node: SdFormNode; theme: "light" | "dark" }) {
+  const colors = getSemanticColors(theme);
+  const [formData, setFormData] = useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {};
+    for (const field of node.fields) {
+      initial[field.name] = field.defaultValue || "";
+    }
+    return initial;
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleFieldChange = useCallback((name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  }, []);
+
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const action = node.submitAction;
+      if (action.type === "submit_form") {
+        const payload = { ...formData };
+        await dispatchAction({ ...action, type: "api_mutation" as const, method: action.method || "POST", payload });
+      } else if (action.type === "api_mutation") {
+        await dispatchAction({ ...action, payload: { ...action.payload, ...formData } });
+      } else {
+        await dispatchAction(action);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [formData, node.submitAction]);
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className={`rounded-lg border p-4 ${modifiersToClassName(node.modifiers)}`}
+      style={{ backgroundColor: colors.card, borderColor: colors.border, ...modifiersToStyle(node.modifiers) }}
+    >
+      {node.title && <h3 className="text-lg font-semibold mb-1" style={{ color: colors.text }}>{node.title}</h3>}
+      {node.description && <p className="text-sm mb-3" style={{ color: colors.textSecondary }}>{node.description}</p>}
+      {node.fields.map((field) => (
+        <SdFormFieldRenderer
+          key={field.name}
+          field={field}
+          value={formData[field.name] || ""}
+          onChange={(v) => handleFieldChange(field.name, v)}
+        />
+      ))}
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full mt-2 px-4 py-2 rounded-md text-white font-semibold transition-opacity hover:opacity-80 disabled:opacity-50"
+        style={{ backgroundColor: colors.primary }}
+      >
+        {isSubmitting ? "Submitting..." : (node.submitLabel || "Submit")}
+      </button>
+    </form>
+  );
+}
+
 export function SduiRenderer({ node, theme = "light" }: SduiRendererProps) {
   switch (node.type) {
     case "text":
@@ -287,6 +449,8 @@ export function SduiRenderer({ node, theme = "light" }: SduiRendererProps) {
       return <SdGridRenderer node={node} theme={theme} />;
     case "map":
       return <SdMapRenderer node={node} />;
+    case "form":
+      return <SdFormRenderer node={node} theme={theme} />;
     default:
       return null;
   }

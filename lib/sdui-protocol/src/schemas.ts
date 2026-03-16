@@ -66,6 +66,17 @@ export const SdActionSchema = z.discriminatedUnion("type", [
     type: z.literal("request_hardware_access"),
     hardware: z.enum(["camera", "location", "microphone", "bluetooth", "nfc", "biometrics"]),
   }),
+  z.object({
+    type: z.literal("intent"),
+    intent: z.string(),
+    data: z.record(z.unknown()).optional(),
+  }),
+  z.object({
+    type: z.literal("submit_form"),
+    formId: z.string(),
+    endpoint: z.string(),
+    method: z.enum(["POST", "PUT", "PATCH"]).optional(),
+  }),
 ]);
 
 export const SdTextVariantSchema = z.enum(["h1", "h2", "h3", "h4", "body", "caption", "label", "overline"]);
@@ -193,6 +204,36 @@ export interface SdGridNode {
   children: SdNode[];
 }
 
+export const SdFormFieldSchema = z.object({
+  name: z.string(),
+  label: z.string(),
+  fieldType: z.enum(["text", "email", "tel", "number", "textarea", "select", "checkbox", "radio", "date", "time"]),
+  placeholder: z.string().optional(),
+  required: z.boolean().optional(),
+  defaultValue: z.string().optional(),
+  options: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
+  validation: z.object({
+    min: z.number().optional(),
+    max: z.number().optional(),
+    pattern: z.string().optional(),
+    message: z.string().optional(),
+  }).optional(),
+});
+
+export type SdFormField = z.infer<typeof SdFormFieldSchema>;
+
+export interface SdFormNode {
+  type: "form";
+  id?: string;
+  modifiers?: z.infer<typeof SdModifiersSchema>;
+  testId?: string;
+  title?: string;
+  description?: string;
+  fields: SdFormField[];
+  submitLabel?: string;
+  submitAction: z.infer<typeof SdActionSchema>;
+}
+
 export type SdNode =
   | SdTextNode
   | SdButtonNode
@@ -201,7 +242,8 @@ export type SdNode =
   | SdCardNode
   | SdCarouselNode
   | SdGridNode
-  | SdMapNode;
+  | SdMapNode
+  | SdFormNode;
 
 export type SdModifiers = z.infer<typeof SdModifiersSchema>;
 export type SdAction = z.infer<typeof SdActionSchema>;
@@ -248,6 +290,16 @@ export const SdGridNodeSchema: z.ZodType<SdGridNode> = z.object({
   children: SdChildrenSchema,
 });
 
+export const SdFormNodeSchema: z.ZodType<SdFormNode> = z.object({
+  ...SdBaseNodeFields,
+  type: z.literal("form"),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  fields: z.array(SdFormFieldSchema),
+  submitLabel: z.string().optional(),
+  submitAction: SdActionSchema,
+});
+
 export const SdNodeSchema: z.ZodType<SdNode> = z.lazy(() =>
   z.union([
     SdTextNodeSchema,
@@ -258,6 +310,7 @@ export const SdNodeSchema: z.ZodType<SdNode> = z.lazy(() =>
     SdCarouselNodeSchema,
     SdGridNodeSchema,
     SdMapNodeSchema,
+    SdFormNodeSchema,
   ])
 );
 

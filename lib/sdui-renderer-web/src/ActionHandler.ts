@@ -3,11 +3,15 @@ import type { SdAction } from "@workspace/sdui-protocol";
 export type NavigateHandler = (screen: string, params?: Record<string, unknown>) => void;
 export type MutationHandler = (endpoint: string, method: string, payload?: Record<string, unknown>) => Promise<unknown>;
 export type HardwareAccessHandler = (hardware: string) => Promise<boolean>;
+export type IntentHandler = (intent: string, data?: Record<string, unknown>) => void;
+export type FormSubmitHandler = (formId: string, endpoint: string, method: string, formData: Record<string, unknown>) => Promise<unknown>;
 
 export interface ActionHandlerConfig {
   onNavigate?: NavigateHandler;
   onMutation?: MutationHandler;
   onHardwareAccess?: HardwareAccessHandler;
+  onIntent?: IntentHandler;
+  onFormSubmit?: FormSubmitHandler;
 }
 
 let config: ActionHandlerConfig = {};
@@ -67,6 +71,20 @@ export async function dispatchAction(action: SdAction): Promise<void> {
     case "request_hardware_access":
       if (config.onHardwareAccess) {
         await config.onHardwareAccess(action.hardware);
+      }
+      break;
+
+    case "intent":
+      if (config.onIntent) {
+        config.onIntent(action.intent, action.data as Record<string, unknown> | undefined);
+      }
+      break;
+
+    case "submit_form":
+      if (config.onFormSubmit) {
+        await config.onFormSubmit(action.formId, action.endpoint, action.method || "POST", {});
+      } else if (config.onMutation) {
+        await config.onMutation(action.endpoint, action.method || "POST", {});
       }
       break;
   }

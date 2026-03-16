@@ -1,8 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import type { DakkahAssistantProps } from "../lib/types";
 import { AssistantProvider } from "../hooks/useAssistantContext";
 import { ChatPanel } from "./ChatPanel";
 import { FloatingButton } from "./FloatingButton";
+import { configureActionHandler } from "@workspace/sdui-renderer-web";
 
 const DEFAULT_API = "/api";
 
@@ -19,6 +20,42 @@ export function DakkahAssistant({
   defaultOpen = false,
 }: DakkahAssistantProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+  const onActionRef = useRef(onAction);
+  onActionRef.current = onAction;
+
+  useEffect(() => {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
+
+    configureActionHandler({
+      onNavigate: (screen, params) => {
+        onActionRef.current?.({ type: "navigate", screen, params });
+      },
+      onMutation: async (endpoint, method, payload) => {
+        const res = await fetch(`${apiEndpoint}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`, {
+          method,
+          headers,
+          body: payload ? JSON.stringify(payload) : undefined,
+        });
+        const result = await res.json();
+        onActionRef.current?.({ type: "api_mutation", endpoint, method, payload, result });
+        return result;
+      },
+      onIntent: (intent, data) => {
+        onActionRef.current?.({ type: "intent", intent, data });
+      },
+      onFormSubmit: async (formId, endpoint, method, formData) => {
+        const res = await fetch(`${apiEndpoint}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`, {
+          method,
+          headers,
+          body: JSON.stringify(formData),
+        });
+        const result = await res.json();
+        onActionRef.current?.({ type: "submit_form", formId, endpoint, formData, result });
+        return result;
+      },
+    });
+  }, [apiEndpoint, authToken]);
 
   const handleToggle = useCallback(() => {
     setIsOpen((prev) => !prev);

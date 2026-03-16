@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Minimize2, Trash2, Send, Mic, MicOff } from "lucide-react";
+import { Minimize2, Trash2, Send, Mic, MicOff, GripVertical } from "lucide-react";
 import { useAssistantContext } from "../hooks/useAssistantContext";
 import { MessageBubble } from "./MessageBubble";
 import type { AssistantPosition } from "../lib/types";
@@ -11,13 +11,21 @@ interface ChatPanelProps {
   position: AssistantPosition;
 }
 
+const MIN_WIDTH = 320;
+const MIN_HEIGHT = 400;
+const MAX_WIDTH = 640;
+const MAX_HEIGHT = 800;
+
 export function ChatPanel({ onClose, onMinimize, placeholder, position }: ChatPanelProps) {
   const { messages, isProcessing, sendMessage, clearHistory } = useAssistantContext();
   const [input, setInput] = useState("");
   const [isListening, setIsListening] = useState(false);
+  const [panelSize, setPanelSize] = useState({ width: 380, height: 520 });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<unknown>(null);
+  const isResizingRef = useRef(false);
+  const resizeStartRef = useRef({ x: 0, y: 0, w: 0, h: 0 });
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -26,6 +34,31 @@ export function ChatPanel({ onClose, onMinimize, placeholder, position }: ChatPa
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  const handleResizeStart = useCallback((e: React.PointerEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isResizingRef.current = true;
+    resizeStartRef.current = { x: e.clientX, y: e.clientY, w: panelSize.width, h: panelSize.height };
+
+    const handleMove = (ev: PointerEvent) => {
+      if (!isResizingRef.current) return;
+      const dx = resizeStartRef.current.x - ev.clientX;
+      const dy = resizeStartRef.current.y - ev.clientY;
+      const newW = Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, resizeStartRef.current.w + dx));
+      const newH = Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, resizeStartRef.current.h + dy));
+      setPanelSize({ width: newW, height: newH });
+    };
+
+    const handleUp = () => {
+      isResizingRef.current = false;
+      document.removeEventListener("pointermove", handleMove);
+      document.removeEventListener("pointerup", handleUp);
+    };
+
+    document.addEventListener("pointermove", handleMove);
+    document.addEventListener("pointerup", handleUp);
+  }, [panelSize]);
 
   const handleSend = useCallback(async () => {
     if (!input.trim() || isProcessing) return;
@@ -96,9 +129,9 @@ export function ChatPanel({ onClose, onMinimize, placeholder, position }: ChatPa
   return (
     <div
       style={{
-        width: 380,
+        width: panelSize.width,
         maxWidth: "calc(100vw - 48px)",
-        height: 520,
+        height: panelSize.height,
         maxHeight: "calc(100vh - 120px)",
         borderRadius: "var(--da-radius)",
         background: "var(--da-bg)",
@@ -109,6 +142,7 @@ export function ChatPanel({ onClose, onMinimize, placeholder, position }: ChatPa
         overflow: "hidden",
         animation: "da-slide-up 0.25s ease-out",
         [alignRight ? "marginLeft" : "marginRight"]: "auto",
+        position: "relative",
       }}
     >
       <style>{`
@@ -121,6 +155,29 @@ export function ChatPanel({ onClose, onMinimize, placeholder, position }: ChatPa
           40% { opacity: 1; }
         }
       `}</style>
+
+      <div
+        onPointerDown={handleResizeStart}
+        style={{
+          position: "absolute",
+          top: 0,
+          [alignRight ? "left" : "right"]: 0,
+          width: 20,
+          height: 20,
+          cursor: alignRight ? "nw-resize" : "ne-resize",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 2,
+          opacity: 0.4,
+          transition: "opacity 0.15s",
+        }}
+        onPointerEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = "1"; }}
+        onPointerLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = "0.4"; }}
+        title="Drag to resize"
+      >
+        <GripVertical size={10} style={{ color: "var(--da-primary-fg)" }} />
+      </div>
 
       <div
         style={{
