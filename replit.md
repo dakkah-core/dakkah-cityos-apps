@@ -73,7 +73,7 @@ Express 5 API server. Routes live in `src/routes/` and use `@workspace/api-zod` 
 - **Copilot context** (`context/ChatContext.tsx`) — manages messages, threads, processing state with request lifecycle protection
 - **Artifact renderer** (`components/artifacts/ArtifactRenderer.tsx`) — maps artifact types to React Native components
 
-#### Artifact Types (35 implemented)
+#### Artifact Types (47 implemented)
 **Original 14:**
 - `poi-carousel` — scrollable place cards with images, ratings, vibes
 - `event-carousel` — event cards with dates, locations, attendees
@@ -114,6 +114,26 @@ Express 5 API server. Routes live in `src/routes/` and use `@workspace/api-zod` 
 - `task-checklist` — interactive task list with progress bar
 - `voice-note` — audio waveform with transcript toggle
 - `profile-card` — user profile with stats, tags, follow/message
+
+**12 Domain Vertical Artifacts:**
+- `flash-sale-countdown` — countdown timer with product and deal price
+- `product-card` — detailed product with add-to-cart button
+- `vendor-trust-profile` — seller card with trust score, reviews, badges
+- `invoice-preview` — invoice with line items and pay button
+- `credit-limit-gauge` — circular progress showing credit usage
+- `escrow-status` — escrow milestone tracker
+- `symptom-triage` — symptom checker with severity and recommendations
+- `lesson-tracker` — course progress with module list
+- `permit-application` — permit card with status and documents checklist
+- `issue-reporter` — civic issue card with category and location
+- `flight-boarding-pass` — airline-style boarding pass with gate and seat
+- `currency-converter` — currency conversion with rates
+
+#### Enhanced App Menu
+- **User Profile** (`components/UserProfile.tsx`) — avatar, display name, Gold Tier XP progress (4,500/5,000), stats grid (places visited, favorites), wallet balance (SAR)
+- **Active Quests** (`components/ActiveQuests.tsx`) — collapsible quest cards with progress bars and XP rewards
+- **Copilot Settings** (`components/CopilotSettings.tsx`) — 3-tab settings modal: Behavior (temperature, proactive toggle), Capabilities (web search, context memory), Privacy (privacy mode, model selector). All persisted to AsyncStorage.
+- **Support Section** — Help & FAQ link, feedback mailto
 
 #### Scenario Engine
 - **189 scenarios** across **21 categories** in `data/scenarios/` JSON files

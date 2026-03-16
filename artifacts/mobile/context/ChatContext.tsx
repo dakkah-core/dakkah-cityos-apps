@@ -156,9 +156,12 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       const data = await AsyncStorage.getItem(`${MESSAGES_KEY}_${id}`);
       if (data) {
         const parsed = JSON.parse(data);
-        if (Array.isArray(parsed)) {
+        if (Array.isArray(parsed) && parsed.every((m: any) => m && typeof m.id === "string" && typeof m.role === "string" && typeof m.content === "string")) {
           setMessages(parsed);
           setCurrentThreadId(id);
+        } else {
+          setMessages([WELCOME_MESSAGE]);
+          setCurrentThreadId(null);
         }
       }
     } catch {

@@ -67,6 +67,17 @@ export function ArtifactRenderer({ artifacts, onAction, onShowDetails }: Props) 
 }
 
 function ArtifactItem({ artifact, onAction, onShowDetails }: { artifact: Artifact; onAction?: (action: string) => void; onShowDetails?: (item: DetailItem) => void }) {
+  if (!artifact || !artifact.type || artifact.data === undefined || artifact.data === null) {
+    return null;
+  }
+  try {
+    return renderArtifact(artifact, onAction, onShowDetails);
+  } catch {
+    return null;
+  }
+}
+
+function renderArtifact(artifact: Artifact, onAction?: (action: string) => void, onShowDetails?: (item: DetailItem) => void) {
   switch (artifact.type) {
     case "poi-carousel":
       return <POICarousel data={artifact.data} onAction={onAction} onShowDetails={onShowDetails} />;
