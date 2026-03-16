@@ -24,7 +24,9 @@ function useSduiSurface(surface: string) {
   const fetchSdui = useCallback(async (action?: string, payload?: Record<string, unknown>) => {
     try {
       const token = await getAccessToken();
-      const baseUrl = process.env.EXPO_PUBLIC_API_URL || "";
+      const baseUrl = process.env.EXPO_PUBLIC_DOMAIN
+        ? `https://${process.env.EXPO_PUBLIC_DOMAIN}`
+        : (process.env.EXPO_PUBLIC_API_URL || "");
       const url = `${baseUrl}/api/sdui/${surface}?surface=tablet`;
       const isPost = !!action;
       const res = await fetch(url, {
