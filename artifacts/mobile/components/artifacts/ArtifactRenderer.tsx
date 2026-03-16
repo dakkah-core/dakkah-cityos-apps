@@ -36,6 +36,18 @@ import { CryptoWallet } from "./CryptoWallet";
 import { TaskChecklist } from "./TaskChecklist";
 import { VoiceNote } from "./VoiceNote";
 import { ProfileCard } from "./ProfileCard";
+import { FlashSaleCountdown } from "./FlashSaleCountdown";
+import { ProductCard } from "./ProductCard";
+import { VendorTrustProfile } from "./VendorTrustProfile";
+import { InvoicePreview } from "./InvoicePreview";
+import { CreditLimitGauge } from "./CreditLimitGauge";
+import { EscrowStatus } from "./EscrowStatus";
+import { SymptomTriage } from "./SymptomTriage";
+import { LessonTracker } from "./LessonTracker";
+import { PermitApplication } from "./PermitApplication";
+import { IssueReporter } from "./IssueReporter";
+import { FlightBoardingPass } from "./FlightBoardingPass";
+import { CurrencyConverter } from "./CurrencyConverter";
 
 interface Props {
   artifacts: Artifact[];
@@ -124,6 +136,30 @@ function ArtifactItem({ artifact, onAction }: { artifact: Artifact; onAction?: (
       return <VoiceNote data={artifact.data} onAction={onAction} />;
     case "profile-card":
       return <ProfileCard data={artifact.data} onAction={onAction} />;
+    case "flash-sale-countdown":
+      return <FlashSaleCountdown data={artifact.data} onAction={onAction} />;
+    case "product-card":
+      return <ProductCard data={artifact.data} onAction={onAction} />;
+    case "vendor-trust-profile":
+      return <VendorTrustProfile data={artifact.data} onAction={onAction} />;
+    case "invoice-preview":
+      return <InvoicePreview data={artifact.data} onAction={onAction} />;
+    case "credit-limit-gauge":
+      return <CreditLimitGauge data={artifact.data} />;
+    case "escrow-status":
+      return <EscrowStatus data={artifact.data} />;
+    case "symptom-triage":
+      return <SymptomTriage data={artifact.data} onAction={onAction} />;
+    case "lesson-tracker":
+      return <LessonTracker data={artifact.data} />;
+    case "permit-application":
+      return <PermitApplication data={artifact.data} />;
+    case "issue-reporter":
+      return <IssueReporter data={artifact.data} onAction={onAction} />;
+    case "flight-boarding-pass":
+      return <FlightBoardingPass data={artifact.data} />;
+    case "currency-converter":
+      return <CurrencyConverter data={artifact.data} />;
     default:
       return null;
   }

@@ -42,7 +42,19 @@ export type ArtifactType =
   | "crypto-wallet"
   | "task-checklist"
   | "voice-note"
-  | "profile-card";
+  | "profile-card"
+  | "flash-sale-countdown"
+  | "product-card"
+  | "vendor-trust-profile"
+  | "invoice-preview"
+  | "credit-limit-gauge"
+  | "escrow-status"
+  | "symptom-triage"
+  | "lesson-tracker"
+  | "permit-application"
+  | "issue-reporter"
+  | "flight-boarding-pass"
+  | "currency-converter";
 
 export interface Artifact {
   type: ArtifactType;
