@@ -47,6 +47,52 @@ router.get("/:screenId", async (req, res) => {
         },
       ],
     },
+    "driver_home": {
+      type: "stack",
+      direction: "vertical",
+      spacing: "md",
+      children: [
+        {
+          type: "card",
+          title: "Driver Dashboard",
+          subtitle: "Manage your deliveries and earnings",
+          children: [
+            {
+              type: "stack",
+              direction: "horizontal",
+              spacing: "sm",
+              children: [
+                { type: "stat", label: "Today's Earnings", value: "285.50 SAR", icon: "💰" },
+                { type: "stat", label: "Completed", value: "12", icon: "✅" },
+                { type: "stat", label: "Rating", value: "4.9", icon: "⭐" },
+              ],
+            },
+          ],
+        },
+        {
+          type: "card",
+          title: "Active Delivery",
+          subtitle: "Al-Medina Fresh Market → Ahmad Al-Rashid",
+          badge: "In Transit",
+          children: [
+            {
+              type: "button",
+              label: "View Details",
+              variant: "solid",
+              action: { type: "navigate", target: "job/active" },
+            },
+          ],
+        },
+        {
+          type: "list",
+          title: "Available Jobs",
+          items: [
+            { title: "Delivery — Heritage Spices", subtitle: "5.4 km • 12 min • 22 SAR", icon: "📦" },
+            { title: "Pickup — Al-Batha Market", subtitle: "3.2 km • 8 min • 18 SAR", icon: "📦" },
+          ],
+        },
+      ],
+    },
     "product-grid": {
       type: "grid",
       columns: 2,

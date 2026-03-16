@@ -6,6 +6,7 @@ import threadsRouter from "./threads";
 import sduiRouter from "./sdui";
 import commerceRouter from "./commerce";
 import notificationsRouter from "./notifications";
+import transportRouter from "./transport";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(threadsRouter);
 router.use("/sdui", sduiRouter);
 router.use("/commerce", commerceRouter);
 router.use(notificationsRouter);
+router.use(transportRouter);
 
 export default router;

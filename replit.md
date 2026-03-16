@@ -59,6 +59,28 @@ The project is structured as a pnpm monorepo with separate `artifacts/` for depl
 - **SDUI Renderer**: `@workspace/sdui-renderer-native` recursively renders 8 SDUI node types into React Native components. `DynamicScreen` component fetches SDUI screens from `/api/sdui/:screenId`.
 - **Commerce Checkout**: Full orchestration flow: address validation → delivery options → payment session → confirmation, with BFF proxy and fallback.
 
+### Driver App (`artifacts/mobile/app/driver/`)
+
+- **Role-Based Experience**: Built within the existing Expo mobile artifact as a route group under `/driver`, sharing auth, design tokens, and shared packages.
+- **Driver Dashboard**: Status toggle (Online/Offline/Break), active job tracking, completed/pending/in-progress stats, offline queue indicator.
+- **Delivery Flow**: Complete lifecycle — accept job → navigate to pickup (Google Maps deep link) → barcode scan verification → in-transit → arrive at customer → proof of delivery (recipient name) → complete with earnings.
+- **Earnings Dashboard**: Daily/weekly/monthly earnings view with per-trip breakdown and daily history.
+- **Vehicle Inspection**: Pre-trip 12-point checklist (tires, brakes, lights, mirrors, etc.) with pass/fail for each item, submission with result card.
+- **SOS/Emergency**: Floating red SOS button with modal for emergency type selection (accident, breakdown, threat, medical, other). Long-press for instant accident report.
+- **Offline Tolerance**: Actions queued in AsyncStorage when offline, synced automatically on reconnect via `/transport/driver/sync`.
+- **Position Reporting**: 15-second interval position updates when driver is online.
+
+### Transport API (`/api/transport/driver/`)
+
+- **Status Management**: GET/POST `/transport/driver/status` — driver online/offline/break toggle.
+- **Job Management**: GET `/transport/driver/jobs`, GET `/transport/driver/jobs/:jobId`, POST `.../accept`, `.../reject`, `.../pickup`, `.../arrive`, `.../complete`.
+- **Position Tracking**: POST `/transport/driver/position` — lat/lng/heading/speed reporting.
+- **Earnings**: GET `/transport/driver/earnings?period=today|week|month`.
+- **Vehicle Inspection**: POST `/transport/driver/inspection` — submit checklist, returns pass/fail result.
+- **SOS**: POST `/transport/driver/sos` — emergency alert with type and location.
+- **Offline Sync**: POST `/transport/driver/sync` — batch sync queued offline actions.
+- **Auth**: `requireAuth` on all mutations, `optionalAuth` on reads.
+
 ### Shared Libraries (`lib/`)
 
 - **Database (`lib/db`)**: Drizzle ORM for PostgreSQL, defining schema and handling database connections.
