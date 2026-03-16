@@ -93,6 +93,7 @@ The project uses a pnpm monorepo with `artifacts/` for deployable applications a
 - **SDUI Protocol (`lib/sdui-protocol`)**: Defines Zod schemas and TypeScript types for SDUI nodes, actions, modifiers, and capabilities.
 - **SDUI Renderers**: `lib/sdui-renderer-native` and `lib/sdui-renderer-web` map SDUI nodes to platform-specific UI components.
 - **Authentication (`lib/auth`)**: Keycloak PKCE SDK for `AuthProvider`, `useAuth()` hook, token management, and storage abstraction.
+- **AI Assistant Widget (`lib/ai-assistant-widget`)**: Embeddable `<DakkahAssistant />` React component for adding an AI copilot chat to any website. Features: floating action button with expand/collapse, text and voice input (Web Speech API), generative SDUI rendering inline in messages, context-aware (host screen/page awareness), customizable theme via CSS custom properties, message history with typing indicator, sandboxed action dispatch via `onAction` callback. Props: `apiEndpoint`, `authToken`, `theme`, `position`, `hostContext`, `greeting`, `placeholder`, `onAction`, `zIndex`, `defaultOpen`. Demo page at `/web-platform/widget-demo`.
 
 # External Dependencies
 

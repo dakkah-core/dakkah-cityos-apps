@@ -37,6 +37,7 @@
     "@workspace/auth": "workspace:*",
     "@workspace/sdui-renderer-web": "workspace:*",
     "@workspace/sdui-protocol": "workspace:*",
-    "@workspace/design-tokens": "workspace:*"
+    "@workspace/design-tokens": "workspace:*",
+    "@workspace/ai-assistant-widget": "workspace:*"
   }
 }
