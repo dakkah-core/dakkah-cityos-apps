@@ -305,4 +305,59 @@ router.get("/:screenId", async (req, res) => {
   }
 });
 
+router.post("/:screenId", async (req, res) => {
+  const { screenId } = req.params;
+  const { surface } = req.query;
+  const { action, payload } = req.body || {};
+
+  const bffHost = process.env.BFF_HOST || "localhost";
+  try {
+    const url = new URL(`http://${bffHost}:${BFF_PLATFORM_PORT}/api/sdui/${screenId}/action`);
+    if (surface) url.searchParams.set("surface", String(surface));
+    const bffRes = await fetch(url.toString(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action, payload }),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (bffRes.ok) {
+      const data = await bffRes.json();
+      res.json({ success: true, data });
+      return;
+    }
+  } catch {}
+
+  if (screenId === "tablet_pos" && action === "cart_update") {
+    const itemCount = payload?.itemCount || 0;
+    const total = payload?.total || 0;
+    const patchedScreen = {
+      type: "stack",
+      direction: "vertical",
+      spacing: "md",
+      children: [
+        {
+          type: "card",
+          title: "POS Terminal",
+          subtitle: itemCount > 0 ? `${itemCount} item(s) - ${total.toFixed ? total.toFixed(2) : total} SAR` : "Point of Sale - Ready",
+          children: [
+            {
+              type: "stack",
+              direction: "horizontal",
+              spacing: "sm",
+              children: [
+                { type: "text", content: "Terminal: T-001" },
+                { type: "text", content: itemCount > 0 ? `Cart: ${itemCount} items` : "Status: Online" },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    res.json({ success: true, data: { screen: patchedScreen, source: "optimistic" } });
+    return;
+  }
+
+  res.json({ success: true, data: { acknowledged: true, action, screenId } });
+});
+
 export default router;

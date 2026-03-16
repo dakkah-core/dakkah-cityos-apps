@@ -17,32 +17,47 @@ function isSdNode(data: unknown): data is SdNode {
     typeof (data as Record<string, unknown>).type === "string";
 }
 
-function useSduiSurface(surface: string): SdNode | null {
+function useSduiSurface(surface: string) {
   const [sduiTree, setSduiTree] = useState<SdNode | null>(null);
   const { getAccessToken } = useAuth();
+
+  const fetchSdui = useCallback(async (action?: string, payload?: Record<string, unknown>) => {
+    try {
+      const token = await getAccessToken();
+      const baseUrl = process.env.EXPO_PUBLIC_API_URL || "";
+      const url = `${baseUrl}/api/sdui/${surface}?surface=tablet`;
+      const isPost = !!action;
+      const res = await fetch(url, {
+        method: isPost ? "POST" : "GET",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(isPost ? { "Content-Type": "application/json" } : {}),
+        },
+        ...(isPost ? { body: JSON.stringify({ action, payload }) } : {}),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const node = json?.data?.screen || json?.screen || json?.data || json;
+        if (isSdNode(node)) {
+          setSduiTree(node);
+        }
+      }
+    } catch {}
+  }, [surface, getAccessToken]);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      try {
-        const token = await getAccessToken();
-        const baseUrl = process.env.EXPO_PUBLIC_API_URL || "";
-        const res = await fetch(`${baseUrl}/api/sdui/${surface}?surface=tablet`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        if (res.ok && !cancelled) {
-          const json = await res.json();
-          const node = json?.data?.screen || json?.screen || json?.data || json;
-          if (isSdNode(node)) {
-            setSduiTree(node);
-          }
-        }
-      } catch {}
+      if (!cancelled) await fetchSdui();
     })();
     return () => { cancelled = true; };
-  }, [surface, getAccessToken]);
+  }, [fetchSdui]);
 
-  return sduiTree;
+  const dispatchSduiAction = useCallback((action: string, payload?: Record<string, unknown>) => {
+    fetchSdui(action, payload);
+  }, [fetchSdui]);
+
+  return { sduiTree, dispatchSduiAction };
 }
 
 export default function PosTerminalScreen() {
@@ -53,7 +68,7 @@ export default function PosTerminalScreen() {
     isLoading, offlineQueueCount, addToCart, removeFromCart,
     updateQuantity, setLineDiscount, clearCart, openShift,
   } = usePos();
-  const sduiTree = useSduiSurface("tablet_pos");
+  const { sduiTree, dispatchSduiAction } = useSduiSurface("tablet_pos");
 
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [search, setSearch] = useState("");
@@ -85,6 +100,27 @@ export default function PosTerminalScreen() {
     }
     return filtered;
   }, [products, selectedCategory, search]);
+
+  useEffect(() => {
+    configureActionHandler({
+      onNavigate: (screen: string) => {
+        router.push(`/${screen}` as never);
+      },
+      onMutation: async (endpoint: string, method: string, payload?: Record<string, unknown>) => {
+        dispatchSduiAction(method, { endpoint, ...payload });
+      },
+    });
+  }, [dispatchSduiAction, router]);
+
+  useEffect(() => {
+    if (cart.items.length > 0) {
+      dispatchSduiAction("cart_update", {
+        itemCount: cart.items.length,
+        subtotal: cart.subtotal,
+        total: cart.total,
+      });
+    }
+  }, [cart.items.length, cart.total, dispatchSduiAction]);
 
   const handleOpenShift = useCallback(async () => {
     const amount = parseFloat(openingCash) || 0;
@@ -256,7 +292,8 @@ export default function PosTerminalScreen() {
               cart.items.map((item, idx) => {
                 const itemKey = `${item.product.id}-${item.variantId || ""}`;
                 const lineTotal = item.product.price * item.quantity;
-                const discounted = item.lineDiscount ? lineTotal - item.lineDiscount : lineTotal;
+                const discountAmt = lineTotal * (item.lineDiscount / 100);
+                const discounted = lineTotal - discountAmt;
                 const isEditingDiscount = discountEditId === itemKey;
                 return (
                   <View key={`${itemKey}-${idx}`} style={styles.cartItem}>
@@ -292,7 +329,7 @@ export default function PosTerminalScreen() {
                           setDiscountEditId(null);
                         } else {
                           setDiscountEditId(itemKey);
-                          setDiscountInput(item.lineDiscount > 0 ? String(item.lineDiscount) : "");
+                          setDiscountInput(item.lineDiscount > 0 ? String(Math.round(item.lineDiscount)) : "");
                         }
                       }}>
                         <Text style={styles.discountToggle}>{item.lineDiscount > 0 ? "✏️" : "🏷️"}</Text>
@@ -303,19 +340,18 @@ export default function PosTerminalScreen() {
                     </Pressable>
                     {isEditingDiscount && (
                       <View style={styles.discountRow}>
-                        <Text style={styles.discountLabel}>Discount (SAR):</Text>
+                        <Text style={styles.discountLabel}>Discount %:</Text>
                         <TextInput
                           style={styles.discountInput}
                           value={discountInput}
                           onChangeText={setDiscountInput}
-                          placeholder="0.00"
+                          placeholder="0"
                           placeholderTextColor="rgba(255,255,255,0.3)"
                           keyboardType="decimal-pad"
                         />
                         <Pressable style={styles.discountApplyBtn} onPress={() => {
-                          const val = parseFloat(discountInput) || 0;
-                          const max = item.product.price * item.quantity;
-                          setLineDiscount(item.product.id, Math.min(val, max), item.variantId);
+                          const pct = Math.min(Math.max(parseFloat(discountInput) || 0, 0), 100);
+                          setLineDiscount(item.product.id, pct, item.variantId);
                           setDiscountEditId(null);
                         }}>
                           <Text style={styles.discountApplyText}>Apply</Text>
