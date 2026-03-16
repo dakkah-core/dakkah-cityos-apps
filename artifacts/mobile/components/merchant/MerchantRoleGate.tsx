@@ -11,7 +11,7 @@ interface MerchantRoleGateProps {
 }
 
 export function MerchantRoleGate({ children }: MerchantRoleGateProps) {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, signInWithKeycloak } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -30,6 +30,9 @@ export function MerchantRoleGate({ children }: MerchantRoleGateProps) {
         <Text style={styles.icon}>🔐</Text>
         <Text style={styles.title}>Authentication Required</Text>
         <Text style={styles.subtitle}>Sign in with your merchant account to access the dashboard</Text>
+        <Pressable style={styles.signInBtn} onPress={() => signInWithKeycloak()}>
+          <Text style={styles.signInBtnText}>Sign in with Keycloak</Text>
+        </Pressable>
         <Pressable style={styles.backBtn} onPress={() => router.replace("/")}>
           <Text style={styles.backBtnText}>Go to Home</Text>
         </Pressable>
@@ -61,8 +64,10 @@ const styles = StyleSheet.create({
   icon: { fontSize: 48, marginBottom: 16 },
   title: { fontSize: 20, fontWeight: "800", color: COLORS.text, marginBottom: 8, textAlign: "center" },
   subtitle: { fontSize: 14, color: COLORS.textSecondary, textAlign: "center", marginBottom: 24, lineHeight: 20 },
-  registerBtn: { backgroundColor: "#0d9488", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10, marginBottom: 12 },
-  registerBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
-  backBtn: { backgroundColor: "#0a1628", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10 },
-  backBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
+  signInBtn: { backgroundColor: "#3182ce", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10, marginBottom: 12, width: 220, alignItems: "center" as const },
+  signInBtnText: { color: "#fff", fontWeight: "700" as const, fontSize: 15 },
+  registerBtn: { backgroundColor: "#0d9488", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10, marginBottom: 12, width: 220, alignItems: "center" as const },
+  registerBtnText: { color: "#fff", fontWeight: "700" as const, fontSize: 15 },
+  backBtn: { backgroundColor: "#0a1628", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10, width: 220, alignItems: "center" as const },
+  backBtnText: { color: "#fff", fontWeight: "700" as const, fontSize: 15 },
 });
