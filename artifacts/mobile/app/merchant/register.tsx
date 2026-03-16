@@ -25,7 +25,7 @@ const CATEGORIES = [
 export default function MerchantRegisterScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { getAccessToken } = useAuth();
+  const { isAuthenticated, signInWithKeycloak, getAccessToken } = useAuth();
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
 
@@ -85,6 +85,27 @@ export default function MerchantRegisterScreen() {
       setSubmitting(false);
     }
   }, [getAccessToken, storeName, category, ownerName, phone, email, address, city, crNumber, openTime, closeTime, description, router]);
+
+  if (!isAuthenticated) {
+    return (
+      <View style={[styles.container, { paddingTop: insets.top }]}>
+        <View style={styles.header}>
+          <Pressable style={styles.backBtn} onPress={() => router.back()}>
+            <Text style={styles.backIcon}>{"<"}</Text>
+          </Pressable>
+          <Text style={styles.title}>Vendor Registration</Text>
+        </View>
+        <View style={styles.authGate}>
+          <Text style={styles.authGateIcon}>🔐</Text>
+          <Text style={styles.authGateTitle}>Sign In Required</Text>
+          <Text style={styles.authGateSubtitle}>Please sign in before registering as a vendor</Text>
+          <Pressable style={styles.authSignInBtn} onPress={() => signInWithKeycloak()}>
+            <Text style={styles.authSignInBtnText}>Sign in with Keycloak</Text>
+          </Pressable>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -240,4 +261,10 @@ const styles = StyleSheet.create({
   submitBtn: { flex: 2, paddingVertical: 14, borderRadius: 12, backgroundColor: "#0d9488", alignItems: "center" },
   submitBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
   btnDisabled: { opacity: 0.4 },
+  authGate: { flex: 1, justifyContent: "center", alignItems: "center", padding: 32 },
+  authGateIcon: { fontSize: 48, marginBottom: 16 },
+  authGateTitle: { fontSize: 20, fontWeight: "800", color: COLORS.text, marginBottom: 8 },
+  authGateSubtitle: { fontSize: 14, color: COLORS.textSecondary, textAlign: "center", marginBottom: 24 },
+  authSignInBtn: { backgroundColor: "#3182ce", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10 },
+  authSignInBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
 });
