@@ -1,0 +1,312 @@
+[
+  {
+    "id": "family-001",
+    "keywords": [
+      "playground",
+      "kids play",
+      "play area",
+      "indoor play"
+    ],
+    "response": "Best playgrounds and play areas for children.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "pg1",
+            "name": "Adventure Land",
+            "category": "Indoor Playground",
+            "image": "https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?w=400",
+            "rating": 4.7,
+            "distance": "2.5 km",
+            "vibe": [
+              "#indoor",
+              "#safe"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Age range",
+      "Birthday parties",
+      "Group rates"
+    ]
+  },
+  {
+    "id": "family-002",
+    "keywords": [
+      "babysitter",
+      "nanny",
+      "childcare",
+      "daycare"
+    ],
+    "response": "Trusted childcare services and babysitters.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "bs1",
+            "name": "Evening Babysitting",
+            "description": "Vetted and certified babysitter",
+            "duration": "4 hrs",
+            "price": "$60",
+            "rating": 4.8
+          },
+          {
+            "id": "bs2",
+            "name": "Full Day Care",
+            "description": "Professional daycare services",
+            "duration": "8 hrs",
+            "price": "$95",
+            "rating": 4.7
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Background check",
+      "Book now",
+      "Regular schedule"
+    ]
+  },
+  {
+    "id": "family-003",
+    "keywords": [
+      "theme park",
+      "amusement park",
+      "water park",
+      "fun park"
+    ],
+    "response": "Theme parks and amusement parks for the whole family.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "tp1",
+            "name": "Galaxy Fun World",
+            "category": "Theme Park",
+            "image": "https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?w=400",
+            "rating": 4.6,
+            "distance": "15 km",
+            "vibe": [
+              "#thrilling",
+              "#family"
+            ],
+            "priceRange": "$$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Buy tickets",
+      "Height guide",
+      "Show times"
+    ]
+  },
+  {
+    "id": "family-004",
+    "keywords": [
+      "zoo",
+      "aquarium",
+      "animal park",
+      "wildlife park"
+    ],
+    "response": "Zoos and aquariums perfect for family outings.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "zo1",
+            "name": "City Zoo & Aquarium",
+            "category": "Zoo",
+            "image": "https://images.unsplash.com/photo-1534567153574-2b12153a87f0?w=400",
+            "rating": 4.7,
+            "distance": "6 km",
+            "vibe": [
+              "#animals",
+              "#educational"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Feeding times",
+      "Family pass",
+      "Guided tour"
+    ]
+  },
+  {
+    "id": "family-005",
+    "keywords": [
+      "family restaurant",
+      "kid-friendly restaurant",
+      "family dining"
+    ],
+    "response": "Kid-friendly restaurants the whole family will love.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "fr1",
+            "name": "Fun Diner",
+            "category": "Family Restaurant",
+            "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400",
+            "rating": 4.5,
+            "distance": "1.8 km",
+            "vibe": [
+              "#kids-menu",
+              "#play-area"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Kids menu",
+      "High chairs",
+      "Play area"
+    ]
+  },
+  {
+    "id": "family-006",
+    "keywords": [
+      "school",
+      "enrollment",
+      "academy",
+      "school admission"
+    ],
+    "response": "Schools and academies in your area.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "sc1",
+            "name": "International Academy",
+            "category": "School",
+            "image": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=400",
+            "rating": 4.8,
+            "distance": "3 km",
+            "vibe": [
+              "#international",
+              "#IB"
+            ],
+            "priceRange": "$$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Open days",
+      "Curriculum",
+      "Fees"
+    ]
+  },
+  {
+    "id": "family-007",
+    "keywords": [
+      "pediatrician",
+      "kids doctor",
+      "child health",
+      "baby doctor"
+    ],
+    "response": "Pediatricians and children's health services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "pd1",
+            "name": "Pediatric Checkup",
+            "description": "Well-child visit and developmental screening",
+            "duration": "30 min",
+            "price": "$90",
+            "rating": 4.9
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book now",
+      "Vaccination schedule",
+      "Telehealth"
+    ]
+  },
+  {
+    "id": "family-008",
+    "keywords": [
+      "family activity",
+      "kids activity",
+      "children activity",
+      "family fun"
+    ],
+    "response": "Fun activities the whole family can enjoy together.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "fa1",
+            "name": "Family Art Workshop",
+            "date": "This Weekend",
+            "time": "10:00 AM",
+            "location": "Creative Studio",
+            "image": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400",
+            "category": "Family",
+            "attendees": 25,
+            "price": "$20/family"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "More activities",
+      "Age-appropriate",
+      "Indoor options"
+    ]
+  },
+  {
+    "id": "family-009",
+    "keywords": [
+      "maternity",
+      "pregnancy",
+      "prenatal",
+      "baby shower"
+    ],
+    "response": "Maternity services and pregnancy resources.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "mt1",
+            "name": "Prenatal Care Package",
+            "description": "Monthly checkups and ultrasound included",
+            "duration": "Monthly",
+            "price": "$200/month",
+            "rating": 4.9
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Find OB/GYN",
+      "Childbirth classes",
+      "Baby shopping"
+    ]
+  }
+]

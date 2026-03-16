@@ -1,0 +1,327 @@
+[
+  {
+    "id": "wellness-001",
+    "keywords": [
+      "spa",
+      "relaxation",
+      "pamper",
+      "spa day"
+    ],
+    "response": "Luxurious spas and relaxation experiences.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "sp1",
+            "name": "Full Body Massage",
+            "description": "60-minute relaxing full body massage",
+            "duration": "60 min",
+            "price": "$90",
+            "rating": 4.9
+          },
+          {
+            "id": "sp2",
+            "name": "Spa Day Package",
+            "description": "Massage, facial, and body scrub combo",
+            "duration": "3 hrs",
+            "price": "$220",
+            "rating": 4.9
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Couples spa",
+      "Hot stone",
+      "Gift voucher"
+    ]
+  },
+  {
+    "id": "wellness-002",
+    "keywords": [
+      "sauna",
+      "steam room",
+      "turkish bath",
+      "hammam"
+    ],
+    "response": "Saunas and steam bath experiences.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "sa1",
+            "name": "Royal Hammam",
+            "category": "Spa",
+            "image": "https://images.unsplash.com/photo-1540555700478-4be289fbec6d?w=400",
+            "rating": 4.8,
+            "distance": "3 km",
+            "vibe": [
+              "#traditional",
+              "#luxury"
+            ],
+            "priceRange": "$$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book session",
+      "Packages",
+      "Men/Women hours"
+    ]
+  },
+  {
+    "id": "wellness-003",
+    "keywords": [
+      "acupuncture",
+      "traditional medicine",
+      "holistic",
+      "alternative medicine"
+    ],
+    "response": "Holistic and alternative medicine practitioners.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "ac1",
+            "name": "Acupuncture Session",
+            "description": "Traditional acupuncture treatment",
+            "duration": "45 min",
+            "price": "$80",
+            "rating": 4.7
+          }
+        ]
+      }
+    },
+    "chips": [
+      "First visit info",
+      "Insurance",
+      "Consultation"
+    ]
+  },
+  {
+    "id": "wellness-004",
+    "keywords": [
+      "chiropractor",
+      "back pain",
+      "spine",
+      "adjustment"
+    ],
+    "response": "Chiropractic care and spinal health services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "ch1",
+            "name": "Chiropractic Adjustment",
+            "description": "Spinal alignment and adjustment",
+            "duration": "30 min",
+            "price": "$70",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "First visit",
+      "X-ray needed?",
+      "Insurance accepted"
+    ]
+  },
+  {
+    "id": "wellness-005",
+    "keywords": [
+      "sleep",
+      "insomnia",
+      "sleep clinic",
+      "sleep better"
+    ],
+    "response": "Sleep health resources and clinics.",
+    "artifact": {
+      "type": "health-snapshot",
+      "data": {
+        "title": "Sleep Health Tips",
+        "metrics": [
+          {
+            "label": "Target Sleep",
+            "value": "7-9",
+            "unit": "hrs",
+            "status": "normal",
+            "icon": "😴"
+          },
+          {
+            "label": "Sleep Quality",
+            "value": "Good",
+            "status": "normal",
+            "icon": "💤"
+          },
+          {
+            "label": "Screen Time Before Bed",
+            "value": "<1",
+            "unit": "hr",
+            "status": "warning",
+            "icon": "📱"
+          }
+        ],
+        "lastUpdated": "General guidelines"
+      }
+    },
+    "chips": [
+      "Sleep clinic",
+      "Tips",
+      "Sleep tracker"
+    ]
+  },
+  {
+    "id": "wellness-006",
+    "keywords": [
+      "physical therapy",
+      "physiotherapy",
+      "rehab",
+      "recovery"
+    ],
+    "response": "Physical therapy and rehabilitation services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "phy1",
+            "name": "Physical Therapy Session",
+            "description": "Assessment and targeted treatment plan",
+            "duration": "45 min",
+            "price": "$85",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Sports rehab",
+      "Post-surgery",
+      "Home visits"
+    ]
+  },
+  {
+    "id": "wellness-007",
+    "keywords": [
+      "supplement",
+      "vitamin",
+      "protein",
+      "health store"
+    ],
+    "response": "Health supplements and nutrition stores.",
+    "artifact": {
+      "type": "product-carousel",
+      "data": {
+        "products": [
+          {
+            "id": "su1",
+            "name": "Daily Multivitamin",
+            "brand": "VitaPlus",
+            "price": "$25",
+            "image": "https://images.unsplash.com/photo-1550572017-edd951aa8f72?w=400",
+            "tags": [
+              "essential",
+              "daily"
+            ]
+          },
+          {
+            "id": "su2",
+            "name": "Whey Protein",
+            "brand": "FitFuel",
+            "price": "$45",
+            "image": "https://images.unsplash.com/photo-1593095948071-474c5cc2c2d9?w=400",
+            "tags": [
+              "protein",
+              "recovery"
+            ]
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Best sellers",
+      "Organic",
+      "Subscription"
+    ]
+  },
+  {
+    "id": "wellness-008",
+    "keywords": [
+      "detox",
+      "cleanse",
+      "juice cleanse",
+      "detox program"
+    ],
+    "response": "Detox programs and juice cleanse options.",
+    "artifact": {
+      "type": "form-group",
+      "data": {
+        "title": "Choose Your Cleanse",
+        "type": "radio",
+        "options": [
+          {
+            "label": "1-Day Juice Cleanse",
+            "value": "1day",
+            "price": "$45",
+            "description": "6 cold-pressed juices"
+          },
+          {
+            "label": "3-Day Reset",
+            "value": "3day",
+            "price": "$120",
+            "description": "18 juices + wellness shots"
+          },
+          {
+            "label": "5-Day Deep Cleanse",
+            "value": "5day",
+            "price": "$180",
+            "description": "30 juices + supplements"
+          }
+        ],
+        "confirmLabel": "Order Now"
+      }
+    },
+    "chips": [
+      "Ingredients",
+      "Delivery",
+      "Reviews"
+    ]
+  },
+  {
+    "id": "wellness-009",
+    "keywords": [
+      "float tank",
+      "sensory deprivation",
+      "float therapy",
+      "isolation tank"
+    ],
+    "response": "Float therapy and sensory deprivation experiences.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "ft1",
+            "name": "Float Session",
+            "description": "60-minute sensory deprivation float",
+            "duration": "60 min",
+            "price": "$75",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "First timer info",
+      "Couples float",
+      "Package deals"
+    ]
+  }
+]

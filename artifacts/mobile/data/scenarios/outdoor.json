@@ -1,0 +1,325 @@
+[
+  {
+    "id": "outdoor-001",
+    "keywords": [
+      "hike",
+      "hiking",
+      "trail",
+      "mountain",
+      "trek"
+    ],
+    "response": "Best hiking trails and outdoor adventures nearby.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "hk1",
+            "name": "Edge of the World",
+            "category": "Hiking Trail",
+            "image": "https://images.unsplash.com/photo-1551632811-561732d1e306?w=400",
+            "rating": 4.9,
+            "distance": "45 km",
+            "vibe": [
+              "#epic",
+              "#views"
+            ],
+            "priceRange": "$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Difficulty level",
+      "Pack list",
+      "Join group hike"
+    ]
+  },
+  {
+    "id": "outdoor-002",
+    "keywords": [
+      "beach",
+      "swimming",
+      "ocean",
+      "seaside",
+      "coast"
+    ],
+    "response": "Beautiful beaches and coastal spots to visit.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "bc1",
+            "name": "Crystal Cove Beach",
+            "category": "Beach",
+            "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400",
+            "rating": 4.8,
+            "distance": "15 km",
+            "vibe": [
+              "#serene",
+              "#clear"
+            ],
+            "priceRange": "Free",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Water sports",
+      "Beach facilities",
+      "Sunset time"
+    ]
+  },
+  {
+    "id": "outdoor-003",
+    "keywords": [
+      "camping",
+      "campsite",
+      "tent",
+      "campground"
+    ],
+    "response": "Camping spots and campgrounds in the region.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "cm1",
+            "name": "Desert Stars Camp",
+            "category": "Campground",
+            "image": "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=400",
+            "rating": 4.7,
+            "distance": "60 km",
+            "vibe": [
+              "#stargazing",
+              "#desert"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book site",
+      "Gear rental",
+      "Group booking"
+    ]
+  },
+  {
+    "id": "outdoor-004",
+    "keywords": [
+      "fishing",
+      "fish",
+      "angling"
+    ],
+    "response": "Fishing spots and charter services.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "fs1",
+            "name": "Lake View Fishing",
+            "category": "Fishing Spot",
+            "image": "https://images.unsplash.com/photo-1504309092620-4d0ec726efa4?w=400",
+            "rating": 4.5,
+            "distance": "25 km",
+            "vibe": [
+              "#peaceful",
+              "#scenic"
+            ],
+            "priceRange": "$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Charter boats",
+      "License info",
+      "Best times"
+    ]
+  },
+  {
+    "id": "outdoor-005",
+    "keywords": [
+      "golf",
+      "golf course",
+      "driving range"
+    ],
+    "response": "Golf courses and driving ranges in your area.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "gf1",
+            "name": "Royal Greens Golf",
+            "category": "Golf Course",
+            "image": "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=400",
+            "rating": 4.8,
+            "distance": "12 km",
+            "vibe": [
+              "#premium",
+              "#18-holes"
+            ],
+            "priceRange": "$$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book tee time",
+      "Equipment rental",
+      "Lessons"
+    ]
+  },
+  {
+    "id": "outdoor-006",
+    "keywords": [
+      "rock climbing",
+      "climbing gym",
+      "bouldering"
+    ],
+    "response": "Rock climbing gyms and outdoor climbing spots.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "rc1",
+            "name": "Summit Climbing Center",
+            "category": "Climbing Gym",
+            "image": "https://images.unsplash.com/photo-1522163182402-834f871fd851?w=400",
+            "rating": 4.7,
+            "distance": "5 km",
+            "vibe": [
+              "#indoor",
+              "#beginner-friendly"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Day pass",
+      "Beginner course",
+      "Equipment"
+    ]
+  },
+  {
+    "id": "outdoor-007",
+    "keywords": [
+      "kayak",
+      "canoe",
+      "paddle",
+      "paddleboard",
+      "water sport"
+    ],
+    "response": "Water sports and kayaking spots nearby.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "ky1",
+            "name": "River Adventures",
+            "category": "Water Sports",
+            "image": "https://images.unsplash.com/photo-1472745433479-4556f22e32c2?w=400",
+            "rating": 4.6,
+            "distance": "8 km",
+            "vibe": [
+              "#adventure",
+              "#scenic"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book session",
+      "Group discount",
+      "Equipment included"
+    ]
+  },
+  {
+    "id": "outdoor-008",
+    "keywords": [
+      "safari",
+      "wildlife",
+      "nature reserve",
+      "animal watching"
+    ],
+    "response": "Wildlife safaris and nature reserves to explore.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "sf1",
+            "name": "Desert Wildlife Reserve",
+            "category": "Nature Reserve",
+            "image": "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=400",
+            "rating": 4.8,
+            "distance": "40 km",
+            "vibe": [
+              "#wildlife",
+              "#guided"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book tour",
+      "Best season",
+      "Photography tips"
+    ]
+  },
+  {
+    "id": "outdoor-009",
+    "keywords": [
+      "picnic",
+      "picnic spot",
+      "outdoor dining"
+    ],
+    "response": "Perfect picnic spots with scenic views.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "pc1",
+            "name": "Hilltop Gardens",
+            "category": "Picnic Area",
+            "image": "https://images.unsplash.com/photo-1585938389612-a552a28c6914?w=400",
+            "rating": 4.6,
+            "distance": "3 km",
+            "vibe": [
+              "#scenic",
+              "#family"
+            ],
+            "priceRange": "Free",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Picnic baskets",
+      "BBQ areas",
+      "Facilities"
+    ]
+  }
+]

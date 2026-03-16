@@ -1,0 +1,260 @@
+[
+  {
+    "id": "transit-001",
+    "keywords": [
+      "uber",
+      "ride",
+      "taxi",
+      "cab",
+      "lyft",
+      "rideshare"
+    ],
+    "response": "I'll help you get a ride. Here's a nearby driver.",
+    "artifact": {
+      "type": "ride-status",
+      "data": {
+        "driverName": "Ahmed K.",
+        "vehicleInfo": "White Toyota Camry 2024",
+        "licensePlate": "ABC 1234",
+        "eta": "4 min",
+        "status": "arriving",
+        "pickup": "Your current location",
+        "dropoff": "Destination",
+        "fare": "$12.50"
+      }
+    },
+    "chips": [
+      "Change pickup",
+      "Share ride",
+      "Schedule for later"
+    ]
+  },
+  {
+    "id": "transit-002",
+    "keywords": [
+      "bus",
+      "public transit",
+      "bus stop",
+      "bus route"
+    ],
+    "response": "Here are bus routes and schedules near you.",
+    "artifact": {
+      "type": "map-view",
+      "data": {
+        "label": "Nearest Bus Stop",
+        "address": "King Fahd Road, Stop #42",
+        "latitude": 24.7136,
+        "longitude": 46.6753
+      }
+    },
+    "chips": [
+      "Route planner",
+      "Next bus",
+      "Day pass"
+    ]
+  },
+  {
+    "id": "transit-003",
+    "keywords": [
+      "metro",
+      "subway",
+      "train station",
+      "rail"
+    ],
+    "response": "Metro stations and train schedules nearby.",
+    "artifact": {
+      "type": "map-view",
+      "data": {
+        "label": "Central Metro Station",
+        "address": "Downtown Line, Platform 2",
+        "latitude": 24.71,
+        "longitude": 46.68
+      }
+    },
+    "chips": [
+      "Schedule",
+      "Station map",
+      "Buy ticket"
+    ]
+  },
+  {
+    "id": "transit-004",
+    "keywords": [
+      "parking",
+      "park my car",
+      "parking lot",
+      "parking garage"
+    ],
+    "response": "Available parking spots near your destination.",
+    "artifact": {
+      "type": "parking-meter",
+      "data": {
+        "zone": "Downtown Zone A",
+        "spot": "B-14",
+        "timeRemaining": "1:45:00",
+        "rate": "$3/hr",
+        "status": "active",
+        "vehiclePlate": "ABC 1234"
+      }
+    },
+    "chips": [
+      "Extend time",
+      "Find cheaper",
+      "Valet option"
+    ]
+  },
+  {
+    "id": "transit-005",
+    "keywords": [
+      "airport",
+      "flight",
+      "terminal",
+      "airline"
+    ],
+    "response": "Airport information and flight details.",
+    "artifact": {
+      "type": "map-view",
+      "data": {
+        "label": "International Airport",
+        "address": "Terminal 1, Departures",
+        "latitude": 24.9576,
+        "longitude": 46.6988
+      }
+    },
+    "chips": [
+      "Flight status",
+      "Terminal map",
+      "Book transfer"
+    ]
+  },
+  {
+    "id": "transit-006",
+    "keywords": [
+      "bicycle",
+      "bike",
+      "cycling",
+      "bike rental",
+      "scooter"
+    ],
+    "response": "Bike and scooter rental stations near you.",
+    "artifact": {
+      "type": "map-view",
+      "data": {
+        "label": "Bike Station #12",
+        "address": "Corner of Main St & 5th Ave",
+        "latitude": 24.715,
+        "longitude": 46.673
+      }
+    },
+    "chips": [
+      "Unlock bike",
+      "Show all stations",
+      "Pricing"
+    ]
+  },
+  {
+    "id": "transit-007",
+    "keywords": [
+      "car rental",
+      "rent a car",
+      "rental car"
+    ],
+    "response": "Car rental options available nearby.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "cr1",
+            "name": "Economy Car",
+            "description": "Compact car, great fuel economy",
+            "duration": "Per day",
+            "price": "$35/day",
+            "rating": 4.5
+          },
+          {
+            "id": "cr2",
+            "name": "SUV Rental",
+            "description": "Spacious SUV for families",
+            "duration": "Per day",
+            "price": "$75/day",
+            "rating": 4.7
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Weekly rates",
+      "Luxury cars",
+      "With driver"
+    ]
+  },
+  {
+    "id": "transit-008",
+    "keywords": [
+      "tow truck",
+      "tow",
+      "roadside assistance",
+      "car breakdown"
+    ],
+    "response": "Emergency roadside assistance is on the way.",
+    "artifact": {
+      "type": "agent-sync-card",
+      "data": {
+        "title": "Roadside Assistance",
+        "theme": "transport",
+        "steps": [
+          {
+            "label": "Request received"
+          },
+          {
+            "label": "Dispatching nearest tow truck"
+          },
+          {
+            "label": "Driver assigned"
+          },
+          {
+            "label": "ETA confirmed"
+          }
+        ],
+        "actions": [
+          "Track Driver",
+          "Call Support"
+        ]
+      }
+    },
+    "chips": [
+      "Share location",
+      "Insurance claim",
+      "Alternative transport"
+    ]
+  },
+  {
+    "id": "transit-009",
+    "keywords": [
+      "traffic",
+      "congestion",
+      "road conditions",
+      "route"
+    ],
+    "response": "Current traffic conditions and best routes.",
+    "artifact": {
+      "type": "alert-card",
+      "data": {
+        "title": "Traffic Update",
+        "message": "Heavy congestion on King Fahd Road. Estimated delay: 25 minutes. Consider taking Prince Mohammed Bin Salman Road instead.",
+        "severity": "warning",
+        "timestamp": "Just now",
+        "actions": [
+          "Reroute",
+          "Set reminder"
+        ]
+      }
+    },
+    "chips": [
+      "Alternative routes",
+      "Leave time",
+      "Real-time map"
+    ]
+  }
+]

@@ -1,0 +1,316 @@
+[
+  {
+    "id": "beauty-001",
+    "keywords": [
+      "haircut",
+      "barber",
+      "barbershop",
+      "hair salon",
+      "hairstyle"
+    ],
+    "response": "Top-rated barbers and hair salons.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "hc1",
+            "name": "Men's Haircut",
+            "description": "Precision cut with hot towel finish",
+            "duration": "30 min",
+            "price": "$35",
+            "rating": 4.8
+          },
+          {
+            "id": "hc2",
+            "name": "Women's Cut & Style",
+            "description": "Cut, wash, blow-dry, and styling",
+            "duration": "1 hr",
+            "price": "$65",
+            "rating": 4.9
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Walk-in available",
+      "Book now",
+      "See styles"
+    ]
+  },
+  {
+    "id": "beauty-002",
+    "keywords": [
+      "nail salon",
+      "manicure",
+      "pedicure",
+      "nails"
+    ],
+    "response": "Nail salons and manicure services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "nl1",
+            "name": "Gel Manicure",
+            "description": "Long-lasting gel polish application",
+            "duration": "45 min",
+            "price": "$40",
+            "rating": 4.7
+          },
+          {
+            "id": "nl2",
+            "name": "Spa Pedicure",
+            "description": "Relaxing foot soak and nail treatment",
+            "duration": "1 hr",
+            "price": "$50",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Nail art",
+      "Combo deals",
+      "Walk-in"
+    ]
+  },
+  {
+    "id": "beauty-003",
+    "keywords": [
+      "facial",
+      "skincare",
+      "skin treatment",
+      "face treatment"
+    ],
+    "response": "Facial treatments and skincare services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "fc1",
+            "name": "Hydrafacial",
+            "description": "Deep cleansing hydration facial treatment",
+            "duration": "45 min",
+            "price": "$120",
+            "rating": 4.9
+          },
+          {
+            "id": "fc2",
+            "name": "Anti-aging Facial",
+            "description": "Rejuvenating anti-aging treatment",
+            "duration": "1 hr",
+            "price": "$150",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Skin analysis",
+      "Product line",
+      "Package deals"
+    ]
+  },
+  {
+    "id": "beauty-004",
+    "keywords": [
+      "makeup",
+      "makeup artist",
+      "mua",
+      "bridal makeup"
+    ],
+    "response": "Professional makeup artists and beauty services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "mu1",
+            "name": "Event Makeup",
+            "description": "Professional makeup for special occasions",
+            "duration": "1 hr",
+            "price": "$85",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Bridal packages",
+      "Trial session",
+      "Portfolio"
+    ]
+  },
+  {
+    "id": "beauty-005",
+    "keywords": [
+      "waxing",
+      "hair removal",
+      "laser",
+      "laser hair removal"
+    ],
+    "response": "Hair removal and waxing services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "wx1",
+            "name": "Full Body Waxing",
+            "description": "Complete waxing treatment",
+            "duration": "1.5 hrs",
+            "price": "$95",
+            "rating": 4.6
+          },
+          {
+            "id": "wx2",
+            "name": "Laser Hair Removal",
+            "description": "Permanent hair reduction treatment",
+            "duration": "30 min",
+            "price": "$200/session",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Package deals",
+      "First-time offer",
+      "Pain-free options"
+    ]
+  },
+  {
+    "id": "beauty-006",
+    "keywords": [
+      "perfume",
+      "fragrance",
+      "cologne",
+      "scent"
+    ],
+    "response": "Perfume shops and fragrance experiences.",
+    "artifact": {
+      "type": "product-carousel",
+      "data": {
+        "products": [
+          {
+            "id": "pf1",
+            "name": "Arabian Oud Collection",
+            "brand": "Oud Master",
+            "price": "$180",
+            "image": "https://images.unsplash.com/photo-1541643600914-78b084683601?w=400",
+            "tags": [
+              "luxury",
+              "oud"
+            ]
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Sample box",
+      "Custom blend",
+      "Gift set"
+    ]
+  },
+  {
+    "id": "beauty-007",
+    "keywords": [
+      "tattoo",
+      "tattoo shop",
+      "piercing",
+      "body art"
+    ],
+    "response": "Tattoo studios and body art services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "tt1",
+            "name": "Custom Tattoo Design",
+            "description": "Consultation and custom tattoo artwork",
+            "duration": "Varies",
+            "price": "From $100",
+            "rating": 4.7
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Portfolio",
+      "Hygiene standards",
+      "Book consultation"
+    ]
+  },
+  {
+    "id": "beauty-008",
+    "keywords": [
+      "eyebrow",
+      "brow",
+      "microblading",
+      "brow shaping"
+    ],
+    "response": "Eyebrow shaping and microblading services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "eb1",
+            "name": "Brow Shaping",
+            "description": "Threading and shaping",
+            "duration": "20 min",
+            "price": "$20",
+            "rating": 4.7
+          },
+          {
+            "id": "eb2",
+            "name": "Microblading",
+            "description": "Semi-permanent brow enhancement",
+            "duration": "2 hrs",
+            "price": "$350",
+            "rating": 4.9
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Before/after",
+      "Touch-up",
+      "Book now"
+    ]
+  },
+  {
+    "id": "beauty-009",
+    "keywords": [
+      "lashes",
+      "eyelash",
+      "lash extensions",
+      "lash lift"
+    ],
+    "response": "Eyelash services and extensions.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "ls1",
+            "name": "Classic Lash Extensions",
+            "description": "Natural-looking lash extensions",
+            "duration": "1.5 hrs",
+            "price": "$120",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Volume lashes",
+      "Lash lift",
+      "Maintenance fills"
+    ]
+  }
+]

@@ -1,0 +1,348 @@
+[
+  {
+    "id": "services-001",
+    "keywords": [
+      "lawyer",
+      "legal",
+      "attorney",
+      "law firm"
+    ],
+    "response": "Top-rated legal professionals in your area.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "lw1",
+            "name": "Legal Consultation",
+            "description": "Initial 30-min consultation with a certified attorney",
+            "duration": "30 min",
+            "price": "$75",
+            "rating": 4.8
+          },
+          {
+            "id": "lw2",
+            "name": "Contract Review",
+            "description": "Detailed review of legal documents",
+            "duration": "2-3 days",
+            "price": "$200",
+            "rating": 4.7
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Family law",
+      "Business law",
+      "Immigration",
+      "Book consultation"
+    ]
+  },
+  {
+    "id": "services-002",
+    "keywords": [
+      "mechanic",
+      "car repair",
+      "auto",
+      "garage",
+      "car service"
+    ],
+    "response": "Trusted auto mechanics and repair shops nearby.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "mc1",
+            "name": "Oil Change & Tune-up",
+            "description": "Full synthetic oil change with inspection",
+            "duration": "45 min",
+            "price": "$65",
+            "rating": 4.9
+          },
+          {
+            "id": "mc2",
+            "name": "Brake Service",
+            "description": "Brake pad replacement and rotor check",
+            "duration": "1.5 hrs",
+            "price": "$150",
+            "rating": 4.7
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Emergency repair",
+      "Schedule service",
+      "Get estimate"
+    ]
+  },
+  {
+    "id": "services-003",
+    "keywords": [
+      "plumber",
+      "plumbing",
+      "leak",
+      "pipe",
+      "drain"
+    ],
+    "response": "Licensed plumbers available for emergency and routine calls.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "pl1",
+            "name": "Emergency Plumbing",
+            "description": "24/7 emergency leak and pipe repair",
+            "duration": "ASAP",
+            "price": "$120",
+            "rating": 4.8
+          },
+          {
+            "id": "pl2",
+            "name": "Drain Cleaning",
+            "description": "Professional drain unclogging service",
+            "duration": "1 hr",
+            "price": "$85",
+            "rating": 4.6
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Call now",
+      "Schedule visit",
+      "Get quote"
+    ]
+  },
+  {
+    "id": "services-004",
+    "keywords": [
+      "electrician",
+      "electrical",
+      "wiring",
+      "power"
+    ],
+    "response": "Certified electricians for residential and commercial work.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "el1",
+            "name": "Electrical Inspection",
+            "description": "Full home electrical safety inspection",
+            "duration": "2 hrs",
+            "price": "$150",
+            "rating": 4.7
+          },
+          {
+            "id": "el2",
+            "name": "Outlet & Switch Repair",
+            "description": "Fix or install electrical outlets",
+            "duration": "1 hr",
+            "price": "$90",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Emergency service",
+      "New installation",
+      "Get estimate"
+    ]
+  },
+  {
+    "id": "services-005",
+    "keywords": [
+      "cleaner",
+      "cleaning",
+      "maid",
+      "housekeeping"
+    ],
+    "response": "Professional cleaning services for your home or office.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "cl1",
+            "name": "Deep Cleaning",
+            "description": "Thorough deep clean of entire home",
+            "duration": "4-5 hrs",
+            "price": "$180",
+            "rating": 4.8
+          },
+          {
+            "id": "cl2",
+            "name": "Regular Cleaning",
+            "description": "Weekly maintenance cleaning",
+            "duration": "2-3 hrs",
+            "price": "$90",
+            "rating": 4.7
+          }
+        ]
+      }
+    },
+    "chips": [
+      "One-time",
+      "Weekly plan",
+      "Office cleaning"
+    ]
+  },
+  {
+    "id": "services-006",
+    "keywords": [
+      "tutor",
+      "tutoring",
+      "lessons",
+      "study help",
+      "academic"
+    ],
+    "response": "Expert tutors available for all subjects and levels.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "tu1",
+            "name": "Math Tutoring",
+            "description": "One-on-one math tutoring, all levels",
+            "duration": "1 hr",
+            "price": "$50",
+            "rating": 4.9
+          },
+          {
+            "id": "tu2",
+            "name": "Language Lessons",
+            "description": "English, Arabic, or French lessons",
+            "duration": "1 hr",
+            "price": "$45",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Online sessions",
+      "In-person",
+      "Group rates"
+    ]
+  },
+  {
+    "id": "services-007",
+    "keywords": [
+      "photographer",
+      "photography",
+      "photo shoot",
+      "portrait"
+    ],
+    "response": "Professional photographers for every occasion.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "ph1",
+            "name": "Portrait Session",
+            "description": "Professional portrait photography session",
+            "duration": "1 hr",
+            "price": "$150",
+            "rating": 4.9
+          },
+          {
+            "id": "ph2",
+            "name": "Event Photography",
+            "description": "Full event coverage with edited photos",
+            "duration": "4 hrs",
+            "price": "$500",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "View portfolio",
+      "Book now",
+      "Wedding packages"
+    ]
+  },
+  {
+    "id": "services-008",
+    "keywords": [
+      "moving",
+      "movers",
+      "relocation",
+      "packing"
+    ],
+    "response": "Reliable moving and relocation services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "mv1",
+            "name": "Local Move",
+            "description": "Full-service local moving with packing",
+            "duration": "4-8 hrs",
+            "price": "$350",
+            "rating": 4.7
+          },
+          {
+            "id": "mv2",
+            "name": "Packing Service",
+            "description": "Professional packing and supplies",
+            "duration": "3-5 hrs",
+            "price": "$200",
+            "rating": 4.6
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Get estimate",
+      "Schedule move",
+      "Storage options"
+    ]
+  },
+  {
+    "id": "services-009",
+    "keywords": [
+      "tailor",
+      "alteration",
+      "sewing",
+      "custom clothing"
+    ],
+    "response": "Expert tailors and alteration services nearby.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "ta1",
+            "name": "Clothing Alterations",
+            "description": "Expert alterations for all garment types",
+            "duration": "3-5 days",
+            "price": "$30",
+            "rating": 4.8
+          },
+          {
+            "id": "ta2",
+            "name": "Custom Suit",
+            "description": "Bespoke suit tailored to your measurements",
+            "duration": "2 weeks",
+            "price": "$450",
+            "rating": 4.9
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Rush service",
+      "View fabrics",
+      "Book fitting"
+    ]
+  }
+]

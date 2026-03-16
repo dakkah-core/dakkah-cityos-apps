@@ -15,6 +15,27 @@ import { OrderTracker } from "./OrderTracker";
 import { AnalyticsSnapshot } from "./AnalyticsSnapshot";
 import { ProductCarousel } from "./ProductCarousel";
 import { ServiceMenu } from "./ServiceMenu";
+import { AgentSyncCard } from "./AgentSyncCard";
+import { CalendarSelector } from "./CalendarSelector";
+import { FormGroup } from "./FormGroup";
+import { MapView } from "./MapView";
+import { MediaPlayer } from "./MediaPlayer";
+import { PaymentRequest } from "./PaymentRequest";
+import { RideStatus } from "./RideStatus";
+import { WeatherCard } from "./WeatherCard";
+import { PollCard } from "./PollCard";
+import { AlertCard } from "./AlertCard";
+import { DocumentCard } from "./DocumentCard";
+import { ReceiptCard } from "./ReceiptCard";
+import { HealthSnapshot } from "./HealthSnapshot";
+import { SmartHomeControl } from "./SmartHomeControl";
+import { ParkingMeter } from "./ParkingMeter";
+import { ParcelLocker } from "./ParcelLocker";
+import { ReservationCard } from "./ReservationCard";
+import { CryptoWallet } from "./CryptoWallet";
+import { TaskChecklist } from "./TaskChecklist";
+import { VoiceNote } from "./VoiceNote";
+import { ProfileCard } from "./ProfileCard";
 
 interface Props {
   artifacts: Artifact[];
@@ -61,6 +82,48 @@ function ArtifactItem({ artifact, onAction }: { artifact: Artifact; onAction?: (
       return <ProductCarousel data={artifact.data} onAction={onAction} />;
     case "service-menu":
       return <ServiceMenu data={artifact.data} onAction={onAction} />;
+    case "agent-sync-card":
+      return <AgentSyncCard data={artifact.data} onAction={onAction} />;
+    case "calendar-selector":
+      return <CalendarSelector data={artifact.data} onAction={onAction} />;
+    case "form-group":
+      return <FormGroup data={artifact.data} onAction={onAction} />;
+    case "map-view":
+      return <MapView data={artifact.data} onAction={onAction} />;
+    case "media-player":
+      return <MediaPlayer data={artifact.data} onAction={onAction} />;
+    case "payment-request":
+      return <PaymentRequest data={artifact.data} onAction={onAction} />;
+    case "ride-status":
+      return <RideStatus data={artifact.data} onAction={onAction} />;
+    case "weather-card":
+      return <WeatherCard data={artifact.data} />;
+    case "poll-card":
+      return <PollCard data={artifact.data} onAction={onAction} />;
+    case "alert-card":
+      return <AlertCard data={artifact.data} onAction={onAction} />;
+    case "document-card":
+      return <DocumentCard data={artifact.data} onAction={onAction} />;
+    case "receipt-card":
+      return <ReceiptCard data={artifact.data} />;
+    case "health-snapshot":
+      return <HealthSnapshot data={artifact.data} />;
+    case "smart-home-control":
+      return <SmartHomeControl data={artifact.data} onAction={onAction} />;
+    case "parking-meter":
+      return <ParkingMeter data={artifact.data} onAction={onAction} />;
+    case "parcel-locker":
+      return <ParcelLocker data={artifact.data} onAction={onAction} />;
+    case "reservation-card":
+      return <ReservationCard data={artifact.data} onAction={onAction} />;
+    case "crypto-wallet":
+      return <CryptoWallet data={artifact.data} onAction={onAction} />;
+    case "task-checklist":
+      return <TaskChecklist data={artifact.data} onAction={onAction} />;
+    case "voice-note":
+      return <VoiceNote data={artifact.data} onAction={onAction} />;
+    case "profile-card":
+      return <ProfileCard data={artifact.data} onAction={onAction} />;
     default:
       return null;
   }

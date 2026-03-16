@@ -1,0 +1,343 @@
+[
+  {
+    "id": "activity-001",
+    "keywords": [
+      "my orders",
+      "order history",
+      "past orders",
+      "recent orders"
+    ],
+    "response": "Here are your recent orders.",
+    "artifact": {
+      "type": "order-tracker",
+      "data": {
+        "id": "o1",
+        "orderNumber": "DK-3891",
+        "status": "on-the-way",
+        "items": [
+          "Grilled Chicken Bowl",
+          "Fresh Juice",
+          "Tiramisu"
+        ],
+        "total": "$38.50",
+        "estimatedTime": "12 min"
+      }
+    },
+    "chips": [
+      "Track order",
+      "Order again",
+      "All orders"
+    ]
+  },
+  {
+    "id": "activity-002",
+    "keywords": [
+      "my profile",
+      "account",
+      "profile info",
+      "my account"
+    ],
+    "response": "Here's your profile overview.",
+    "artifact": {
+      "type": "profile-card",
+      "data": {
+        "name": "User",
+        "title": "City Explorer",
+        "verified": true,
+        "bio": "Urban adventurer and food enthusiast. Always looking for hidden gems.",
+        "stats": [
+          {
+            "label": "Places",
+            "value": "47"
+          },
+          {
+            "label": "Reviews",
+            "value": "23"
+          },
+          {
+            "label": "Following",
+            "value": "156"
+          }
+        ],
+        "tags": [
+          "Foodie",
+          "Explorer",
+          "Night Owl",
+          "Culture Seeker"
+        ]
+      }
+    },
+    "chips": [
+      "Edit profile",
+      "Settings",
+      "Privacy"
+    ]
+  },
+  {
+    "id": "activity-003",
+    "keywords": [
+      "my health",
+      "health stats",
+      "vitals",
+      "health data"
+    ],
+    "response": "Your latest health metrics snapshot.",
+    "artifact": {
+      "type": "health-snapshot",
+      "data": {
+        "title": "Your Health Today",
+        "metrics": [
+          {
+            "label": "Steps",
+            "value": "6,420",
+            "icon": "👟",
+            "status": "normal"
+          },
+          {
+            "label": "Heart Rate",
+            "value": "72",
+            "unit": "bpm",
+            "icon": "❤️",
+            "status": "normal"
+          },
+          {
+            "label": "Water",
+            "value": "5",
+            "unit": "glasses",
+            "icon": "💧",
+            "status": "warning"
+          },
+          {
+            "label": "Sleep",
+            "value": "6.5",
+            "unit": "hrs",
+            "icon": "😴",
+            "status": "warning"
+          }
+        ],
+        "lastUpdated": "2 min ago"
+      }
+    },
+    "chips": [
+      "Full report",
+      "Set goals",
+      "Connect device"
+    ]
+  },
+  {
+    "id": "activity-004",
+    "keywords": [
+      "my tasks",
+      "todo",
+      "to-do",
+      "task list",
+      "my checklist"
+    ],
+    "response": "Here's your task list for today.",
+    "artifact": {
+      "type": "task-checklist",
+      "data": {
+        "title": "Today's Tasks",
+        "tasks": [
+          {
+            "label": "Morning workout",
+            "done": true,
+            "priority": "high"
+          },
+          {
+            "label": "Grocery shopping",
+            "done": false,
+            "priority": "medium"
+          },
+          {
+            "label": "Call dentist for appointment",
+            "done": false,
+            "priority": "high"
+          },
+          {
+            "label": "Pick up dry cleaning",
+            "done": false,
+            "priority": "low"
+          },
+          {
+            "label": "Prepare dinner",
+            "done": false,
+            "priority": "medium"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Add task",
+      "Tomorrow",
+      "Completed"
+    ]
+  },
+  {
+    "id": "activity-005",
+    "keywords": [
+      "my wallet",
+      "balance",
+      "payment history",
+      "my payments"
+    ],
+    "response": "Your wallet and payment summary.",
+    "artifact": {
+      "type": "payment-request",
+      "data": {
+        "title": "Wallet Balance",
+        "amount": "247.50",
+        "currency": "$",
+        "description": "Available balance for in-app purchases and bookings",
+        "method": "Visa ending in 4242",
+        "status": "paid"
+      }
+    },
+    "chips": [
+      "Add funds",
+      "Transaction history",
+      "Payment methods"
+    ]
+  },
+  {
+    "id": "activity-006",
+    "keywords": [
+      "my reservation",
+      "my booking",
+      "upcoming booking",
+      "my appointments"
+    ],
+    "response": "Your upcoming reservations.",
+    "artifact": {
+      "type": "reservation-card",
+      "data": {
+        "venue": "The Golden Plate",
+        "type": "Restaurant",
+        "date": "March 18, 2026",
+        "time": "8:00 PM",
+        "guests": 2,
+        "confirmationCode": "GP-2847",
+        "status": "confirmed",
+        "notes": "Window table requested"
+      }
+    },
+    "chips": [
+      "Modify",
+      "Cancel",
+      "All bookings"
+    ]
+  },
+  {
+    "id": "activity-007",
+    "keywords": [
+      "my package",
+      "my delivery",
+      "track package",
+      "parcel status"
+    ],
+    "response": "Your package delivery status.",
+    "artifact": {
+      "type": "parcel-locker",
+      "data": {
+        "trackingId": "PKG-2024-38291",
+        "carrier": "Express Delivery",
+        "status": "ready-for-pickup",
+        "lockerLocation": "City Mall, Locker Station B",
+        "lockerCode": "7429",
+        "estimatedDelivery": "Today"
+      }
+    },
+    "chips": [
+      "Get directions",
+      "Contact carrier",
+      "All packages"
+    ]
+  },
+  {
+    "id": "activity-008",
+    "keywords": [
+      "voice message",
+      "send voice",
+      "audio message"
+    ],
+    "response": "Here's your latest voice message.",
+    "artifact": {
+      "type": "voice-note",
+      "data": {
+        "title": "Voice Message",
+        "duration": "0:32",
+        "sender": "Sarah K.",
+        "timestamp": "Today, 2:15 PM",
+        "transcript": "Hey! Just wanted to let you know I found that amazing coffee place you recommended. The matcha latte is incredible! We should go together next week."
+      }
+    },
+    "chips": [
+      "Reply",
+      "Forward",
+      "Save"
+    ]
+  },
+  {
+    "id": "activity-009",
+    "keywords": [
+      "my points",
+      "rewards",
+      "loyalty",
+      "my rewards"
+    ],
+    "response": "Your rewards and loyalty points.",
+    "artifact": {
+      "type": "progress-card",
+      "data": {
+        "level": 15,
+        "xp": 3200,
+        "xpToNext": 4000,
+        "title": "Gold Explorer",
+        "badges": [
+          {
+            "name": "Early Adopter",
+            "icon": "star",
+            "earned": true
+          },
+          {
+            "name": "Foodie",
+            "icon": "utensils",
+            "earned": true
+          },
+          {
+            "name": "Adventurer",
+            "icon": "mountain",
+            "earned": true
+          },
+          {
+            "name": "Social Butterfly",
+            "icon": "users",
+            "earned": false
+          },
+          {
+            "name": "Master Explorer",
+            "icon": "crown",
+            "earned": false
+          }
+        ],
+        "missions": [
+          {
+            "title": "Visit 5 new places this week",
+            "progress": 60,
+            "reward": "200 XP"
+          },
+          {
+            "title": "Write 3 reviews",
+            "progress": 33,
+            "reward": "150 XP"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Redeem points",
+      "Missions",
+      "Leaderboard"
+    ]
+  }
+]

@@ -73,7 +73,8 @@ Express 5 API server. Routes live in `src/routes/` and use `@workspace/api-zod` 
 - **Copilot context** (`context/ChatContext.tsx`) — manages messages, threads, processing state with request lifecycle protection
 - **Artifact renderer** (`components/artifacts/ArtifactRenderer.tsx`) — maps artifact types to React Native components
 
-#### Artifact Types (14 implemented)
+#### Artifact Types (35 implemented)
+**Original 14:**
 - `poi-carousel` — scrollable place cards with images, ratings, vibes
 - `event-carousel` — event cards with dates, locations, attendees
 - `ambassador-carousel` — trust layer profiles with fit scores
@@ -88,6 +89,38 @@ Express 5 API server. Routes live in `src/routes/` and use `@workspace/api-zod` 
 - `analytics-snapshot` — metric cards with trends
 - `product-carousel` — product cards with prices and tags
 - `service-menu` — bookable service listings
+
+**7 New Core Artifacts:**
+- `agent-sync-card` — animated multi-step agent card with themed icons, user avatars, step-through animation
+- `calendar-selector` — horizontal date strip + bookable time slot grid
+- `form-group` — radio/checkbox option selector with prices, confirm button
+- `map-view` — static map with pin, navigation button, location footer
+- `media-player` — album art, play/pause/skip controls, progress bar
+- `payment-request` — payment card with amount, method, pay button
+- `ride-status` — Uber-style ride card with driver info, route, ETA
+
+**14 CityOS Micro-Artifacts:**
+- `weather-card` — temperature, condition, humidity, wind
+- `poll-card` — interactive poll with vote percentages
+- `alert-card` — severity-colored alerts (info/warning/critical)
+- `document-card` — document preview with status badge
+- `receipt-card` — itemized receipt with totals
+- `health-snapshot` — health metrics grid with status indicators
+- `smart-home-control` — toggleable device grid
+- `parking-meter` — parking zone status with extend button
+- `parcel-locker` — package tracking with locker code
+- `reservation-card` — reservation details with modify/cancel
+- `crypto-wallet` — token balances with send/receive/swap
+- `task-checklist` — interactive task list with progress bar
+- `voice-note` — audio waveform with transcript toggle
+- `profile-card` — user profile with stats, tags, follow/message
+
+#### Scenario Engine
+- **189 scenarios** across **21 categories** in `data/scenarios/` JSON files
+- Categories: places, services, commerce, transit, social, health, work, outdoor, family, pets, culture, utility, intel, events, planning, misc, home, education, beauty, wellness, my_activity
+- Each scenario has: id, keywords array, response text, artifact config, follow-up chips
+- **CopilotBrain** in `lib/copilot-brain.ts` uses longest-keyword-match scoring to find best scenario
+- Hardcoded patterns run as priority fallback before scenario matching
 
 #### Interaction Modes
 - **Suggest** — recommendations, insights (purple badge)

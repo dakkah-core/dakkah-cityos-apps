@@ -1,0 +1,319 @@
+[
+  {
+    "id": "pets-001",
+    "keywords": [
+      "vet",
+      "veterinarian",
+      "animal clinic",
+      "pet doctor"
+    ],
+    "response": "Veterinary clinics and animal hospitals near you.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "v1",
+            "name": "Pet Checkup",
+            "description": "Annual wellness exam and vaccination",
+            "duration": "30 min",
+            "price": "$65",
+            "rating": 4.8
+          },
+          {
+            "id": "v2",
+            "name": "Emergency Vet Care",
+            "description": "24/7 emergency veterinary services",
+            "duration": "Varies",
+            "price": "$150+",
+            "rating": 4.9
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Emergency vet",
+      "Book appointment",
+      "Pet pharmacy"
+    ]
+  },
+  {
+    "id": "pets-002",
+    "keywords": [
+      "pet grooming",
+      "dog grooming",
+      "groomer",
+      "pet wash"
+    ],
+    "response": "Pet grooming services and salons.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "pg1",
+            "name": "Full Grooming Package",
+            "description": "Bath, haircut, nails, and ear cleaning",
+            "duration": "1.5 hrs",
+            "price": "$55",
+            "rating": 4.7
+          },
+          {
+            "id": "pg2",
+            "name": "Bath & Brush",
+            "description": "Wash, blow-dry, and brushing",
+            "duration": "45 min",
+            "price": "$30",
+            "rating": 4.6
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book now",
+      "Cat grooming",
+      "Mobile groomer"
+    ]
+  },
+  {
+    "id": "pets-003",
+    "keywords": [
+      "dog park",
+      "pet park",
+      "off-leash",
+      "dog walk"
+    ],
+    "response": "Dog parks and pet-friendly areas nearby.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "dp1",
+            "name": "Paws Park",
+            "category": "Dog Park",
+            "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400",
+            "rating": 4.6,
+            "distance": "1.5 km",
+            "vibe": [
+              "#off-leash",
+              "#fenced"
+            ],
+            "priceRange": "Free",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Dog walkers",
+      "Pet meetups",
+      "Facilities"
+    ]
+  },
+  {
+    "id": "pets-004",
+    "keywords": [
+      "pet store",
+      "pet shop",
+      "pet supplies",
+      "pet food"
+    ],
+    "response": "Pet stores and supply shops near you.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "ps1",
+            "name": "Paws & Claws",
+            "category": "Pet Store",
+            "image": "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400",
+            "rating": 4.5,
+            "distance": "0.8 km",
+            "vibe": [
+              "#variety",
+              "#premium"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Order delivery",
+      "Pet food deals",
+      "New arrivals"
+    ]
+  },
+  {
+    "id": "pets-005",
+    "keywords": [
+      "pet boarding",
+      "pet hotel",
+      "kennel",
+      "cat boarding"
+    ],
+    "response": "Pet boarding facilities and pet hotels.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "pb1",
+            "name": "Pet Hotel Stay",
+            "description": "Luxury boarding with daily walks and playtime",
+            "duration": "Per night",
+            "price": "$45/night",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book dates",
+      "Tour facility",
+      "Requirements"
+    ]
+  },
+  {
+    "id": "pets-006",
+    "keywords": [
+      "pet adoption",
+      "adopt",
+      "rescue",
+      "shelter",
+      "adopt a pet"
+    ],
+    "response": "Pet adoption centers and rescue shelters.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "pa1",
+            "name": "Second Chance Shelter",
+            "category": "Animal Shelter",
+            "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400",
+            "rating": 4.9,
+            "distance": "5 km",
+            "vibe": [
+              "#rescue",
+              "#adoption"
+            ],
+            "priceRange": "$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "See available pets",
+      "Adoption process",
+      "Foster program"
+    ]
+  },
+  {
+    "id": "pets-007",
+    "keywords": [
+      "pet training",
+      "dog training",
+      "obedience",
+      "puppy class"
+    ],
+    "response": "Professional pet training services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "pt1",
+            "name": "Puppy Training Course",
+            "description": "8-week obedience training program",
+            "duration": "8 weeks",
+            "price": "$250",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Private lessons",
+      "Group classes",
+      "Behavior issues"
+    ]
+  },
+  {
+    "id": "pets-008",
+    "keywords": [
+      "pet sitting",
+      "pet sitter",
+      "cat sitter",
+      "house sitting"
+    ],
+    "response": "Trusted pet sitters in your neighborhood.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "pst1",
+            "name": "In-Home Pet Sitting",
+            "description": "Daily visits and care at your home",
+            "duration": "Per day",
+            "price": "$35/day",
+            "rating": 4.7
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Meet sitter",
+      "Book dates",
+      "Reviews"
+    ]
+  },
+  {
+    "id": "pets-009",
+    "keywords": [
+      "pet insurance",
+      "animal insurance",
+      "pet health plan"
+    ],
+    "response": "Pet insurance and health plan options.",
+    "artifact": {
+      "type": "form-group",
+      "data": {
+        "title": "Compare Pet Insurance Plans",
+        "type": "radio",
+        "options": [
+          {
+            "label": "Basic Coverage",
+            "value": "basic",
+            "price": "$25/mo",
+            "description": "Accidents and emergencies"
+          },
+          {
+            "label": "Standard Coverage",
+            "value": "standard",
+            "price": "$45/mo",
+            "description": "Accidents, illness, and routine care"
+          },
+          {
+            "label": "Premium Coverage",
+            "value": "premium",
+            "price": "$65/mo",
+            "description": "Comprehensive with dental and wellness"
+          }
+        ],
+        "confirmLabel": "Get Quote"
+      }
+    },
+    "chips": [
+      "Compare plans",
+      "What's covered",
+      "Claims process"
+    ]
+  }
+]

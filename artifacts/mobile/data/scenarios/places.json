@@ -1,0 +1,368 @@
+[
+  {
+    "id": "places-001",
+    "keywords": [
+      "coffee",
+      "cafe",
+      "latte",
+      "espresso",
+      "cappuccino"
+    ],
+    "response": "Here are the best coffee spots near you, rated by local ambassadors.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "p1",
+            "name": "Brew Lab",
+            "category": "Specialty Coffee",
+            "image": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=400",
+            "rating": 4.9,
+            "distance": "0.3 km",
+            "vibe": [
+              "#specialty",
+              "#cozy"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          },
+          {
+            "id": "p2",
+            "name": "Morning Ritual",
+            "category": "Cafe",
+            "image": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400",
+            "rating": 4.7,
+            "distance": "0.6 km",
+            "vibe": [
+              "#artisan",
+              "#quiet"
+            ],
+            "priceRange": "$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Filter by rating",
+      "Open now",
+      "Nearest first",
+      "Under $10"
+    ]
+  },
+  {
+    "id": "places-002",
+    "keywords": [
+      "matcha",
+      "tea",
+      "tea house",
+      "green tea"
+    ],
+    "response": "Found the best matcha and tea spots in your area.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "t1",
+            "name": "Matcha Zen",
+            "category": "Tea House",
+            "image": "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=400",
+            "rating": 4.8,
+            "distance": "0.9 km",
+            "vibe": [
+              "#zen",
+              "#matcha"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          },
+          {
+            "id": "t2",
+            "name": "Leaf & Pour",
+            "category": "Tea Lounge",
+            "image": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400",
+            "rating": 4.6,
+            "distance": "1.4 km",
+            "vibe": [
+              "#organic",
+              "#calm"
+            ],
+            "priceRange": "$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Show on map",
+      "See menu",
+      "Book a seat"
+    ]
+  },
+  {
+    "id": "places-003",
+    "keywords": [
+      "library",
+      "study",
+      "quiet place",
+      "read"
+    ],
+    "response": "Here are quiet study spots and libraries nearby.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "l1",
+            "name": "City Central Library",
+            "category": "Library",
+            "image": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=400",
+            "rating": 4.7,
+            "distance": "1.0 km",
+            "vibe": [
+              "#quiet",
+              "#study"
+            ],
+            "priceRange": "Free",
+            "openNow": true
+          },
+          {
+            "id": "l2",
+            "name": "The Reading Room",
+            "category": "Co-working",
+            "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400",
+            "rating": 4.5,
+            "distance": "1.8 km",
+            "vibe": [
+              "#wifi",
+              "#silent"
+            ],
+            "priceRange": "$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "With WiFi",
+      "Open late",
+      "Free entry"
+    ]
+  },
+  {
+    "id": "places-004",
+    "keywords": [
+      "park",
+      "garden",
+      "green space",
+      "nature walk"
+    ],
+    "response": "Beautiful parks and gardens near you for a relaxing walk.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "pk1",
+            "name": "Central Garden",
+            "category": "Park",
+            "image": "https://images.unsplash.com/photo-1585938389612-a552a28c6914?w=400",
+            "rating": 4.8,
+            "distance": "0.5 km",
+            "vibe": [
+              "#green",
+              "#peaceful"
+            ],
+            "priceRange": "Free",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Dog-friendly",
+      "Playground nearby",
+      "Show on map"
+    ]
+  },
+  {
+    "id": "places-005",
+    "keywords": [
+      "museum",
+      "gallery",
+      "art",
+      "exhibition"
+    ],
+    "response": "Here are museums and galleries with current exhibitions.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "m1",
+            "name": "Modern Art Museum",
+            "category": "Museum",
+            "image": "https://images.unsplash.com/photo-1531243269054-5ebf6f34081e?w=400",
+            "rating": 4.9,
+            "distance": "2.0 km",
+            "vibe": [
+              "#contemporary",
+              "#art"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Free admission days",
+      "Current exhibitions",
+      "Buy tickets"
+    ]
+  },
+  {
+    "id": "places-006",
+    "keywords": [
+      "bookstore",
+      "books",
+      "bookshop"
+    ],
+    "response": "Discover indie bookstores and literary havens nearby.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "b1",
+            "name": "Pages & Co",
+            "category": "Bookstore",
+            "image": "https://images.unsplash.com/photo-1526243741027-444d633d7365?w=400",
+            "rating": 4.8,
+            "distance": "0.7 km",
+            "vibe": [
+              "#indie",
+              "#cozy"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "With cafe",
+      "Used books",
+      "Local authors"
+    ]
+  },
+  {
+    "id": "places-007",
+    "keywords": [
+      "rooftop",
+      "skyline",
+      "view",
+      "viewpoint"
+    ],
+    "response": "Best rooftop spots and scenic viewpoints in the city.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "r1",
+            "name": "Sky Lounge",
+            "category": "Rooftop Bar",
+            "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400",
+            "rating": 4.7,
+            "distance": "1.5 km",
+            "vibe": [
+              "#rooftop",
+              "#sunset"
+            ],
+            "priceRange": "$$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Sunset time",
+      "Reservations",
+      "Dress code"
+    ]
+  },
+  {
+    "id": "places-008",
+    "keywords": [
+      "coworking",
+      "workspace",
+      "remote work",
+      "work from"
+    ],
+    "response": "Top co-working spaces with fast WiFi and great vibes.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "cw1",
+            "name": "The Hub",
+            "category": "Co-working",
+            "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400",
+            "rating": 4.6,
+            "distance": "0.8 km",
+            "vibe": [
+              "#productive",
+              "#modern"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Day pass",
+      "Meeting rooms",
+      "24/7 access"
+    ]
+  },
+  {
+    "id": "places-009",
+    "keywords": [
+      "mosque",
+      "prayer",
+      "masjid"
+    ],
+    "response": "Nearby mosques and prayer facilities.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "mq1",
+            "name": "Al Noor Mosque",
+            "category": "Mosque",
+            "image": "https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?w=400",
+            "rating": 4.9,
+            "distance": "0.4 km",
+            "vibe": [
+              "#peaceful",
+              "#historic"
+            ],
+            "priceRange": "Free",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Prayer times",
+      "Show on map",
+      "Facilities"
+    ]
+  }
+]

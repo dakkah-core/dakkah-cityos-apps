@@ -1,0 +1,307 @@
+[
+  {
+    "id": "intel-001",
+    "keywords": [
+      "weather",
+      "forecast",
+      "temperature",
+      "rain",
+      "sunny"
+    ],
+    "response": "Here's the current weather and forecast for your area.",
+    "artifact": {
+      "type": "weather-card",
+      "data": {
+        "location": "Downtown",
+        "temp": 34,
+        "condition": "Sunny",
+        "high": 38,
+        "low": 26,
+        "humidity": 35,
+        "wind": "12 km/h NW"
+      }
+    },
+    "chips": [
+      "Hourly forecast",
+      "7-day outlook",
+      "UV index"
+    ]
+  },
+  {
+    "id": "intel-002",
+    "keywords": [
+      "news",
+      "headlines",
+      "what's new",
+      "breaking"
+    ],
+    "response": "Here are today's top local stories.",
+    "artifact": {
+      "type": "document-card",
+      "data": {
+        "title": "Local News Digest",
+        "type": "doc",
+        "date": "Today",
+        "preview": "City announces new metro line expansion, festival season kicks off this weekend, and local startup raises $5M in funding."
+      }
+    },
+    "chips": [
+      "Full article",
+      "Business news",
+      "Sports"
+    ]
+  },
+  {
+    "id": "intel-003",
+    "keywords": [
+      "exchange rate",
+      "dollar",
+      "euro",
+      "sar",
+      "currency rate"
+    ],
+    "response": "Current exchange rates and currency information.",
+    "artifact": {
+      "type": "receipt-card",
+      "data": {
+        "merchant": "Exchange Rates",
+        "date": "Today",
+        "items": [
+          {
+            "label": "USD/SAR",
+            "amount": "3.75"
+          },
+          {
+            "label": "EUR/SAR",
+            "amount": "4.08"
+          },
+          {
+            "label": "GBP/SAR",
+            "amount": "4.72"
+          },
+          {
+            "label": "JPY/SAR",
+            "amount": "0.025"
+          }
+        ],
+        "total": "Updated live"
+      }
+    },
+    "chips": [
+      "Convert amount",
+      "Historical rates",
+      "Find exchange"
+    ]
+  },
+  {
+    "id": "intel-004",
+    "keywords": [
+      "time zone",
+      "world clock",
+      "time in",
+      "current time"
+    ],
+    "response": "World clock and time zone information.",
+    "artifact": {
+      "type": "receipt-card",
+      "data": {
+        "merchant": "World Clock",
+        "date": "Current Times",
+        "items": [
+          {
+            "label": "Riyadh (AST)",
+            "amount": "3:30 PM"
+          },
+          {
+            "label": "New York (EST)",
+            "amount": "7:30 AM"
+          },
+          {
+            "label": "London (GMT)",
+            "amount": "12:30 PM"
+          },
+          {
+            "label": "Tokyo (JST)",
+            "amount": "9:30 PM"
+          }
+        ],
+        "total": "All times local"
+      }
+    },
+    "chips": [
+      "Set alarm",
+      "Meeting planner",
+      "More cities"
+    ]
+  },
+  {
+    "id": "intel-005",
+    "keywords": [
+      "translate",
+      "translation",
+      "how to say",
+      "what does mean"
+    ],
+    "response": "Translation and language help.",
+    "artifact": {
+      "type": "form-group",
+      "data": {
+        "title": "Quick Translation",
+        "type": "radio",
+        "options": [
+          {
+            "label": "English → Arabic",
+            "value": "en-ar"
+          },
+          {
+            "label": "Arabic → English",
+            "value": "ar-en"
+          },
+          {
+            "label": "English → French",
+            "value": "en-fr"
+          },
+          {
+            "label": "English → Spanish",
+            "value": "en-es"
+          }
+        ],
+        "confirmLabel": "Translate"
+      }
+    },
+    "chips": [
+      "Voice translate",
+      "Camera translate",
+      "Phrase book"
+    ]
+  },
+  {
+    "id": "intel-006",
+    "keywords": [
+      "emergency number",
+      "police",
+      "fire department",
+      "emergency contact"
+    ],
+    "response": "Important emergency contacts and numbers.",
+    "artifact": {
+      "type": "alert-card",
+      "data": {
+        "title": "Emergency Contacts",
+        "message": "Police: 999 | Ambulance: 997 | Fire: 998 | Traffic Accidents: 993 | Civil Defense: 966",
+        "severity": "critical",
+        "actions": [
+          "Call Police",
+          "Call Ambulance"
+        ]
+      }
+    },
+    "chips": [
+      "Nearest station",
+      "Embassy contacts",
+      "Roadside help"
+    ]
+  },
+  {
+    "id": "intel-007",
+    "keywords": [
+      "tip",
+      "tipping",
+      "gratuity",
+      "how much to tip"
+    ],
+    "response": "Tipping guidelines for your area.",
+    "artifact": {
+      "type": "receipt-card",
+      "data": {
+        "merchant": "Tipping Guide",
+        "date": "Local Standards",
+        "items": [
+          {
+            "label": "Restaurants",
+            "amount": "10-15%"
+          },
+          {
+            "label": "Taxi/Rideshare",
+            "amount": "5-10%"
+          },
+          {
+            "label": "Hotel Porter",
+            "amount": "SAR 10-20"
+          },
+          {
+            "label": "Delivery",
+            "amount": "SAR 5-10"
+          }
+        ],
+        "total": "Tips are appreciated"
+      }
+    },
+    "chips": [
+      "Calculate tip",
+      "Is it included?",
+      "Local customs"
+    ]
+  },
+  {
+    "id": "intel-008",
+    "keywords": [
+      "visa",
+      "passport",
+      "immigration",
+      "travel document"
+    ],
+    "response": "Visa and travel document information.",
+    "artifact": {
+      "type": "document-card",
+      "data": {
+        "title": "Visa Requirements",
+        "type": "doc",
+        "preview": "Check visa requirements for your destination, apply online, or find the nearest visa service center.",
+        "status": "pending"
+      }
+    },
+    "chips": [
+      "Check eligibility",
+      "Apply online",
+      "Processing times"
+    ]
+  },
+  {
+    "id": "intel-009",
+    "keywords": [
+      "holiday",
+      "public holiday",
+      "national day",
+      "day off"
+    ],
+    "response": "Upcoming public holidays and observances.",
+    "artifact": {
+      "type": "receipt-card",
+      "data": {
+        "merchant": "Public Holidays 2026",
+        "date": "Upcoming",
+        "items": [
+          {
+            "label": "Eid al-Fitr",
+            "amount": "Mar 30-Apr 2"
+          },
+          {
+            "label": "National Day",
+            "amount": "Sep 23"
+          },
+          {
+            "label": "Eid al-Adha",
+            "amount": "Jun 6-9"
+          }
+        ],
+        "total": "Mark your calendar"
+      }
+    },
+    "chips": [
+      "Add to calendar",
+      "Plan vacation",
+      "Office hours"
+    ]
+  }
+]

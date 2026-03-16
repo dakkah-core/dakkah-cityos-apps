@@ -1,0 +1,265 @@
+[
+  {
+    "id": "utility-001",
+    "keywords": [
+      "atm",
+      "cash",
+      "withdraw",
+      "bank"
+    ],
+    "response": "Nearest ATMs and banking services.",
+    "artifact": {
+      "type": "map-view",
+      "data": {
+        "label": "Nearest ATM",
+        "address": "Al Rajhi Bank ATM, 200m ahead",
+        "latitude": 24.714,
+        "longitude": 46.6755
+      }
+    },
+    "chips": [
+      "More ATMs",
+      "Currency exchange",
+      "Bank branch"
+    ]
+  },
+  {
+    "id": "utility-002",
+    "keywords": [
+      "charge",
+      "charging",
+      "power bank",
+      "charge phone",
+      "ev charging"
+    ],
+    "response": "Phone charging stations and EV charging points.",
+    "artifact": {
+      "type": "map-view",
+      "data": {
+        "label": "Charging Station",
+        "address": "Mall Entrance, Level P1",
+        "latitude": 24.713,
+        "longitude": 46.676
+      }
+    },
+    "chips": [
+      "EV chargers",
+      "Power banks",
+      "Nearest outlet"
+    ]
+  },
+  {
+    "id": "utility-003",
+    "keywords": [
+      "wifi",
+      "internet",
+      "free wifi",
+      "hotspot"
+    ],
+    "response": "Free WiFi hotspots and internet access points.",
+    "artifact": {
+      "type": "map-view",
+      "data": {
+        "label": "Free WiFi Zone",
+        "address": "City Center Public WiFi",
+        "latitude": 24.7135,
+        "longitude": 46.675
+      }
+    },
+    "chips": [
+      "Speed test",
+      "Coworking spaces",
+      "Mobile data"
+    ]
+  },
+  {
+    "id": "utility-004",
+    "keywords": [
+      "restroom",
+      "bathroom",
+      "toilet",
+      "washroom",
+      "wc"
+    ],
+    "response": "Nearest public restrooms and facilities.",
+    "artifact": {
+      "type": "map-view",
+      "data": {
+        "label": "Public Restroom",
+        "address": "City Mall, Ground Floor",
+        "latitude": 24.7132,
+        "longitude": 46.6758
+      }
+    },
+    "chips": [
+      "Accessible",
+      "Clean rated",
+      "Nearest"
+    ]
+  },
+  {
+    "id": "utility-005",
+    "keywords": [
+      "gas station",
+      "fuel",
+      "petrol",
+      "gasoline"
+    ],
+    "response": "Nearest gas stations and fuel prices.",
+    "artifact": {
+      "type": "map-view",
+      "data": {
+        "label": "Shell Gas Station",
+        "address": "King Fahd Road, 500m",
+        "latitude": 24.712,
+        "longitude": 46.677
+      }
+    },
+    "chips": [
+      "Compare prices",
+      "Full service",
+      "Car wash"
+    ]
+  },
+  {
+    "id": "utility-006",
+    "keywords": [
+      "post office",
+      "mail",
+      "shipping",
+      "send package",
+      "courier"
+    ],
+    "response": "Post offices and shipping services nearby.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "po1",
+            "name": "Central Post Office",
+            "category": "Post Office",
+            "image": "https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?w=400",
+            "rating": 4.3,
+            "distance": "0.9 km",
+            "vibe": [
+              "#international",
+              "#express"
+            ],
+            "priceRange": "$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Track package",
+      "Rates",
+      "Schedule pickup"
+    ]
+  },
+  {
+    "id": "utility-007",
+    "keywords": [
+      "laundry",
+      "dry cleaning",
+      "wash clothes",
+      "laundromat"
+    ],
+    "response": "Laundry and dry cleaning services near you.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "ld1",
+            "name": "Express Dry Cleaning",
+            "description": "Same-day professional dry cleaning",
+            "duration": "4 hrs",
+            "price": "$15/item",
+            "rating": 4.6
+          },
+          {
+            "id": "ld2",
+            "name": "Wash & Fold",
+            "description": "Convenient wash, dry, and fold service",
+            "duration": "24 hrs",
+            "price": "$2/lb",
+            "rating": 4.5
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Pickup service",
+      "Express same-day",
+      "Bulk pricing"
+    ]
+  },
+  {
+    "id": "utility-008",
+    "keywords": [
+      "locksmith",
+      "locked out",
+      "key copy",
+      "lock change"
+    ],
+    "response": "Emergency locksmith services available now.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "ls1",
+            "name": "Emergency Lockout",
+            "description": "Quick unlock service for cars and homes",
+            "duration": "30 min",
+            "price": "$75",
+            "rating": 4.7
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Call now",
+      "Car lockout",
+      "Key duplication"
+    ]
+  },
+  {
+    "id": "utility-009",
+    "keywords": [
+      "currency exchange",
+      "foreign exchange",
+      "money exchange",
+      "forex"
+    ],
+    "response": "Currency exchange services and rates.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "fx1",
+            "name": "City Exchange Center",
+            "category": "Currency Exchange",
+            "image": "https://images.unsplash.com/photo-1580519542036-c47de6196ba5?w=400",
+            "rating": 4.4,
+            "distance": "0.6 km",
+            "vibe": [
+              "#competitive",
+              "#fast"
+            ],
+            "priceRange": "$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Today's rates",
+      "Calculator",
+      "Large amounts"
+    ]
+  }
+]

@@ -1,0 +1,316 @@
+[
+  {
+    "id": "misc-001",
+    "keywords": [
+      "joke",
+      "tell me a joke",
+      "funny",
+      "make me laugh"
+    ],
+    "response": "Why don't scientists trust atoms? Because they make up everything! 😄 Want to hear more?",
+    "artifact": {
+      "type": "selection-chips",
+      "data": {
+        "question": "More humor?",
+        "options": [
+          "Another joke",
+          "Dad joke",
+          "Fun facts",
+          "Something else"
+        ]
+      }
+    },
+    "chips": [
+      "Another joke",
+      "Fun fact",
+      "Riddle"
+    ]
+  },
+  {
+    "id": "misc-002",
+    "keywords": [
+      "music recommend",
+      "song",
+      "playlist",
+      "what to listen"
+    ],
+    "response": "Here's a curated playlist based on your vibe.",
+    "artifact": {
+      "type": "media-player",
+      "data": {
+        "title": "City Vibes Playlist",
+        "artist": "Various Artists",
+        "albumArt": "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=400",
+        "duration": "2:34:00",
+        "type": "audio"
+      }
+    },
+    "chips": [
+      "Play all",
+      "Save playlist",
+      "Similar vibes"
+    ]
+  },
+  {
+    "id": "misc-003",
+    "keywords": [
+      "quote",
+      "motivational",
+      "inspire",
+      "motivation",
+      "inspiration"
+    ],
+    "response": "\"The only way to do great work is to love what you do.\" — Steve Jobs",
+    "artifact": {
+      "type": "selection-chips",
+      "data": {
+        "question": "More inspiration?",
+        "options": [
+          "Another quote",
+          "Daily affirmation",
+          "Success stories",
+          "Something different"
+        ]
+      }
+    },
+    "chips": [
+      "More quotes",
+      "Share",
+      "Daily inspiration"
+    ]
+  },
+  {
+    "id": "misc-004",
+    "keywords": [
+      "game",
+      "bored",
+      "entertainment",
+      "play",
+      "fun"
+    ],
+    "response": "Here are fun things to do right now.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "fn1",
+            "name": "VR Experience Zone",
+            "category": "Entertainment",
+            "image": "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=400",
+            "rating": 4.7,
+            "distance": "1.5 km",
+            "vibe": [
+              "#VR",
+              "#immersive"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Arcade games",
+      "VR experience",
+      "Board games",
+      "Bowling"
+    ]
+  },
+  {
+    "id": "misc-005",
+    "keywords": [
+      "random",
+      "surprise me",
+      "anything",
+      "whatever",
+      "idk"
+    ],
+    "response": "How about a random adventure? Here's something unexpected!",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "rn1",
+            "name": "Hidden Speakeasy",
+            "category": "Bar",
+            "image": "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400",
+            "rating": 4.8,
+            "distance": "2.0 km",
+            "vibe": [
+              "#hidden",
+              "#cocktails"
+            ],
+            "priceRange": "$$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Another suggestion",
+      "Something free",
+      "Outdoor option"
+    ]
+  },
+  {
+    "id": "misc-006",
+    "keywords": [
+      "lottery",
+      "raffle",
+      "giveaway",
+      "win"
+    ],
+    "response": "Active giveaways and promotions in your area.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "gw1",
+            "name": "Monthly Prize Draw",
+            "date": "Ends this month",
+            "time": "Midnight",
+            "location": "Online",
+            "image": "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400",
+            "category": "Giveaway",
+            "attendees": 5000,
+            "price": "Free"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Enter now",
+      "Terms",
+      "Past winners"
+    ]
+  },
+  {
+    "id": "misc-007",
+    "keywords": [
+      "crypto",
+      "bitcoin",
+      "ethereum",
+      "blockchain",
+      "nft"
+    ],
+    "response": "Here's your crypto wallet overview.",
+    "artifact": {
+      "type": "crypto-wallet",
+      "data": {
+        "walletName": "My Wallet",
+        "totalBalance": "$4,250.00",
+        "tokens": [
+          {
+            "symbol": "BTC",
+            "name": "Bitcoin",
+            "balance": "0.05",
+            "value": "$2,150",
+            "change": "2.3%",
+            "changeDir": "up"
+          },
+          {
+            "symbol": "ETH",
+            "name": "Ethereum",
+            "balance": "0.8",
+            "value": "$1,500",
+            "change": "1.1%",
+            "changeDir": "up"
+          },
+          {
+            "symbol": "SOL",
+            "name": "Solana",
+            "balance": "15",
+            "value": "$600",
+            "change": "0.5%",
+            "changeDir": "down"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Market trends",
+      "Buy crypto",
+      "Transaction history"
+    ]
+  },
+  {
+    "id": "misc-008",
+    "keywords": [
+      "smart home",
+      "home automation",
+      "iot",
+      "alexa",
+      "google home"
+    ],
+    "response": "Your smart home device status.",
+    "artifact": {
+      "type": "smart-home-control",
+      "data": {
+        "room": "Living Room",
+        "devices": [
+          {
+            "name": "Main Lights",
+            "type": "light",
+            "status": "on",
+            "value": "80%"
+          },
+          {
+            "name": "AC",
+            "type": "thermostat",
+            "status": "on",
+            "value": "22°C"
+          },
+          {
+            "name": "Front Door",
+            "type": "lock",
+            "status": "on"
+          },
+          {
+            "name": "TV",
+            "type": "tv",
+            "status": "off"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "All rooms",
+      "Set scene",
+      "Energy usage"
+    ]
+  },
+  {
+    "id": "misc-009",
+    "keywords": [
+      "horoscope",
+      "zodiac",
+      "astrology",
+      "star sign"
+    ],
+    "response": "Today's cosmic energy is all about new beginnings and bold moves. Trust your instincts and take that leap!",
+    "artifact": {
+      "type": "selection-chips",
+      "data": {
+        "question": "What's your sign?",
+        "options": [
+          "Aries",
+          "Taurus",
+          "Gemini",
+          "Cancer",
+          "Leo",
+          "Virgo",
+          "Libra",
+          "Scorpio"
+        ]
+      }
+    },
+    "chips": [
+      "Full reading",
+      "Compatibility",
+      "Monthly forecast"
+    ]
+  }
+]

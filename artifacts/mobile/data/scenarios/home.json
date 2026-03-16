@@ -1,0 +1,305 @@
+[
+  {
+    "id": "home-001",
+    "keywords": [
+      "interior design",
+      "home decor",
+      "decoration",
+      "furnish"
+    ],
+    "response": "Interior design services and home decor stores.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "id1",
+            "name": "Room Design Consultation",
+            "description": "Professional interior design consultation",
+            "duration": "1.5 hrs",
+            "price": "$120",
+            "rating": 4.8
+          },
+          {
+            "id": "id2",
+            "name": "Full Home Styling",
+            "description": "Complete home staging and styling",
+            "duration": "1 day",
+            "price": "$500",
+            "rating": 4.9
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Browse styles",
+      "3D preview",
+      "Budget options"
+    ]
+  },
+  {
+    "id": "home-002",
+    "keywords": [
+      "furniture",
+      "sofa",
+      "couch",
+      "table",
+      "chair"
+    ],
+    "response": "Furniture stores and deals near you.",
+    "artifact": {
+      "type": "product-carousel",
+      "data": {
+        "products": [
+          {
+            "id": "fu1",
+            "name": "Modern Sectional Sofa",
+            "brand": "Home Living",
+            "price": "$1,200",
+            "image": "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400",
+            "tags": [
+              "modern",
+              "comfortable"
+            ]
+          },
+          {
+            "id": "fu2",
+            "name": "Dining Table Set",
+            "brand": "Wood Works",
+            "price": "$800",
+            "image": "https://images.unsplash.com/photo-1617806118233-18e1de247200?w=400",
+            "tags": [
+              "solid-wood",
+              "6-seater"
+            ]
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Delivery options",
+      "Assembly included",
+      "Sale items"
+    ]
+  },
+  {
+    "id": "home-003",
+    "keywords": [
+      "pest control",
+      "exterminator",
+      "bugs",
+      "insects",
+      "rodent"
+    ],
+    "response": "Professional pest control services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "pc1",
+            "name": "Home Pest Inspection",
+            "description": "Comprehensive pest inspection and treatment",
+            "duration": "1-2 hrs",
+            "price": "$100",
+            "rating": 4.7
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Emergency service",
+      "Monthly plan",
+      "Eco-friendly"
+    ]
+  },
+  {
+    "id": "home-004",
+    "keywords": [
+      "gardener",
+      "landscaping",
+      "lawn",
+      "garden service"
+    ],
+    "response": "Gardening and landscaping services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "gd1",
+            "name": "Garden Maintenance",
+            "description": "Regular garden upkeep and lawn care",
+            "duration": "2-3 hrs",
+            "price": "$75",
+            "rating": 4.6
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Weekly service",
+      "Landscape design",
+      "Tree trimming"
+    ]
+  },
+  {
+    "id": "home-005",
+    "keywords": [
+      "ac repair",
+      "air conditioning",
+      "hvac",
+      "cooling",
+      "heating"
+    ],
+    "response": "HVAC and air conditioning services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "ac1",
+            "name": "AC Service & Repair",
+            "description": "Diagnostic, cleaning, and repair",
+            "duration": "1-2 hrs",
+            "price": "$95",
+            "rating": 4.7
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Emergency repair",
+      "New installation",
+      "Annual maintenance"
+    ]
+  },
+  {
+    "id": "home-006",
+    "keywords": [
+      "painting",
+      "painter",
+      "wall paint",
+      "house painting"
+    ],
+    "response": "Professional painting services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "pt1",
+            "name": "Interior Painting",
+            "description": "Professional interior wall painting",
+            "duration": "1-2 days",
+            "price": "$300/room",
+            "rating": 4.6
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Color consultation",
+      "Exterior painting",
+      "Get estimate"
+    ]
+  },
+  {
+    "id": "home-007",
+    "keywords": [
+      "security",
+      "alarm",
+      "cctv",
+      "surveillance",
+      "home security"
+    ],
+    "response": "Home security solutions and installation.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "sc1",
+            "name": "Security System Install",
+            "description": "Full CCTV and alarm system installation",
+            "duration": "4-6 hrs",
+            "price": "$350",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Smart cameras",
+      "24/7 monitoring",
+      "Get quote"
+    ]
+  },
+  {
+    "id": "home-008",
+    "keywords": [
+      "appliance repair",
+      "washing machine",
+      "fridge repair",
+      "dishwasher"
+    ],
+    "response": "Home appliance repair services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "ar1",
+            "name": "Appliance Diagnosis",
+            "description": "Diagnose and fix home appliance issues",
+            "duration": "1 hr",
+            "price": "$70",
+            "rating": 4.5
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Emergency repair",
+      "Parts available",
+      "Warranty check"
+    ]
+  },
+  {
+    "id": "home-009",
+    "keywords": [
+      "real estate",
+      "apartment",
+      "rent",
+      "property",
+      "house hunt"
+    ],
+    "response": "Real estate listings and rental properties.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "re1",
+            "name": "Downtown Apartments",
+            "category": "Real Estate",
+            "image": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400",
+            "rating": 4.5,
+            "distance": "0.5 km",
+            "vibe": [
+              "#modern",
+              "#central"
+            ],
+            "priceRange": "$$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "View listings",
+      "Price range",
+      "Schedule tour"
+    ]
+  }
+]

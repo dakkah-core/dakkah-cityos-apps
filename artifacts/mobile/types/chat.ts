@@ -21,7 +21,28 @@ export type ArtifactType =
   | "ticket-pass"
   | "order-tracker"
   | "product-carousel"
-  | "service-menu";
+  | "service-menu"
+  | "agent-sync-card"
+  | "calendar-selector"
+  | "form-group"
+  | "map-view"
+  | "media-player"
+  | "payment-request"
+  | "ride-status"
+  | "weather-card"
+  | "poll-card"
+  | "alert-card"
+  | "document-card"
+  | "receipt-card"
+  | "health-snapshot"
+  | "smart-home-control"
+  | "parking-meter"
+  | "parcel-locker"
+  | "reservation-card"
+  | "crypto-wallet"
+  | "task-checklist"
+  | "voice-note"
+  | "profile-card";
 
 export interface Artifact {
   type: ArtifactType;

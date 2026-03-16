@@ -1,0 +1,312 @@
+[
+  {
+    "id": "health-001",
+    "keywords": [
+      "doctor",
+      "clinic",
+      "medical",
+      "health check",
+      "checkup"
+    ],
+    "response": "Medical clinics and doctors available near you.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "doc1",
+            "name": "General Checkup",
+            "description": "Comprehensive health screening",
+            "duration": "45 min",
+            "price": "$100",
+            "rating": 4.8
+          },
+          {
+            "id": "doc2",
+            "name": "Specialist Consultation",
+            "description": "Consultation with board-certified specialist",
+            "duration": "30 min",
+            "price": "$150",
+            "rating": 4.9
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Walk-in clinics",
+      "Book appointment",
+      "Telehealth"
+    ]
+  },
+  {
+    "id": "health-002",
+    "keywords": [
+      "dentist",
+      "dental",
+      "teeth",
+      "tooth"
+    ],
+    "response": "Top-rated dental clinics in your area.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "dn1",
+            "name": "Dental Cleaning",
+            "description": "Professional teeth cleaning and checkup",
+            "duration": "45 min",
+            "price": "$120",
+            "rating": 4.8
+          },
+          {
+            "id": "dn2",
+            "name": "Teeth Whitening",
+            "description": "Professional whitening treatment",
+            "duration": "1 hr",
+            "price": "$250",
+            "rating": 4.7
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Emergency dental",
+      "Cosmetic",
+      "Insurance accepted"
+    ]
+  },
+  {
+    "id": "health-003",
+    "keywords": [
+      "gym",
+      "fitness",
+      "workout",
+      "exercise",
+      "training"
+    ],
+    "response": "Fitness centers and gyms near you.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "gym1",
+            "name": "Iron Peak Fitness",
+            "category": "Gym",
+            "image": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400",
+            "rating": 4.7,
+            "distance": "0.8 km",
+            "vibe": [
+              "#modern",
+              "#24hr"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Day pass",
+      "Personal trainer",
+      "Class schedule"
+    ]
+  },
+  {
+    "id": "health-004",
+    "keywords": [
+      "mental health",
+      "therapy",
+      "therapist",
+      "counseling",
+      "psychologist"
+    ],
+    "response": "Licensed therapists and counseling services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "th1",
+            "name": "Individual Therapy",
+            "description": "One-on-one counseling session",
+            "duration": "50 min",
+            "price": "$130",
+            "rating": 4.9
+          },
+          {
+            "id": "th2",
+            "name": "Online Counseling",
+            "description": "Virtual therapy session from home",
+            "duration": "50 min",
+            "price": "$100",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Virtual session",
+      "Insurance",
+      "Couples therapy"
+    ]
+  },
+  {
+    "id": "health-005",
+    "keywords": [
+      "hospital",
+      "emergency",
+      "er",
+      "urgent care",
+      "ambulance"
+    ],
+    "response": "Nearest hospitals and emergency facilities.",
+    "artifact": {
+      "type": "alert-card",
+      "data": {
+        "title": "Emergency Services",
+        "message": "The nearest emergency room is at City General Hospital, 1.2 km away. Average wait time: 15 minutes. For life-threatening emergencies, call 911.",
+        "severity": "critical",
+        "actions": [
+          "Get Directions",
+          "Call 911"
+        ]
+      }
+    },
+    "chips": [
+      "Navigate now",
+      "Call ahead",
+      "Urgent care instead"
+    ]
+  },
+  {
+    "id": "health-006",
+    "keywords": [
+      "optician",
+      "eye doctor",
+      "ophthalmologist",
+      "glasses",
+      "contacts",
+      "vision"
+    ],
+    "response": "Eye care professionals and opticians nearby.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "eye1",
+            "name": "Eye Exam",
+            "description": "Comprehensive vision and eye health check",
+            "duration": "30 min",
+            "price": "$80",
+            "rating": 4.7
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book exam",
+      "Lens catalog",
+      "Insurance"
+    ]
+  },
+  {
+    "id": "health-007",
+    "keywords": [
+      "yoga",
+      "pilates",
+      "meditation",
+      "mindfulness"
+    ],
+    "response": "Yoga studios and meditation centers nearby.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "yg1",
+            "name": "Zen Flow Studio",
+            "category": "Yoga Studio",
+            "image": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400",
+            "rating": 4.9,
+            "distance": "1.0 km",
+            "vibe": [
+              "#zen",
+              "#peaceful"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Class schedule",
+      "Beginner class",
+      "Trial pass"
+    ]
+  },
+  {
+    "id": "health-008",
+    "keywords": [
+      "nutrition",
+      "nutritionist",
+      "diet",
+      "dietician",
+      "meal plan"
+    ],
+    "response": "Nutritionists and diet planning services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "nt1",
+            "name": "Nutrition Consultation",
+            "description": "Personalized diet plan and assessment",
+            "duration": "1 hr",
+            "price": "$90",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Meal plans",
+      "Online consult",
+      "Weight management"
+    ]
+  },
+  {
+    "id": "health-009",
+    "keywords": [
+      "blood test",
+      "lab",
+      "laboratory",
+      "blood work"
+    ],
+    "response": "Medical laboratories for blood work and testing.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "lb1",
+            "name": "Complete Blood Panel",
+            "description": "Comprehensive blood test with results in 24h",
+            "duration": "15 min",
+            "price": "$75",
+            "rating": 4.6
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Walk-in available",
+      "Home collection",
+      "Results online"
+    ]
+  }
+]

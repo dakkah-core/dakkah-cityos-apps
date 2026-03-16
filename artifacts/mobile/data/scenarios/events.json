@@ -1,0 +1,301 @@
+[
+  {
+    "id": "events-001",
+    "keywords": [
+      "sports",
+      "game",
+      "match",
+      "stadium",
+      "football",
+      "soccer"
+    ],
+    "response": "Live sports events and matches.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "sp1",
+            "name": "City FC vs. Rivals",
+            "date": "This Saturday",
+            "time": "8:00 PM",
+            "location": "National Stadium",
+            "image": "https://images.unsplash.com/photo-1459865264687-595d652de67e?w=400",
+            "category": "Sports",
+            "attendees": 35000,
+            "price": "$30"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Buy tickets",
+      "Fan zone",
+      "Live stream"
+    ]
+  },
+  {
+    "id": "events-002",
+    "keywords": [
+      "workshop",
+      "hands-on",
+      "diy",
+      "make"
+    ],
+    "response": "Hands-on workshops and DIY experiences.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "ws1",
+            "name": "Pottery Workshop",
+            "date": "This Sunday",
+            "time": "2:00 PM",
+            "location": "Clay Studio",
+            "image": "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400",
+            "category": "Workshop",
+            "attendees": 15,
+            "price": "$45"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book spot",
+      "Materials included",
+      "All levels"
+    ]
+  },
+  {
+    "id": "events-003",
+    "keywords": [
+      "conference",
+      "summit",
+      "keynote",
+      "speaker"
+    ],
+    "response": "Professional conferences and speaking events.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "cf1",
+            "name": "Tech Innovation Summit",
+            "date": "Next Month",
+            "time": "9:00 AM",
+            "location": "Convention Center",
+            "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400",
+            "category": "Conference",
+            "attendees": 2000,
+            "price": "$199"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Register",
+      "Speakers",
+      "Agenda"
+    ]
+  },
+  {
+    "id": "events-004",
+    "keywords": [
+      "pop-up",
+      "popup",
+      "temporary",
+      "limited time"
+    ],
+    "response": "Pop-up events and limited-time experiences.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "pu1",
+            "name": "Artisan Pop-up Market",
+            "date": "This Weekend",
+            "time": "10:00 AM",
+            "location": "Warehouse District",
+            "image": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400",
+            "category": "Pop-up",
+            "attendees": 300,
+            "price": "Free"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Vendor list",
+      "Set reminder",
+      "Share"
+    ]
+  },
+  {
+    "id": "events-005",
+    "keywords": [
+      "open mic",
+      "karaoke",
+      "sing",
+      "performance"
+    ],
+    "response": "Open mic nights and karaoke venues.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "om1",
+            "name": "Open Mic Night",
+            "date": "Every Thursday",
+            "time": "8:00 PM",
+            "location": "The Melody Bar",
+            "image": "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=400",
+            "category": "Music",
+            "attendees": 50,
+            "price": "Free"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Sign up",
+      "Song list",
+      "Bring instrument"
+    ]
+  },
+  {
+    "id": "events-006",
+    "keywords": [
+      "charity event",
+      "fundraiser",
+      "gala",
+      "benefit"
+    ],
+    "response": "Charity events and fundraising galas.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "ch1",
+            "name": "Annual Charity Gala",
+            "date": "Next Saturday",
+            "time": "7:00 PM",
+            "location": "Grand Ballroom",
+            "image": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400",
+            "category": "Charity",
+            "attendees": 300,
+            "price": "$150"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Buy tickets",
+      "Donate",
+      "Sponsor table"
+    ]
+  },
+  {
+    "id": "events-007",
+    "keywords": [
+      "market",
+      "farmers market",
+      "flea market",
+      "bazaar"
+    ],
+    "response": "Markets, bazaars, and farmers markets near you.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "mk1",
+            "name": "Saturday Farmers Market",
+            "date": "Every Saturday",
+            "time": "7:00 AM",
+            "location": "Central Park",
+            "image": "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=400",
+            "category": "Market",
+            "attendees": 500,
+            "price": "Free Entry"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Vendor map",
+      "Seasonal produce",
+      "Parking"
+    ]
+  },
+  {
+    "id": "events-008",
+    "keywords": [
+      "trivia",
+      "quiz night",
+      "pub quiz",
+      "trivia night"
+    ],
+    "response": "Trivia nights and quiz events.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "tr1",
+            "name": "Pub Quiz Championship",
+            "date": "This Wednesday",
+            "time": "7:30 PM",
+            "location": "The Scholar Pub",
+            "image": "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=400",
+            "category": "Trivia",
+            "attendees": 80,
+            "price": "$5/person"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Register team",
+      "Prizes",
+      "Practice quiz"
+    ]
+  },
+  {
+    "id": "events-009",
+    "keywords": [
+      "wine tasting",
+      "beer tasting",
+      "brewery",
+      "tasting event"
+    ],
+    "response": "Tasting events and brewery tours.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "wt1",
+            "name": "Craft Beverage Tasting",
+            "date": "This Friday",
+            "time": "6:00 PM",
+            "location": "The Tasting Room",
+            "image": "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=400",
+            "category": "Tasting",
+            "attendees": 30,
+            "price": "$40"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book spot",
+      "Menu",
+      "Designated driver"
+    ]
+  }
+]

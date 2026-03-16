@@ -1,0 +1,508 @@
+[
+  {
+    "id": "planning-001",
+    "keywords": [
+      "itinerary",
+      "plan my day",
+      "day plan",
+      "schedule my day"
+    ],
+    "response": "I've created a balanced day plan for you.",
+    "artifact": {
+      "type": "itinerary-timeline",
+      "data": {
+        "days": [
+          {
+            "day": 1,
+            "title": "Your Day Plan",
+            "items": [
+              {
+                "time": "09:00",
+                "title": "Morning Coffee",
+                "type": "food",
+                "duration": "30m",
+                "cost": "$"
+              },
+              {
+                "time": "10:00",
+                "title": "City Walking Tour",
+                "type": "culture",
+                "duration": "2h",
+                "cost": "$$"
+              },
+              {
+                "time": "12:30",
+                "title": "Lunch Break",
+                "type": "food",
+                "duration": "1h",
+                "cost": "$$"
+              },
+              {
+                "time": "14:00",
+                "title": "Museum Visit",
+                "type": "culture",
+                "duration": "2h",
+                "cost": "$"
+              },
+              {
+                "time": "17:00",
+                "title": "Sunset Spot",
+                "type": "leisure",
+                "duration": "1h",
+                "cost": "Free"
+              },
+              {
+                "time": "19:00",
+                "title": "Dinner",
+                "type": "food",
+                "duration": "1.5h",
+                "cost": "$$$"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Adjust timing",
+      "Add activities",
+      "Share plan"
+    ]
+  },
+  {
+    "id": "planning-002",
+    "keywords": [
+      "budget",
+      "how much",
+      "cost estimate",
+      "price estimate"
+    ],
+    "response": "Here's a cost breakdown and budget estimate.",
+    "artifact": {
+      "type": "receipt-card",
+      "data": {
+        "merchant": "Budget Estimate",
+        "date": "Today's Plan",
+        "items": [
+          {
+            "label": "Activities",
+            "amount": "$45"
+          },
+          {
+            "label": "Food & Drinks",
+            "amount": "$60"
+          },
+          {
+            "label": "Transport",
+            "amount": "$25"
+          },
+          {
+            "label": "Shopping",
+            "amount": "$40"
+          }
+        ],
+        "subtotal": "$170",
+        "tax": "$0",
+        "total": "$170",
+        "paymentMethod": "Estimated"
+      }
+    },
+    "chips": [
+      "Make it cheaper",
+      "Splurge options",
+      "Save budget"
+    ]
+  },
+  {
+    "id": "planning-003",
+    "keywords": [
+      "road trip",
+      "drive",
+      "road",
+      "driving tour",
+      "scenic drive"
+    ],
+    "response": "Road trip route planned with stops along the way.",
+    "artifact": {
+      "type": "itinerary-timeline",
+      "data": {
+        "days": [
+          {
+            "day": 1,
+            "title": "Road Trip",
+            "items": [
+              {
+                "time": "07:00",
+                "title": "Departure",
+                "type": "transport",
+                "duration": "30m"
+              },
+              {
+                "time": "09:00",
+                "title": "Scenic Viewpoint",
+                "type": "nature",
+                "duration": "30m",
+                "cost": "Free"
+              },
+              {
+                "time": "11:00",
+                "title": "Historic Town Stop",
+                "type": "culture",
+                "duration": "1.5h",
+                "cost": "$"
+              },
+              {
+                "time": "13:00",
+                "title": "Roadside Lunch",
+                "type": "food",
+                "duration": "1h",
+                "cost": "$"
+              },
+              {
+                "time": "15:00",
+                "title": "Arrival at Destination",
+                "type": "landmark",
+                "duration": "-"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Gas stations",
+      "Rest stops",
+      "Alternative route"
+    ]
+  },
+  {
+    "id": "planning-004",
+    "keywords": [
+      "packing list",
+      "what to pack",
+      "pack",
+      "travel essentials"
+    ],
+    "response": "Here's a customized packing checklist for your trip.",
+    "artifact": {
+      "type": "task-checklist",
+      "data": {
+        "title": "Packing List",
+        "tasks": [
+          {
+            "label": "Passport & ID",
+            "done": false,
+            "priority": "high"
+          },
+          {
+            "label": "Phone charger & adapter",
+            "done": false,
+            "priority": "high"
+          },
+          {
+            "label": "Comfortable walking shoes",
+            "done": false,
+            "priority": "medium"
+          },
+          {
+            "label": "Sunscreen & hat",
+            "done": false,
+            "priority": "medium"
+          },
+          {
+            "label": "Light jacket",
+            "done": false,
+            "priority": "low"
+          },
+          {
+            "label": "Reusable water bottle",
+            "done": false,
+            "priority": "low"
+          },
+          {
+            "label": "Camera",
+            "done": false,
+            "priority": "low"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Add items",
+      "Share list",
+      "Download PDF"
+    ]
+  },
+  {
+    "id": "planning-005",
+    "keywords": [
+      "wedding",
+      "wedding planning",
+      "wedding venue",
+      "wedding reception"
+    ],
+    "response": "Wedding planning resources and venue options.",
+    "artifact": {
+      "type": "agent-sync-card",
+      "data": {
+        "title": "Wedding Planning",
+        "theme": "social",
+        "steps": [
+          {
+            "label": "Set date and budget"
+          },
+          {
+            "label": "Choose venue"
+          },
+          {
+            "label": "Book vendors"
+          },
+          {
+            "label": "Send invitations"
+          },
+          {
+            "label": "Final arrangements"
+          }
+        ],
+        "avatars": [
+          "Bride",
+          "Groom",
+          "Planner"
+        ],
+        "actions": [
+          "Browse Venues",
+          "Find Vendors"
+        ]
+      }
+    },
+    "chips": [
+      "Venues",
+      "Photographers",
+      "Catering",
+      "Budget planner"
+    ]
+  },
+  {
+    "id": "planning-006",
+    "keywords": [
+      "vacation",
+      "holiday plan",
+      "getaway",
+      "time off"
+    ],
+    "response": "Vacation planning and getaway ideas.",
+    "artifact": {
+      "type": "form-group",
+      "data": {
+        "title": "What kind of vacation?",
+        "type": "radio",
+        "options": [
+          {
+            "label": "Beach & Relaxation",
+            "value": "beach",
+            "description": "Coastal resort or tropical destination"
+          },
+          {
+            "label": "City Break",
+            "value": "city",
+            "description": "Culture, food, and nightlife"
+          },
+          {
+            "label": "Adventure & Outdoor",
+            "value": "adventure",
+            "description": "Hiking, sports, and nature"
+          },
+          {
+            "label": "Cultural Immersion",
+            "value": "cultural",
+            "description": "History, art, and local experiences"
+          }
+        ],
+        "confirmLabel": "Plan My Trip"
+      }
+    },
+    "chips": [
+      "Popular destinations",
+      "Budget options",
+      "Last minute deals"
+    ]
+  },
+  {
+    "id": "planning-007",
+    "keywords": [
+      "reservation",
+      "make reservation",
+      "table for",
+      "book a table"
+    ],
+    "response": "I'll help you make a reservation.",
+    "artifact": {
+      "type": "calendar-selector",
+      "data": {
+        "title": "Book a Table",
+        "dates": [
+          {
+            "date": "2026-03-16",
+            "day": "Mon",
+            "dayNum": 16,
+            "available": true
+          },
+          {
+            "date": "2026-03-17",
+            "day": "Tue",
+            "dayNum": 17,
+            "available": true
+          },
+          {
+            "date": "2026-03-18",
+            "day": "Wed",
+            "dayNum": 18,
+            "available": true
+          },
+          {
+            "date": "2026-03-19",
+            "day": "Thu",
+            "dayNum": 19,
+            "available": true
+          },
+          {
+            "date": "2026-03-20",
+            "day": "Fri",
+            "dayNum": 20,
+            "available": true
+          },
+          {
+            "date": "2026-03-21",
+            "day": "Sat",
+            "dayNum": 21,
+            "available": false
+          },
+          {
+            "date": "2026-03-22",
+            "day": "Sun",
+            "dayNum": 22,
+            "available": true
+          }
+        ],
+        "timeSlots": [
+          {
+            "time": "6:00 PM",
+            "available": true
+          },
+          {
+            "time": "6:30 PM",
+            "available": true
+          },
+          {
+            "time": "7:00 PM",
+            "available": false
+          },
+          {
+            "time": "7:30 PM",
+            "available": true
+          },
+          {
+            "time": "8:00 PM",
+            "available": true
+          },
+          {
+            "time": "8:30 PM",
+            "available": false
+          },
+          {
+            "time": "9:00 PM",
+            "available": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Special requests",
+      "Large party",
+      "Outdoor seating"
+    ]
+  },
+  {
+    "id": "planning-008",
+    "keywords": [
+      "surprise",
+      "surprise plan",
+      "surprise party",
+      "plan a surprise"
+    ],
+    "response": "Let me help plan the perfect surprise!",
+    "artifact": {
+      "type": "agent-sync-card",
+      "data": {
+        "title": "Surprise Planning",
+        "theme": "social",
+        "steps": [
+          {
+            "label": "Set the date"
+          },
+          {
+            "label": "Choose activity"
+          },
+          {
+            "label": "Coordinate with friends"
+          },
+          {
+            "label": "Arrange logistics"
+          },
+          {
+            "label": "Execute the surprise!"
+          }
+        ],
+        "avatars": [
+          "You",
+          "Friend1",
+          "Friend2"
+        ],
+        "actions": [
+          "Start Planning",
+          "Get Ideas"
+        ]
+      }
+    },
+    "chips": [
+      "Venue ideas",
+      "Gift options",
+      "Invite helpers"
+    ]
+  },
+  {
+    "id": "planning-009",
+    "keywords": [
+      "anniversary",
+      "special occasion",
+      "celebrate anniversary"
+    ],
+    "response": "Anniversary celebration ideas and planning.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "an1",
+            "name": "Romantic Dinner Cruise",
+            "category": "Experience",
+            "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400",
+            "rating": 4.9,
+            "distance": "5 km",
+            "vibe": [
+              "#romantic",
+              "#sunset"
+            ],
+            "priceRange": "$$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book experience",
+      "Gift ideas",
+      "Flowers delivery"
+    ]
+  }
+]

@@ -1,0 +1,308 @@
+[
+  {
+    "id": "culture-001",
+    "keywords": [
+      "theater",
+      "theatre",
+      "play",
+      "drama",
+      "stage show"
+    ],
+    "response": "Live theater performances and stage shows.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "th1",
+            "name": "Shakespeare in the Park",
+            "date": "This Weekend",
+            "time": "7:30 PM",
+            "location": "Open Air Theater",
+            "image": "https://images.unsplash.com/photo-1503095396549-807759245b35?w=400",
+            "category": "Theater",
+            "attendees": 200,
+            "price": "$35"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Buy tickets",
+      "Season pass",
+      "Cast info"
+    ]
+  },
+  {
+    "id": "culture-002",
+    "keywords": [
+      "cinema",
+      "movie",
+      "film",
+      "theater showing"
+    ],
+    "response": "Movies now showing at nearby cinemas.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "cm1",
+            "name": "New Releases at CineMax",
+            "date": "Now Showing",
+            "time": "Various",
+            "location": "CineMax Downtown",
+            "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400",
+            "category": "Cinema",
+            "attendees": 450,
+            "price": "$14"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Showtimes",
+      "IMAX",
+      "Book seats"
+    ]
+  },
+  {
+    "id": "culture-003",
+    "keywords": [
+      "history",
+      "heritage",
+      "historic site",
+      "ancient",
+      "archaeological"
+    ],
+    "response": "Historical sites and heritage locations to explore.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "hs1",
+            "name": "Old City Fortress",
+            "category": "Historic Site",
+            "image": "https://images.unsplash.com/photo-1539650116574-8efeb43e2750?w=400",
+            "rating": 4.8,
+            "distance": "3 km",
+            "vibe": [
+              "#ancient",
+              "#heritage"
+            ],
+            "priceRange": "$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Guided tour",
+      "Audio guide",
+      "History facts"
+    ]
+  },
+  {
+    "id": "culture-004",
+    "keywords": [
+      "live music",
+      "band",
+      "gig",
+      "music venue",
+      "open mic"
+    ],
+    "response": "Live music venues and tonight's performances.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "lm1",
+            "name": "Live Jazz Evening",
+            "date": "Tonight",
+            "time": "9:00 PM",
+            "location": "Blue Note Club",
+            "image": "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=400",
+            "category": "Music",
+            "attendees": 80,
+            "price": "$20"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "RSVP",
+      "Full lineup",
+      "Drink specials"
+    ]
+  },
+  {
+    "id": "culture-005",
+    "keywords": [
+      "cooking class",
+      "food class",
+      "culinary",
+      "learn to cook"
+    ],
+    "response": "Cooking classes and culinary experiences.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "cc1",
+            "name": "Traditional Arabic Cooking",
+            "date": "This Saturday",
+            "time": "11:00 AM",
+            "location": "Chef's Kitchen Studio",
+            "image": "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400",
+            "category": "Culinary",
+            "attendees": 12,
+            "price": "$75"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book spot",
+      "Menu preview",
+      "Gift voucher"
+    ]
+  },
+  {
+    "id": "culture-006",
+    "keywords": [
+      "festival",
+      "cultural festival",
+      "fair",
+      "carnival"
+    ],
+    "response": "Upcoming festivals and cultural celebrations.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "fs1",
+            "name": "Cultural Heritage Festival",
+            "date": "Next Weekend",
+            "time": "4:00 PM",
+            "location": "City Square",
+            "image": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400",
+            "category": "Festival",
+            "attendees": 5000,
+            "price": "Free"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Schedule",
+      "Food vendors",
+      "Entertainment"
+    ]
+  },
+  {
+    "id": "culture-007",
+    "keywords": [
+      "comedy",
+      "stand up",
+      "comedy show",
+      "comedian",
+      "laugh"
+    ],
+    "response": "Stand-up comedy shows and comedy nights.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "co1",
+            "name": "Comedy Night Live",
+            "date": "This Friday",
+            "time": "8:00 PM",
+            "location": "Laugh Factory",
+            "image": "https://images.unsplash.com/photo-1585699324551-f6c309eedeca?w=400",
+            "category": "Comedy",
+            "attendees": 120,
+            "price": "$25"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book tickets",
+      "Lineup",
+      "VIP seats"
+    ]
+  },
+  {
+    "id": "culture-008",
+    "keywords": [
+      "dance class",
+      "dancing",
+      "salsa",
+      "ballet",
+      "hip hop dance"
+    ],
+    "response": "Dance classes and studios for all styles.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "dc1",
+            "name": "Salsa Beginners",
+            "description": "Fun intro to salsa dancing for all levels",
+            "duration": "1 hr",
+            "price": "$20",
+            "rating": 4.8
+          },
+          {
+            "id": "dc2",
+            "name": "Hip Hop Workshop",
+            "description": "High-energy hip hop choreography class",
+            "duration": "1.5 hrs",
+            "price": "$25",
+            "rating": 4.7
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Class schedule",
+      "Trial class",
+      "Private lessons"
+    ]
+  },
+  {
+    "id": "culture-009",
+    "keywords": [
+      "podcast",
+      "recording studio",
+      "audio production"
+    ],
+    "response": "Recording studios and podcast facilities.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "rs1",
+            "name": "Podcast Studio Rental",
+            "description": "Professional podcast recording studio",
+            "duration": "2 hrs",
+            "price": "$80",
+            "rating": 4.6
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book studio",
+      "Equipment list",
+      "Editing services"
+    ]
+  }
+]

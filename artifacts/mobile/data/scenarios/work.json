@@ -1,0 +1,345 @@
+[
+  {
+    "id": "work-001",
+    "keywords": [
+      "interview",
+      "job interview",
+      "interview prep"
+    ],
+    "response": "Let me help you prepare for your interview.",
+    "artifact": {
+      "type": "task-checklist",
+      "data": {
+        "title": "Interview Prep Checklist",
+        "tasks": [
+          {
+            "label": "Research the company",
+            "done": false,
+            "priority": "high"
+          },
+          {
+            "label": "Prepare STAR examples",
+            "done": false,
+            "priority": "high"
+          },
+          {
+            "label": "Review job description",
+            "done": false,
+            "priority": "medium"
+          },
+          {
+            "label": "Prepare questions to ask",
+            "done": false,
+            "priority": "medium"
+          },
+          {
+            "label": "Plan outfit and route",
+            "done": false,
+            "priority": "low"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Mock interview",
+      "Company research",
+      "Salary info"
+    ]
+  },
+  {
+    "id": "work-002",
+    "keywords": [
+      "resume",
+      "cv",
+      "cover letter",
+      "job application"
+    ],
+    "response": "Resources for crafting your resume and applications.",
+    "artifact": {
+      "type": "document-card",
+      "data": {
+        "title": "Resume Template Pack",
+        "type": "doc",
+        "size": "2.4 MB",
+        "status": "draft",
+        "preview": "Professional resume templates optimized for ATS systems. Includes cover letter templates and formatting guide."
+      }
+    },
+    "chips": [
+      "Review my resume",
+      "Templates",
+      "Writing tips"
+    ]
+  },
+  {
+    "id": "work-003",
+    "keywords": [
+      "meeting",
+      "schedule meeting",
+      "calendar",
+      "availability"
+    ],
+    "response": "Let's find the perfect time for your meeting.",
+    "artifact": {
+      "type": "calendar-selector",
+      "data": {
+        "title": "Schedule a Meeting",
+        "dates": [
+          {
+            "date": "2026-03-16",
+            "day": "Mon",
+            "dayNum": 16,
+            "available": true
+          },
+          {
+            "date": "2026-03-17",
+            "day": "Tue",
+            "dayNum": 17,
+            "available": true
+          },
+          {
+            "date": "2026-03-18",
+            "day": "Wed",
+            "dayNum": 18,
+            "available": true
+          },
+          {
+            "date": "2026-03-19",
+            "day": "Thu",
+            "dayNum": 19,
+            "available": false
+          },
+          {
+            "date": "2026-03-20",
+            "day": "Fri",
+            "dayNum": 20,
+            "available": true
+          }
+        ],
+        "timeSlots": [
+          {
+            "time": "9:00 AM",
+            "available": true
+          },
+          {
+            "time": "10:00 AM",
+            "available": false
+          },
+          {
+            "time": "11:00 AM",
+            "available": true
+          },
+          {
+            "time": "1:00 PM",
+            "available": true
+          },
+          {
+            "time": "2:00 PM",
+            "available": true
+          },
+          {
+            "time": "3:00 PM",
+            "available": false
+          },
+          {
+            "time": "4:00 PM",
+            "available": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Send invite",
+      "Add agenda",
+      "Virtual meeting"
+    ]
+  },
+  {
+    "id": "work-004",
+    "keywords": [
+      "freelance",
+      "freelancer",
+      "gig",
+      "contract work",
+      "side hustle"
+    ],
+    "response": "Freelance opportunities and resources.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "fr1",
+            "name": "Freelance Consultation",
+            "description": "Expert advice on freelancing and pricing",
+            "duration": "30 min",
+            "price": "$40",
+            "rating": 4.7
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Find gigs",
+      "Set rates",
+      "Tax advice"
+    ]
+  },
+  {
+    "id": "work-005",
+    "keywords": [
+      "presentation",
+      "pitch",
+      "slide deck",
+      "powerpoint"
+    ],
+    "response": "Tools and services for creating impactful presentations.",
+    "artifact": {
+      "type": "document-card",
+      "data": {
+        "title": "Pitch Deck Template",
+        "type": "doc",
+        "size": "5.1 MB",
+        "status": "draft",
+        "preview": "Professional pitch deck template with 20+ slides covering problem, solution, market, team, and financials."
+      }
+    },
+    "chips": [
+      "Design help",
+      "Practice pitch",
+      "Templates"
+    ]
+  },
+  {
+    "id": "work-006",
+    "keywords": [
+      "print",
+      "printer",
+      "printing",
+      "copy center",
+      "print shop"
+    ],
+    "response": "Nearby print shops and copy centers.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "pr1",
+            "name": "QuickPrint Express",
+            "category": "Print Shop",
+            "image": "https://images.unsplash.com/photo-1562654501-a0ccc0fc3fb1?w=400",
+            "rating": 4.5,
+            "distance": "0.6 km",
+            "vibe": [
+              "#fast",
+              "#quality"
+            ],
+            "priceRange": "$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Upload file",
+      "Business cards",
+      "Large format"
+    ]
+  },
+  {
+    "id": "work-007",
+    "keywords": [
+      "notary",
+      "apostille",
+      "legal document",
+      "certification"
+    ],
+    "response": "Notary and document certification services.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "nt1",
+            "name": "Notary Service",
+            "description": "Document notarization and certification",
+            "duration": "30 min",
+            "price": "$25",
+            "rating": 4.6
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Walk-in",
+      "Mobile notary",
+      "Documents needed"
+    ]
+  },
+  {
+    "id": "work-008",
+    "keywords": [
+      "business card",
+      "networking card",
+      "name card"
+    ],
+    "response": "Professional business card design and printing.",
+    "artifact": {
+      "type": "product-carousel",
+      "data": {
+        "products": [
+          {
+            "id": "bc1",
+            "name": "Premium Business Cards",
+            "brand": "PrintPro",
+            "price": "$35/100",
+            "image": "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=400",
+            "tags": [
+              "premium",
+              "matte"
+            ]
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Design now",
+      "Rush order",
+      "Digital card"
+    ]
+  },
+  {
+    "id": "work-009",
+    "keywords": [
+      "startup",
+      "incubator",
+      "accelerator",
+      "entrepreneurship"
+    ],
+    "response": "Startup resources, incubators, and entrepreneurship programs.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "st1",
+            "name": "Startup Weekend",
+            "date": "Next Month",
+            "time": "9:00 AM",
+            "location": "Innovation Hub",
+            "image": "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400",
+            "category": "Startup",
+            "attendees": 150,
+            "price": "$50"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Apply now",
+      "Mentors",
+      "Funding options"
+    ]
+  }
+]

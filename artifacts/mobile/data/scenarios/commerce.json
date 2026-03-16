@@ -1,0 +1,360 @@
+[
+  {
+    "id": "commerce-001",
+    "keywords": [
+      "sneakers",
+      "shoes",
+      "kicks",
+      "footwear"
+    ],
+    "response": "Trending sneakers and shoe stores near you.",
+    "artifact": {
+      "type": "product-carousel",
+      "data": {
+        "products": [
+          {
+            "id": "sh1",
+            "name": "Limited Edition Air Max",
+            "brand": "Nike",
+            "price": "$189",
+            "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400",
+            "tags": [
+              "limited",
+              "trending"
+            ]
+          },
+          {
+            "id": "sh2",
+            "name": "Classic Ultraboost",
+            "brand": "Adidas",
+            "price": "$160",
+            "image": "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400",
+            "tags": [
+              "comfort",
+              "running"
+            ]
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Try on nearby",
+      "Size guide",
+      "Compare prices"
+    ]
+  },
+  {
+    "id": "commerce-002",
+    "keywords": [
+      "mall",
+      "shopping center",
+      "shopping mall"
+    ],
+    "response": "Shopping malls and retail centers near you.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "ml1",
+            "name": "City Center Mall",
+            "category": "Shopping Mall",
+            "image": "https://images.unsplash.com/photo-1519567241046-7f570eee3ce6?w=400",
+            "rating": 4.5,
+            "distance": "2.5 km",
+            "vibe": [
+              "#luxury",
+              "#dining"
+            ],
+            "priceRange": "$$$",
+            "openNow": true
+          },
+          {
+            "id": "ml2",
+            "name": "The Avenues",
+            "category": "Mall",
+            "image": "https://images.unsplash.com/photo-1567449303078-57ad995bd17f?w=400",
+            "rating": 4.3,
+            "distance": "4.0 km",
+            "vibe": [
+              "#family",
+              "#entertainment"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Store directory",
+      "Sales today",
+      "Food court"
+    ]
+  },
+  {
+    "id": "commerce-003",
+    "keywords": [
+      "electronics",
+      "tech",
+      "gadgets",
+      "laptop",
+      "phone"
+    ],
+    "response": "Best tech stores and deals on electronics.",
+    "artifact": {
+      "type": "product-carousel",
+      "data": {
+        "products": [
+          {
+            "id": "el1",
+            "name": "Wireless Earbuds Pro",
+            "brand": "TechSound",
+            "price": "$129",
+            "image": "https://images.unsplash.com/photo-1590658268037-6bf12f032f55?w=400",
+            "tags": [
+              "wireless",
+              "noise-cancelling"
+            ]
+          },
+          {
+            "id": "el2",
+            "name": "Smart Watch Ultra",
+            "brand": "FitTech",
+            "price": "$299",
+            "image": "https://images.unsplash.com/photo-1546868871-af0de0ae72be?w=400",
+            "tags": [
+              "fitness",
+              "smart"
+            ]
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Compare specs",
+      "Best deals",
+      "Nearby stores"
+    ]
+  },
+  {
+    "id": "commerce-004",
+    "keywords": [
+      "grocery",
+      "supermarket",
+      "groceries",
+      "fresh produce"
+    ],
+    "response": "Grocery stores and fresh markets near you.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "gr1",
+            "name": "Fresh Market",
+            "category": "Grocery",
+            "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400",
+            "rating": 4.6,
+            "distance": "0.5 km",
+            "vibe": [
+              "#organic",
+              "#fresh"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Delivery available",
+      "Weekly deals",
+      "Organic section"
+    ]
+  },
+  {
+    "id": "commerce-005",
+    "keywords": [
+      "flowers",
+      "florist",
+      "bouquet",
+      "floral"
+    ],
+    "response": "Beautiful flower shops and florists nearby.",
+    "artifact": {
+      "type": "product-carousel",
+      "data": {
+        "products": [
+          {
+            "id": "fl1",
+            "name": "Seasonal Bouquet",
+            "brand": "Petal & Stem",
+            "price": "$45",
+            "image": "https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=400",
+            "tags": [
+              "fresh",
+              "seasonal"
+            ]
+          },
+          {
+            "id": "fl2",
+            "name": "Rose Arrangement",
+            "brand": "Bloom Room",
+            "price": "$65",
+            "image": "https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=400",
+            "tags": [
+              "romantic",
+              "premium"
+            ]
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Same-day delivery",
+      "Custom arrangement",
+      "Subscription"
+    ]
+  },
+  {
+    "id": "commerce-006",
+    "keywords": [
+      "gift",
+      "present",
+      "gift shop",
+      "souvenir"
+    ],
+    "response": "Unique gift shops and souvenir stores in the area.",
+    "artifact": {
+      "type": "product-carousel",
+      "data": {
+        "products": [
+          {
+            "id": "gf1",
+            "name": "Artisan Gift Box",
+            "brand": "Local Crafts",
+            "price": "$55",
+            "image": "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=400",
+            "tags": [
+              "handmade",
+              "local"
+            ]
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Under $30",
+      "Personalized",
+      "Gift wrapping"
+    ]
+  },
+  {
+    "id": "commerce-007",
+    "keywords": [
+      "jewelry",
+      "jeweler",
+      "ring",
+      "necklace",
+      "bracelet"
+    ],
+    "response": "Fine jewelry stores and artisan jewelers.",
+    "artifact": {
+      "type": "product-carousel",
+      "data": {
+        "products": [
+          {
+            "id": "jw1",
+            "name": "Gold Chain Necklace",
+            "brand": "Luxe Fine",
+            "price": "$320",
+            "image": "https://images.unsplash.com/photo-1515562141589-67f0d569b6c1?w=400",
+            "tags": [
+              "gold",
+              "elegant"
+            ]
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Custom design",
+      "Repairs",
+      "Appraisal"
+    ]
+  },
+  {
+    "id": "commerce-008",
+    "keywords": [
+      "thrift",
+      "vintage",
+      "secondhand",
+      "pre-owned",
+      "consignment"
+    ],
+    "response": "Best thrift and vintage stores for unique finds.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "th1",
+            "name": "Retro Revival",
+            "category": "Thrift Store",
+            "image": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400",
+            "rating": 4.6,
+            "distance": "1.2 km",
+            "vibe": [
+              "#vintage",
+              "#unique"
+            ],
+            "priceRange": "$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Designer items",
+      "Furniture",
+      "Clothing only"
+    ]
+  },
+  {
+    "id": "commerce-009",
+    "keywords": [
+      "pharmacy",
+      "drugstore",
+      "medicine",
+      "prescription"
+    ],
+    "response": "Pharmacies and drugstores open near you.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "rx1",
+            "name": "MedPlus Pharmacy",
+            "category": "Pharmacy",
+            "image": "https://images.unsplash.com/photo-1576602976047-174e57a47881?w=400",
+            "rating": 4.4,
+            "distance": "0.3 km",
+            "vibe": [
+              "#24hr",
+              "#delivery"
+            ],
+            "priceRange": "$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "24-hour",
+      "Delivery",
+      "Prescription refill"
+    ]
+  }
+]

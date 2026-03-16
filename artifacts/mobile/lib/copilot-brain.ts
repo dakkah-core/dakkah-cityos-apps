@@ -1,15 +1,95 @@
 import type { Artifact, Message } from "../types/chat";
 
+import placesData from "../data/scenarios/places.json";
+import servicesData from "../data/scenarios/services.json";
+import commerceData from "../data/scenarios/commerce.json";
+import transitData from "../data/scenarios/transit.json";
+import socialData from "../data/scenarios/social.json";
+import healthData from "../data/scenarios/health.json";
+import workData from "../data/scenarios/work.json";
+import outdoorData from "../data/scenarios/outdoor.json";
+import familyData from "../data/scenarios/family.json";
+import petsData from "../data/scenarios/pets.json";
+import cultureData from "../data/scenarios/culture.json";
+import utilityData from "../data/scenarios/utility.json";
+import intelData from "../data/scenarios/intel.json";
+import eventsData from "../data/scenarios/events.json";
+import planningData from "../data/scenarios/planning.json";
+import miscData from "../data/scenarios/misc.json";
+import homeData from "../data/scenarios/home.json";
+import educationData from "../data/scenarios/education.json";
+import beautyData from "../data/scenarios/beauty.json";
+import wellnessData from "../data/scenarios/wellness.json";
+import myActivityData from "../data/scenarios/my_activity.json";
+
+interface ScenarioEntry {
+  id: string;
+  keywords: string[];
+  response: string;
+  artifact: { type: string; data: any };
+  chips: string[];
+}
+
 interface CopilotResponse {
   content: string;
   artifacts?: Artifact[];
   mode?: "suggest" | "propose" | "execute";
 }
 
-export function processUserMessage(input: string): CopilotResponse {
-  const lower = input.toLowerCase();
+const allScenarios: ScenarioEntry[] = [
+  ...placesData,
+  ...servicesData,
+  ...commerceData,
+  ...transitData,
+  ...socialData,
+  ...healthData,
+  ...workData,
+  ...outdoorData,
+  ...familyData,
+  ...petsData,
+  ...cultureData,
+  ...utilityData,
+  ...intelData,
+  ...eventsData,
+  ...planningData,
+  ...miscData,
+  ...homeData,
+  ...educationData,
+  ...beautyData,
+  ...wellnessData,
+  ...myActivityData,
+] as ScenarioEntry[];
 
-  if (lower.includes("quiet") || lower.includes("places near") || lower.includes("coffee") || lower.includes("cafe")) {
+function findBestScenario(input: string): ScenarioEntry | null {
+  const lower = input.toLowerCase();
+  let bestMatch: ScenarioEntry | null = null;
+  let bestScore = 0;
+
+  for (const scenario of allScenarios) {
+    let matchedLength = 0;
+    let matchCount = 0;
+
+    for (const keyword of scenario.keywords) {
+      if (lower.includes(keyword.toLowerCase())) {
+        matchedLength += keyword.length;
+        matchCount++;
+      }
+    }
+
+    if (matchCount > 0) {
+      const score = matchedLength + matchCount * 0.1;
+      if (score > bestScore) {
+        bestScore = score;
+        bestMatch = scenario;
+      }
+    }
+  }
+
+  return bestMatch;
+}
+
+function handleHardcodedPatterns(lower: string): CopilotResponse | null {
+  if (lower.includes("quiet") || lower.includes("places near")) {
     return {
       content: "Here are some quiet spots near you that match your vibe. Each one has been rated by local ambassadors.",
       mode: "execute",
@@ -66,27 +146,7 @@ export function processUserMessage(input: string): CopilotResponse {
     };
   }
 
-  if (lower.includes("event") || lower.includes("happening") || lower.includes("weekend") || lower.includes("tonight") || lower.includes("concert")) {
-    return {
-      content: "Here's what's happening around you. I've prioritized events matching your interests.",
-      mode: "execute",
-      artifacts: [
-        {
-          type: "event-carousel",
-          data: {
-            events: [
-              { id: "e1", name: "Jazz Under Stars", date: "Tonight", time: "8:00 PM", location: "Rooftop Garden", image: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=400", category: "Music", attendees: 128, price: "$25" },
-              { id: "e2", name: "Street Food Festival", date: "This Saturday", time: "5:00 PM", location: "City Square", image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400", category: "Food", attendees: 342, price: "Free" },
-              { id: "e3", name: "Contemporary Art Exhibition", date: "This Week", time: "10:00 AM", location: "Modern Art Gallery", image: "https://images.unsplash.com/photo-1531243269054-5ebf6f34081e?w=400", category: "Art", attendees: 89, price: "$15" },
-              { id: "e4", name: "Sunset Yoga in the Park", date: "Tomorrow", time: "6:30 PM", location: "Central Park", image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400", category: "Wellness", attendees: 45, price: "$10" },
-            ],
-          },
-        },
-      ],
-    };
-  }
-
-  if (lower.includes("ambassador") || lower.includes("trust") || lower.includes("recommend") || lower.includes("who should")) {
+  if (lower.includes("ambassador") || lower.includes("trust") || lower.includes("who should")) {
     return {
       content: "Here are top-rated local ambassadors whose expertise matches what you're looking for. Each has been verified through our trust layer.",
       mode: "execute",
@@ -105,7 +165,7 @@ export function processUserMessage(input: string): CopilotResponse {
     };
   }
 
-  if (lower.includes("zone") || lower.includes("trending") || lower.includes("neighborhood") || lower.includes("area")) {
+  if (lower.includes("zone") || lower.includes("trending") || lower.includes("neighborhood")) {
     return {
       content: "Here's the real-time Zone Experience Score for areas around you. Higher scores mean more activity, better vibes, and more happening events.",
       mode: "execute",
@@ -217,133 +277,44 @@ export function processUserMessage(input: string): CopilotResponse {
     };
   }
 
-  if (lower.includes("order") || lower.includes("track") || lower.includes("delivery") || lower.includes("status")) {
+  if (lower.includes("help") || lower.includes("what can you") || lower.includes("how do you work") || lower.includes("your features")) {
     return {
-      content: "Here's the status of your order.",
-      mode: "execute",
-      artifacts: [
-        {
-          type: "order-tracker",
-          data: {
-            id: "o1",
-            orderNumber: "DK-2847",
-            status: "on-the-way",
-            items: ["Grilled Salmon", "Caesar Salad", "Sparkling Water"],
-            total: "$42.50",
-            estimatedTime: "15 min",
-          },
-        },
-      ],
-    };
-  }
-
-  if (lower.includes("analytics") || lower.includes("stats") || lower.includes("insights") || lower.includes("data") || lower.includes("report")) {
-    return {
-      content: "Here's your activity snapshot for this week.",
-      mode: "execute",
-      artifacts: [
-        {
-          type: "analytics-snapshot",
-          data: {
-            title: "Weekly Activity",
-            metrics: [
-              { label: "Places Visited", value: "12", trend: "up", trendValue: "+3" },
-              { label: "XP Earned", value: "450", trend: "up", trendValue: "+120" },
-              { label: "Reviews Written", value: "4", trend: "neutral", trendValue: "0" },
-              { label: "Events Attended", value: "2", trend: "down", trendValue: "-1" },
-            ],
-          },
-        },
-      ],
-    };
-  }
-
-  if (lower.includes("shop") || lower.includes("product") || lower.includes("buy") || lower.includes("merch")) {
-    return {
-      content: "Here are some products you might like based on your interests.",
-      mode: "execute",
-      artifacts: [
-        {
-          type: "product-carousel",
-          data: {
-            products: [
-              { id: "pr1", name: "Artisan Coffee Set", brand: "Local Roasters", price: "$45", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400", tags: ["artisan", "gift"] },
-              { id: "pr2", name: "City Map Print", brand: "Urban Art Co", price: "$30", image: "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=400", tags: ["art", "decor"] },
-              { id: "pr3", name: "Explorer Backpack", brand: "TrailMaker", price: "$89", image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400", tags: ["travel", "gear"] },
-            ],
-          },
-        },
-      ],
-    };
-  }
-
-  if (lower.includes("service") || lower.includes("spa") || lower.includes("salon") || lower.includes("massage") || lower.includes("haircut")) {
-    return {
-      content: "Here are available services near you.",
-      mode: "execute",
-      artifacts: [
-        {
-          type: "service-menu",
-          data: {
-            services: [
-              { id: "s1", name: "Deep Tissue Massage", description: "Full body therapeutic massage", duration: "60 min", price: "$80", rating: 4.9 },
-              { id: "s2", name: "Facial Treatment", description: "Hydrating and rejuvenating", duration: "45 min", price: "$65", rating: 4.7 },
-              { id: "s3", name: "Hair Styling", description: "Cut, wash, and style", duration: "30 min", price: "$40", rating: 4.8 },
-            ],
-          },
-        },
-      ],
-    };
-  }
-
-  if (lower.includes("restaurant") || lower.includes("food") || lower.includes("eat") || lower.includes("lunch") || lower.includes("dinner") || lower.includes("hungry")) {
-    return {
-      content: "I found these top dining options nearby based on current ratings and availability.",
-      mode: "execute",
-      artifacts: [
-        {
-          type: "poi-carousel",
-          data: {
-            pois: [
-              { id: "r1", name: "Najd Village", category: "Saudi Cuisine", image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400", rating: 4.9, distance: "0.8 km", vibe: ["#authentic", "#cozy"], priceRange: "$$", openNow: true },
-              { id: "r2", name: "Sakura House", category: "Japanese", image: "https://images.unsplash.com/photo-1579027989536-b7b1f875659b?w=400", rating: 4.7, distance: "1.5 km", vibe: ["#intimate", "#omakase"], priceRange: "$$$", openNow: true },
-              { id: "r3", name: "Piatto", category: "Italian", image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400", rating: 4.6, distance: "2.0 km", vibe: ["#romantic", "#garden"], priceRange: "$$", openNow: true },
-            ],
-          },
-        },
-        { type: "selection-chips", data: { question: "Filter by?", options: ["Cuisine type", "Price range", "Open now", "Highest rated"] } },
-      ],
-    };
-  }
-
-  if (lower.includes("family") || lower.includes("kid") || lower.includes("child")) {
-    return {
-      content: "Here are family-friendly activities perfect for all ages.",
-      mode: "execute",
-      artifacts: [
-        {
-          type: "poi-carousel",
-          data: {
-            pois: [
-              { id: "f1", name: "Adventure Park", category: "Theme Park", image: "https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?w=400", rating: 4.7, distance: "3.0 km", vibe: ["#family", "#adventure"], priceRange: "$$", openNow: true },
-              { id: "f2", name: "Science Museum", category: "Museum", image: "https://images.unsplash.com/photo-1569587112025-0d460e81a126?w=400", rating: 4.8, distance: "1.5 km", vibe: ["#educational", "#interactive"], priceRange: "$", openNow: true },
-              { id: "f3", name: "City Zoo", category: "Zoo", image: "https://images.unsplash.com/photo-1534567153574-2b12153a87f0?w=400", rating: 4.5, distance: "5.0 km", vibe: ["#outdoor", "#animals"], priceRange: "$", openNow: true },
-            ],
-          },
-        },
-      ],
-    };
-  }
-
-  if (lower.includes("help") || lower.includes("what can") || lower.includes("how do") || lower.includes("feature")) {
-    return {
-      content: "I'm your Dakkah Copilot \u2014 your AI concierge for the entire city. Here's what I can help with:\n\n\u2022 **Discover** places, restaurants, cafes, and hidden gems\n\u2022 **Plan** trips, itineraries, and date nights\n\u2022 **Events** \u2014 find what's happening and get tickets\n\u2022 **Book** restaurants, services, and experiences\n\u2022 **Compare** options side-by-side\n\u2022 **Track** orders and deliveries\n\u2022 **Zone Intelligence** \u2014 see what's trending in each area\n\u2022 **Progress** \u2014 earn XP, badges, and complete missions\n\nJust tell me what you need in natural language!",
+      content: "I'm your Dakkah Copilot — your AI concierge for the entire city. Here's what I can help with:\n\n• **Discover** places, restaurants, cafes, and hidden gems\n• **Plan** trips, itineraries, and date nights\n• **Events** — find what's happening and get tickets\n• **Book** restaurants, services, and experiences\n• **Compare** options side-by-side\n• **Track** orders and deliveries\n• **Zone Intelligence** — see what's trending in each area\n• **Progress** — earn XP, badges, and complete missions\n\nJust tell me what you need in natural language!",
       mode: "suggest",
       artifacts: [
         { type: "selection-chips", data: { question: "Try one of these:", options: ["Show me quiet places", "Plan a weekend trip", "What's happening tonight?", "How do I earn XP?"] } },
       ],
     };
   }
+
+  return null;
+}
+
+export function processUserMessage(input: string): CopilotResponse {
+  const lower = input.toLowerCase();
+
+  const scenario = findBestScenario(input);
+  if (scenario) {
+    const artifacts: Artifact[] = [
+      { type: scenario.artifact.type as Artifact["type"], data: scenario.artifact.data },
+    ];
+
+    if (scenario.chips && scenario.chips.length > 0) {
+      artifacts.push({
+        type: "selection-chips",
+        data: { question: "What next?", options: scenario.chips },
+      });
+    }
+
+    return {
+      content: scenario.response,
+      mode: "execute",
+      artifacts,
+    };
+  }
+
+  const hardcoded = handleHardcodedPatterns(lower);
+  if (hardcoded) return hardcoded;
 
   return {
     content: "I understand you're looking for something. Let me help you explore. You can ask me about places, events, trip planning, bookings, zone intelligence, or anything else about the city. What interests you most?",

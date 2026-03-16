@@ -1,0 +1,300 @@
+[
+  {
+    "id": "education-001",
+    "keywords": [
+      "online course",
+      "learn",
+      "e-learning",
+      "skill",
+      "udemy",
+      "coursera"
+    ],
+    "response": "Online courses and learning opportunities.",
+    "artifact": {
+      "type": "product-carousel",
+      "data": {
+        "products": [
+          {
+            "id": "oc1",
+            "name": "Web Development Bootcamp",
+            "brand": "CodeAcademy",
+            "price": "$49",
+            "image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400",
+            "tags": [
+              "coding",
+              "popular"
+            ]
+          },
+          {
+            "id": "oc2",
+            "name": "Data Science Fundamentals",
+            "brand": "SkillPath",
+            "price": "$39",
+            "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400",
+            "tags": [
+              "data",
+              "analytics"
+            ]
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Free courses",
+      "Certificates",
+      "By topic"
+    ]
+  },
+  {
+    "id": "education-002",
+    "keywords": [
+      "library card",
+      "borrow books",
+      "lending library"
+    ],
+    "response": "Library services and membership info.",
+    "artifact": {
+      "type": "document-card",
+      "data": {
+        "title": "Library Membership",
+        "type": "doc",
+        "preview": "Get a free library card with access to 500,000+ books, digital resources, study rooms, and community programs.",
+        "status": "pending"
+      }
+    },
+    "chips": [
+      "Apply online",
+      "Digital library",
+      "Study rooms"
+    ]
+  },
+  {
+    "id": "education-003",
+    "keywords": [
+      "certification",
+      "certificate",
+      "professional cert",
+      "exam prep"
+    ],
+    "response": "Professional certification programs and exam prep.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "ct1",
+            "name": "PMP Exam Prep",
+            "description": "Project Management Professional certification prep",
+            "duration": "6 weeks",
+            "price": "$350",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Available certs",
+      "Study groups",
+      "Practice exams"
+    ]
+  },
+  {
+    "id": "education-004",
+    "keywords": [
+      "music lesson",
+      "instrument",
+      "piano",
+      "guitar",
+      "violin"
+    ],
+    "response": "Music lessons and instrument classes.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "ml1",
+            "name": "Guitar Lessons",
+            "description": "Beginner to advanced guitar instruction",
+            "duration": "45 min",
+            "price": "$40",
+            "rating": 4.8
+          },
+          {
+            "id": "ml2",
+            "name": "Piano Classes",
+            "description": "Classical and contemporary piano",
+            "duration": "1 hr",
+            "price": "$50",
+            "rating": 4.9
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Trial lesson",
+      "Group classes",
+      "Instrument rental"
+    ]
+  },
+  {
+    "id": "education-005",
+    "keywords": [
+      "art class",
+      "painting class",
+      "drawing",
+      "sketch"
+    ],
+    "response": "Art classes and creative workshops.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "ac1",
+            "name": "Watercolor Workshop",
+            "date": "This Saturday",
+            "time": "2:00 PM",
+            "location": "Art Studio",
+            "image": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400",
+            "category": "Art",
+            "attendees": 12,
+            "price": "$55"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "All classes",
+      "Supplies included",
+      "Private lesson"
+    ]
+  },
+  {
+    "id": "education-006",
+    "keywords": [
+      "university",
+      "college",
+      "degree",
+      "higher education",
+      "masters"
+    ],
+    "response": "Universities and higher education programs.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "un1",
+            "name": "International University",
+            "category": "University",
+            "image": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=400",
+            "rating": 4.7,
+            "distance": "8 km",
+            "vibe": [
+              "#research",
+              "#campus"
+            ],
+            "priceRange": "$$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Programs",
+      "Admissions",
+      "Campus tour"
+    ]
+  },
+  {
+    "id": "education-007",
+    "keywords": [
+      "first aid",
+      "cpr",
+      "emergency training",
+      "safety course"
+    ],
+    "response": "First aid and safety training courses.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "fa1",
+            "name": "CPR & First Aid",
+            "description": "Certified first aid and CPR training",
+            "duration": "4 hrs",
+            "price": "$75",
+            "rating": 4.9
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book class",
+      "Group rates",
+      "Certification"
+    ]
+  },
+  {
+    "id": "education-008",
+    "keywords": [
+      "driving school",
+      "driving lesson",
+      "learn to drive",
+      "license"
+    ],
+    "response": "Driving schools and lesson packages.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "ds1",
+            "name": "Beginner Package",
+            "description": "10 driving lessons with licensed instructor",
+            "duration": "10 sessions",
+            "price": "$450",
+            "rating": 4.7
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book lesson",
+      "Theory test prep",
+      "Intensive course"
+    ]
+  },
+  {
+    "id": "education-009",
+    "keywords": [
+      "coding",
+      "programming",
+      "bootcamp",
+      "software development"
+    ],
+    "response": "Coding bootcamps and programming courses.",
+    "artifact": {
+      "type": "service-menu",
+      "data": {
+        "services": [
+          {
+            "id": "cb1",
+            "name": "Full-Stack Bootcamp",
+            "description": "12-week intensive coding program",
+            "duration": "12 weeks",
+            "price": "$3,500",
+            "rating": 4.8
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Curriculum",
+      "Job guarantee",
+      "Financing options"
+    ]
+  }
+]

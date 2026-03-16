@@ -1,0 +1,335 @@
+[
+  {
+    "id": "social-001",
+    "keywords": [
+      "meetup",
+      "social",
+      "meet people",
+      "networking"
+    ],
+    "response": "Social meetups and networking events happening soon.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "su1",
+            "name": "Tech Networking Night",
+            "date": "This Thursday",
+            "time": "7:00 PM",
+            "location": "The Hub Coworking",
+            "image": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400",
+            "category": "Networking",
+            "attendees": 85,
+            "price": "Free"
+          },
+          {
+            "id": "su2",
+            "name": "Coffee & Connect",
+            "date": "This Saturday",
+            "time": "10:00 AM",
+            "location": "Brew Lab",
+            "image": "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=400",
+            "category": "Social",
+            "attendees": 32,
+            "price": "Free"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "RSVP",
+      "Invite friends",
+      "More events"
+    ]
+  },
+  {
+    "id": "social-002",
+    "keywords": [
+      "date night",
+      "romantic",
+      "couple",
+      "date idea"
+    ],
+    "response": "Perfect date night ideas curated for you.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "dn1",
+            "name": "Candlelight Lounge",
+            "category": "Restaurant",
+            "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400",
+            "rating": 4.9,
+            "distance": "1.2 km",
+            "vibe": [
+              "#romantic",
+              "#candlelit"
+            ],
+            "priceRange": "$$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book table",
+      "Outdoor dining",
+      "Budget-friendly"
+    ]
+  },
+  {
+    "id": "social-003",
+    "keywords": [
+      "birthday",
+      "party",
+      "celebration",
+      "celebrate"
+    ],
+    "response": "Let me help you plan the perfect celebration!",
+    "artifact": {
+      "type": "agent-sync-card",
+      "data": {
+        "title": "Party Planning",
+        "theme": "social",
+        "steps": [
+          {
+            "label": "Choose venue"
+          },
+          {
+            "label": "Set guest list"
+          },
+          {
+            "label": "Arrange catering"
+          },
+          {
+            "label": "Send invitations"
+          }
+        ],
+        "avatars": [
+          "Alex",
+          "Sam",
+          "Jo",
+          "Kim"
+        ],
+        "actions": [
+          "Start Planning",
+          "Browse Venues"
+        ]
+      }
+    },
+    "chips": [
+      "Venue options",
+      "Catering menus",
+      "Party supplies"
+    ]
+  },
+  {
+    "id": "social-004",
+    "keywords": [
+      "volunteer",
+      "volunteering",
+      "community service",
+      "charity"
+    ],
+    "response": "Volunteer opportunities and community events near you.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "vol1",
+            "name": "Beach Cleanup Drive",
+            "date": "This Sunday",
+            "time": "8:00 AM",
+            "location": "City Beach",
+            "image": "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=400",
+            "category": "Volunteer",
+            "attendees": 120,
+            "price": "Free"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Sign up",
+      "More causes",
+      "Regular volunteering"
+    ]
+  },
+  {
+    "id": "social-005",
+    "keywords": [
+      "club",
+      "nightlife",
+      "night out",
+      "dj",
+      "dance"
+    ],
+    "response": "Top nightlife spots and clubs with tonight's lineup.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "nc1",
+            "name": "Pulse Club",
+            "category": "Nightclub",
+            "image": "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=400",
+            "rating": 4.5,
+            "distance": "3.0 km",
+            "vibe": [
+              "#electronic",
+              "#rooftop"
+            ],
+            "priceRange": "$$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Guest list",
+      "VIP tables",
+      "Tonight's DJ"
+    ]
+  },
+  {
+    "id": "social-006",
+    "keywords": [
+      "friends",
+      "group activity",
+      "group outing",
+      "things to do with friends"
+    ],
+    "response": "Fun group activities and outings for you and your friends.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "ga1",
+            "name": "Escape Room Arena",
+            "category": "Entertainment",
+            "image": "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=400",
+            "rating": 4.7,
+            "distance": "2.0 km",
+            "vibe": [
+              "#fun",
+              "#teamwork"
+            ],
+            "priceRange": "$$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book for group",
+      "Bowling nearby",
+      "Game cafes"
+    ]
+  },
+  {
+    "id": "social-007",
+    "keywords": [
+      "language exchange",
+      "language partner",
+      "practice language"
+    ],
+    "response": "Language exchange meetups and conversation partners.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "le1",
+            "name": "Arabic-English Exchange",
+            "date": "This Wednesday",
+            "time": "6:30 PM",
+            "location": "Culture Cafe",
+            "image": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400",
+            "category": "Language",
+            "attendees": 28,
+            "price": "Free"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Join group",
+      "Find partner",
+      "Online sessions"
+    ]
+  },
+  {
+    "id": "social-008",
+    "keywords": [
+      "singles",
+      "dating",
+      "speed dating",
+      "single"
+    ],
+    "response": "Social events perfect for meeting new people.",
+    "artifact": {
+      "type": "event-carousel",
+      "data": {
+        "events": [
+          {
+            "id": "sp1",
+            "name": "Social Mixer",
+            "date": "This Friday",
+            "time": "7:00 PM",
+            "location": "Sky Lounge",
+            "image": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400",
+            "category": "Social",
+            "attendees": 60,
+            "price": "$15"
+          }
+        ]
+      }
+    },
+    "chips": [
+      "RSVP",
+      "Dress code",
+      "Age range"
+    ]
+  },
+  {
+    "id": "social-009",
+    "keywords": [
+      "board game",
+      "game night",
+      "tabletop",
+      "gaming cafe"
+    ],
+    "response": "Board game cafes and game night events.",
+    "artifact": {
+      "type": "poi-carousel",
+      "data": {
+        "pois": [
+          {
+            "id": "bg1",
+            "name": "Dice & Cards Cafe",
+            "category": "Gaming Cafe",
+            "image": "https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?w=400",
+            "rating": 4.7,
+            "distance": "1.5 km",
+            "vibe": [
+              "#games",
+              "#social"
+            ],
+            "priceRange": "$",
+            "openNow": true
+          }
+        ]
+      }
+    },
+    "chips": [
+      "Book table",
+      "Game library",
+      "Tournaments"
+    ]
+  }
+]
