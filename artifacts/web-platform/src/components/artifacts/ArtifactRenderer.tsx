@@ -50,6 +50,57 @@ function ArtifactItem({ artifact, onAction }: { artifact: Artifact; onAction?: (
       return <ProfileCard data={d as ProfileData} />;
     case "sdui-node":
       return <SduiRenderer node={(d as { node: SdNode }).node} theme="light" />;
+    case "order-status":
+    case "order-tracking":
+    case "cart-summary":
+    case "product-detail":
+    case "product-grid":
+    case "booking-card":
+    case "appointment-card":
+    case "health-metrics":
+    case "symptom-triage":
+    case "prescription-card":
+    case "ride-request":
+    case "transit-card":
+    case "parking-status":
+    case "wallet-card":
+    case "transaction-list":
+    case "invoice-card":
+    case "crypto-card":
+    case "escrow-card":
+    case "credit-card":
+    case "permit-card":
+    case "report-card":
+    case "utility-bill":
+    case "course-card":
+    case "lesson-card":
+    case "skill-tracker":
+    case "community-post":
+    case "ambassador-card":
+    case "group-card":
+    case "iot-sensor":
+    case "smart-home":
+    case "city-alert":
+    case "zone-score":
+    case "leaderboard":
+    case "reward-card":
+    case "coupon-card":
+    case "itinerary-card":
+    case "hotel-card":
+    case "flight-card":
+    case "restaurant-card":
+    case "review-card":
+    case "checklist-card":
+    case "countdown-card":
+    case "poll-card":
+    case "feedback-card":
+    case "qr-code":
+    case "barcode-card":
+    case "document-card":
+    case "media-card":
+    case "audio-player":
+    case "video-player":
+      return <SduiBackedCard artifact={artifact} onAction={onAction} />;
     default:
       return <GenericCard artifact={artifact} onAction={onAction} />;
   }
@@ -366,6 +417,47 @@ function ProfileCard({ data }: { data: ProfileData }) {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function SduiBackedCard({ artifact, onAction }: { artifact: Artifact; onAction?: (action: string) => void }) {
+  const data = artifact.data as Record<string, unknown>;
+  const sduiNode: SdNode = {
+    type: "card",
+    title: (data.title as string) || artifact.type.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+    subtitle: (data.subtitle as string) || (data.status as string) || undefined,
+    badge: (data.badge as string) || undefined,
+    children: [],
+  };
+
+  const skipKeys = new Set(["title", "subtitle", "status", "badge", "type", "id"]);
+  const entries = Object.entries(data).filter(([k]) => !skipKeys.has(k));
+
+  if (entries.length > 0) {
+    (sduiNode as unknown as Record<string, unknown>).children = entries.slice(0, 8).map(([key, val]) => {
+      if (typeof val === "string" || typeof val === "number") {
+        return { type: "text", content: `${key.replace(/([A-Z])/g, " $1").replace(/^./, (s: string) => s.toUpperCase())}: ${val}`, variant: "body" };
+      }
+      if (Array.isArray(val) && val.length > 0 && typeof val[0] === "object") {
+        return {
+          type: "stack",
+          direction: "vertical",
+          spacing: "sm",
+          children: val.slice(0, 5).map((item: Record<string, unknown>) => ({
+            type: "text",
+            content: item.name || item.title || item.label || JSON.stringify(item),
+            variant: "body",
+          })),
+        };
+      }
+      return { type: "text", content: `${key}: ${JSON.stringify(val)}`, variant: "label" };
+    });
+  }
+
+  return (
+    <div className="artifact-sdui-backed" onClick={() => onAction?.(`Show more about ${artifact.type}`)}>
+      <SduiRenderer node={sduiNode} theme="light" />
     </div>
   );
 }

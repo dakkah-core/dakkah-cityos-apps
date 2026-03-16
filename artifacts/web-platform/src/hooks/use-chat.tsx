@@ -71,29 +71,36 @@ function matchResponse(text: string) {
   return { content: `I understand you're asking about "${text}". In a production environment, I would connect to the relevant city service to help you with this. For now, try asking about weather, restaurants, rides, events, clinics, or permits!` };
 }
 
-async function fetchFromApi(text: string): Promise<{ content: string; artifacts?: Message["artifacts"] } | null> {
+async function fetchFromApi(
+  text: string,
+  history: Message[],
+): Promise<{ content: string; artifacts?: Message["artifacts"] } | null> {
   try {
+    const messages = history
+      .filter((m) => m.role === "user" || m.role === "assistant")
+      .slice(-10)
+      .map((m) => ({ role: m.role, content: m.content }));
+    messages.push({ role: "user", content: text });
+
     const res = await fetch(`${API_BASE}/ai/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text, threadId: "web-default" }),
-      signal: AbortSignal.timeout(5000),
+      body: JSON.stringify({ messages, threadId: "web-default" }),
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return null;
-    const data = await res.json();
-    if (data.reply) {
-      let resolvedArtifacts: Message["artifacts"] | undefined;
-      if (Array.isArray(data.artifacts) && data.artifacts.length > 0) {
-        resolvedArtifacts = data.artifacts;
-      } else if (data.sduiPayload) {
-        resolvedArtifacts = [{ type: "sdui-node", data: { node: data.sduiPayload } }];
-      }
-      return {
-        content: data.reply,
-        artifacts: resolvedArtifacts,
-      };
+    const json = await res.json();
+    if (!json.success || !json.data) return null;
+
+    const { content, sdui } = json.data;
+    if (!content) return null;
+
+    let resolvedArtifacts: Message["artifacts"] | undefined;
+    if (sdui) {
+      resolvedArtifacts = [{ type: "sdui-node", data: { node: sdui } }];
     }
-    return null;
+
+    return { content, artifacts: resolvedArtifacts };
   } catch {
     return null;
   }
@@ -143,7 +150,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     setMessages((prev) => [...prev, userMsg]);
     setIsProcessing(true);
 
-    const apiResponse = await fetchFromApi(text);
+    const apiResponse = await fetchFromApi(text, messages);
     const response = apiResponse || matchResponse(text);
 
     if (!apiResponse) {

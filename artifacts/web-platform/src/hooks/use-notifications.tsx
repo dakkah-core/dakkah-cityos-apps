@@ -60,13 +60,13 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         applicationServerKey: keyBytes.buffer as ArrayBuffer,
       });
 
-      await fetch(`${API_BASE}/notifications/push/register`, {
+      await fetch(`${API_BASE}/notifications/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          subscription: sub.toJSON(),
+          token: sub.endpoint,
           platform: "web",
-          userAgent: navigator.userAgent,
+          subscription: sub.toJSON(),
         }),
       });
 
@@ -83,11 +83,12 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.getSubscription();
       if (sub) {
+        const endpoint = sub.endpoint;
         await sub.unsubscribe();
-        await fetch(`${API_BASE}/notifications/push/unregister`, {
-          method: "POST",
+        await fetch(`${API_BASE}/notifications/unregister`, {
+          method: "DELETE",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ endpoint: sub.endpoint }),
+          body: JSON.stringify({ token: endpoint }),
         });
       }
       setIsSubscribed(false);

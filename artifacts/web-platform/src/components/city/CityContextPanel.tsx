@@ -24,21 +24,63 @@ const DEMO_CITY_DATA: CityData = {
 
 const API_BASE = `${import.meta.env.BASE_URL}api`;
 
+function extractCityDataFromSdui(screen: Record<string, unknown>): CityData | null {
+  try {
+    const children = (screen as { children?: unknown[] }).children;
+    if (!Array.isArray(children)) return null;
+
+    const stats: CityData["stats"] = [];
+    children.forEach((child) => {
+      const inner = (child as { children?: unknown[] }).children;
+      if (!Array.isArray(inner)) return;
+      inner.forEach((sub) => {
+        const nested = (sub as { children?: unknown[] }).children;
+        if (!Array.isArray(nested)) return;
+        nested.forEach((node) => {
+          const n = node as Record<string, unknown>;
+          if (n.type === "stat") {
+            stats.push({
+              label: String(n.label || ""),
+              value: String(n.value || ""),
+              trend: n.trend === "+%" || String(n.trend || "").startsWith("+") ? "up"
+                : n.trend === "-%" || String(n.trend || "").startsWith("-") ? "down"
+                : undefined,
+            });
+          }
+        });
+      });
+    });
+
+    if (stats.length > 0) {
+      return { ...DEMO_CITY_DATA, stats };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 async function fetchCityContext(): Promise<CityData> {
   try {
-    const res = await fetch(`${API_BASE}/sdui/screen/citizen_home?surface=web`, {
+    const res = await fetch(`${API_BASE}/sdui/citizen_home?surface=web`, {
       signal: AbortSignal.timeout(3000),
     });
     if (res.ok) {
-      const data = await res.json();
-      await cacheSduiScreen("citizen_home_web", data);
-      return data.cityContext || DEMO_CITY_DATA;
+      const json = await res.json();
+      await cacheSduiScreen("citizen_home_web", json);
+      if (json.success && json.data?.screen) {
+        const extracted = extractCityDataFromSdui(json.data.screen as Record<string, unknown>);
+        if (extracted) return extracted;
+      }
     }
   } catch {
     const cached = await getCachedSduiScreen("citizen_home_web");
     if (cached && typeof cached === "object") {
-      const ctx = (cached as Record<string, unknown>).cityContext;
-      if (ctx) return ctx as CityData;
+      const json = cached as { success?: boolean; data?: { screen?: unknown } };
+      if (json.success && json.data?.screen) {
+        const extracted = extractCityDataFromSdui(json.data.screen as Record<string, unknown>);
+        if (extracted) return extracted;
+      }
     }
   }
   return DEMO_CITY_DATA;
