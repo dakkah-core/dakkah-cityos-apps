@@ -3,7 +3,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { Message, ChatThread, MessageReaction, MessageAttachment } from "@/types/chat";
 import { generateId } from "@/lib/id";
 import { processUserMessage } from "@/lib/copilot-brain";
-import { aiChat } from "@/lib/ai-client";
+import { aiChat, syncThread, deleteServerThread } from "@/lib/ai-client";
+import { useAuth } from "@/context/AuthContext";
 
 const THREADS_KEY = "dakkah_threads";
 const MESSAGES_KEY = "dakkah_copilot_msgs";
@@ -48,6 +49,7 @@ interface CopilotContextValue {
 const CopilotContext = createContext<CopilotContextValue | null>(null);
 
 export function ChatProvider({ children }: { children: React.ReactNode }) {
+  const { copilotSettings, getAccessToken } = useAuth();
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
   const [threads, setThreads] = useState<ChatThread[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -57,6 +59,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const initRef = useRef(false);
   const requestTokenRef = useRef(0);
   const threadIdRef = useRef<string | null>(null);
+  const copilotSettingsRef = useRef(copilotSettings);
+  copilotSettingsRef.current = copilotSettings;
 
   useEffect(() => {
     threadIdRef.current = currentThreadId;
@@ -97,13 +101,19 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         AsyncStorage.setItem(THREADS_KEY, JSON.stringify(updated)).catch(() => {});
         return updated;
       });
+
+      if (!copilotSettingsRef.current.privacyMode) {
+        getAccessToken().then((token) => {
+          syncThread(threadId, msgs, title, token || undefined).catch(() => {});
+        }).catch(() => {});
+      }
     } catch {}
   };
 
   const sendMessage = useCallback(async (text: string, replyTo?: Message, attachments?: MessageAttachment[]) => {
     if (!text.trim() || isProcessing) return;
 
-    const token = ++requestTokenRef.current;
+    const reqToken = ++requestTokenRef.current;
     const threadId = currentThreadId || generateId("thread");
     if (!currentThreadId) setCurrentThreadId(threadId);
 
@@ -125,7 +135,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
       if (hasScenarioMatch || !useAI) {
         await new Promise((r) => setTimeout(r, 400 + Math.random() * 600));
-        if (requestTokenRef.current !== token) return;
+        if (requestTokenRef.current !== reqToken) return;
 
         const assistantMsg: Message = {
           id: generateId("msg"),
@@ -136,7 +146,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           mode: localResponse.mode,
         };
 
-        if (requestTokenRef.current !== token) return;
+        if (requestTokenRef.current !== reqToken) return;
 
         setMessages((prev) => {
           const finalMsgs = [...prev, assistantMsg];
@@ -152,8 +162,16 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         }));
         recentMsgs.push({ role: "user", content: text });
 
-        const aiResponse = await aiChat(recentMsgs);
-        if (requestTokenRef.current !== token) return;
+        const accessToken = await getAccessToken();
+        const aiResponse = await aiChat(recentMsgs, {
+          threadId,
+          model: copilotSettingsRef.current.model,
+          context: {
+            language: copilotSettingsRef.current.language,
+          },
+          accessToken: accessToken || undefined,
+        });
+        if (requestTokenRef.current !== reqToken) return;
 
         const content = aiResponse.success && aiResponse.data?.content
           ? aiResponse.data.content
@@ -167,6 +185,19 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           mode: "suggest",
         };
 
+        if (aiResponse.data?.intent && aiResponse.data?.bffData) {
+          assistantMsg.artifacts = [
+            {
+              type: "toast",
+              data: {
+                message: `Action: ${aiResponse.data.intent}`,
+                type: "info" as const,
+                duration: 3000,
+              },
+            },
+          ];
+        }
+
         setMessages((prev) => {
           const finalMsgs = [...prev, assistantMsg];
           if (threadIdRef.current === threadId || threadIdRef.current === null) {
@@ -176,7 +207,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         });
       }
     } finally {
-      if (requestTokenRef.current === token) {
+      if (requestTokenRef.current === reqToken) {
         setIsProcessing(false);
       }
     }
@@ -198,7 +229,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       const data = await AsyncStorage.getItem(`${MESSAGES_KEY}_${id}`);
       if (data) {
         const parsed = JSON.parse(data);
-        if (Array.isArray(parsed) && parsed.every((m: any) => m && typeof m.id === "string" && typeof m.role === "string" && typeof m.content === "string")) {
+        if (Array.isArray(parsed) && parsed.every((m: Record<string, unknown>) => m && typeof m.id === "string" && typeof m.role === "string" && typeof m.content === "string")) {
           setMessages(parsed);
           setCurrentThreadId(id);
         } else {
@@ -276,6 +307,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       if (currentThreadId === threadId) {
         setMessages([WELCOME_MESSAGE]);
         setCurrentThreadId(null);
+      }
+      if (!copilotSettingsRef.current.privacyMode) {
+        getAccessToken().then((token) => {
+          deleteServerThread(threadId, token || undefined).catch(() => {});
+        }).catch(() => {});
       }
     } catch {}
   }, [currentThreadId]);

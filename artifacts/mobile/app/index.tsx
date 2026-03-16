@@ -20,6 +20,7 @@ import { ComingSoonModal } from "@/components/ComingSoonModal";
 import { VoiceInputButton } from "@/components/VoiceInputButton";
 import { MediaPickerButton } from "@/components/MediaPickerButton";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
+import { CopilotSettingsDialog } from "@/components/CopilotSettingsDialog";
 import type { Message, MessageAttachment } from "@/types/chat";
 
 export default function CopilotScreen() {
@@ -49,6 +50,7 @@ export default function CopilotScreen() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [comingSoonFeature, setComingSoonFeature] = useState<string | null>(null);
   const [pendingAttachments, setPendingAttachments] = useState<MessageAttachment[]>([]);
+  const [copilotSettingsOpen, setCopilotSettingsOpen] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
   const prevMsgCountRef = useRef(messages.length);
@@ -273,6 +275,7 @@ export default function CopilotScreen() {
         onLoadThread={loadThread}
         onRefresh={refreshThreads}
         onOpenSettings={() => { setThreadsOpen(false); setSettingsOpen(true); }}
+        onOpenCopilotSettings={() => { setThreadsOpen(false); setCopilotSettingsOpen(true); }}
         onOpenSupport={() => { setThreadsOpen(false); setSupportOpen(true); }}
         onOpenGroupInfo={() => { setThreadsOpen(false); setGroupInfoOpen(true); }}
         onOpenSharedMedia={() => { setThreadsOpen(false); setSharedMediaOpen(true); }}
@@ -286,6 +289,7 @@ export default function CopilotScreen() {
       <SupportDialog visible={supportOpen} onClose={() => setSupportOpen(false)} />
       <FullSettingsDialog visible={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <ComingSoonModal visible={!!comingSoonFeature} feature={comingSoonFeature || ""} onClose={() => setComingSoonFeature(null)} />
+      <CopilotSettingsDialog visible={copilotSettingsOpen} onClose={() => setCopilotSettingsOpen(false)} />
     </View>
   );
 }

@@ -49,6 +49,8 @@ import { PermitApplication } from "./PermitApplication";
 import { IssueReporter } from "./IssueReporter";
 import { FlightBoardingPass } from "./FlightBoardingPass";
 import { CurrencyConverter } from "./CurrencyConverter";
+import { SduiNodeRenderer } from "./SduiNodeRenderer";
+import { ToastCard } from "./ToastCard";
 
 interface Props {
   artifacts: Artifact[];
@@ -173,6 +175,10 @@ function renderArtifact(artifact: Artifact, onAction?: (action: string) => void,
       return <FlightBoardingPass data={artifact.data} />;
     case "currency-converter":
       return <CurrencyConverter data={artifact.data} />;
+    case "sdui-node":
+      return <SduiNodeRenderer data={artifact.data as { node: Record<string, unknown>; theme?: "light" | "dark" }} />;
+    case "toast":
+      return <ToastCard data={artifact.data as { message: string; type?: "success" | "error" | "warning" | "info"; duration?: number; action?: string; actionLabel?: string }} onAction={onAction} />;
     default:
       return null;
   }

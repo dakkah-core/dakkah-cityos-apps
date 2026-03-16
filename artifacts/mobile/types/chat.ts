@@ -75,7 +75,9 @@ export type ArtifactType =
   | "permit-application"
   | "issue-reporter"
   | "flight-boarding-pass"
-  | "currency-converter";
+  | "currency-converter"
+  | "sdui-node"
+  | "toast";
 
 export interface Artifact {
   type: ArtifactType;

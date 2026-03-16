@@ -15,13 +15,14 @@ interface Props {
   onLoadThread: (id: string) => void;
   onRefresh: () => void;
   onOpenSettings?: () => void;
+  onOpenCopilotSettings?: () => void;
   onOpenSupport?: () => void;
   onOpenGroupInfo?: () => void;
   onOpenSharedMedia?: () => void;
   onDeleteThread?: (threadId: string) => void;
 }
 
-export function ThreadsDrawer({ visible, onClose, threads, onNewChat, onLoadThread, onRefresh, onOpenSettings, onOpenSupport, onOpenGroupInfo, onOpenSharedMedia, onDeleteThread }: Props) {
+export function ThreadsDrawer({ visible, onClose, threads, onNewChat, onLoadThread, onRefresh, onOpenSettings, onOpenCopilotSettings, onOpenSupport, onOpenGroupInfo, onOpenSharedMedia, onDeleteThread }: Props) {
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -103,6 +104,11 @@ export function ThreadsDrawer({ visible, onClose, threads, onNewChat, onLoadThre
                 <Pressable style={styles.menuItem} onPress={() => { if (onOpenSettings) onOpenSettings(); else setSettingsOpen(true); }}>
                   <Text style={styles.menuItemIcon}>⚙️</Text>
                   <Text style={styles.menuItemText}>Settings</Text>
+                  <Text style={styles.menuItemChevron}>›</Text>
+                </Pressable>
+                <Pressable style={styles.menuItem} onPress={() => { if (onOpenCopilotSettings) onOpenCopilotSettings(); }}>
+                  <Text style={styles.menuItemIcon}>🤖</Text>
+                  <Text style={styles.menuItemText}>Copilot Settings</Text>
                   <Text style={styles.menuItemChevron}>›</Text>
                 </Pressable>
 

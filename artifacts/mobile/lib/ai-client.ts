@@ -12,21 +12,46 @@ interface AIChatResponse {
   data?: {
     content: string;
     model: string;
+    intent?: string | null;
+    bffData?: unknown;
+    threadId?: string | null;
     usage?: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
   };
   error?: { code: string; message: string };
 }
 
-export async function aiChat(messages: AIChatMessage[]): Promise<AIChatResponse> {
+interface ChatOptions {
+  model?: string;
+  threadId?: string;
+  context?: {
+    location?: string;
+    language?: string;
+    tier?: string;
+  };
+  accessToken?: string;
+}
+
+export async function aiChat(messages: AIChatMessage[], options?: ChatOptions): Promise<AIChatResponse> {
   try {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (options?.accessToken) {
+      headers["Authorization"] = `Bearer ${options.accessToken}`;
+    }
+
     const res = await fetch(`${API_BASE}/ai/chat`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages }),
+      headers,
+      body: JSON.stringify({
+        messages,
+        model: options?.model,
+        threadId: options?.threadId,
+        context: options?.context,
+      }),
     });
     return await res.json();
-  } catch (err: any) {
-    return { success: false, error: { code: "NETWORK_ERROR", message: err.message } };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Network error";
+    return { success: false, error: { code: "NETWORK_ERROR", message } };
   }
 }
 
@@ -36,6 +61,129 @@ export async function transcribeAudio(audioBase64: string, format: string = "web
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ audio: audioBase64, format }),
+    });
+    const data = await res.json();
+    return data.success ? data.data : null;
+  } catch {
+    return null;
+  }
+}
+
+interface ThreadSummary {
+  id: string;
+  title: string;
+  lastMessage: string;
+  timestamp: number;
+  messageCount: number;
+}
+
+export async function fetchThreads(accessToken?: string): Promise<ThreadSummary[]> {
+  try {
+    const headers: Record<string, string> = {};
+    if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+
+    const res = await fetch(`${API_BASE}/threads`, { headers });
+    const data = await res.json();
+    return data.success ? data.data.threads : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function fetchThread(threadId: string, accessToken?: string): Promise<{ messages: unknown[] } | null> {
+  try {
+    const headers: Record<string, string> = {};
+    if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+
+    const res = await fetch(`${API_BASE}/threads/${threadId}`, { headers });
+    const data = await res.json();
+    return data.success ? data.data : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function syncThread(
+  threadId: string,
+  messages: unknown[],
+  title?: string,
+  accessToken?: string
+): Promise<boolean> {
+  try {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+
+    const res = await fetch(`${API_BASE}/threads`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ threadId, messages, title }),
+    });
+    const data = await res.json();
+    return data.success;
+  } catch {
+    return false;
+  }
+}
+
+export async function deleteServerThread(threadId: string, accessToken?: string): Promise<boolean> {
+  try {
+    const headers: Record<string, string> = {};
+    if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+
+    const res = await fetch(`${API_BASE}/threads/${threadId}`, {
+      method: "DELETE",
+      headers,
+    });
+    const data = await res.json();
+    return data.success;
+  } catch {
+    return false;
+  }
+}
+
+export async function fetchProducts(params?: { category?: string; query?: string }): Promise<unknown> {
+  try {
+    const url = new URL(`${API_BASE}/commerce/products`);
+    if (params?.category) url.searchParams.set("category", params.category);
+    if (params?.query) url.searchParams.set("query", params.query);
+    const res = await fetch(url.toString());
+    const data = await res.json();
+    return data.success ? data.data : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function addToCart(productId: string, userId?: string): Promise<unknown> {
+  try {
+    const res = await fetch(`${API_BASE}/commerce/cart/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId, userId, quantity: 1 }),
+    });
+    const data = await res.json();
+    return data.success ? data.data : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function getCart(userId?: string): Promise<unknown> {
+  try {
+    const res = await fetch(`${API_BASE}/commerce/cart?userId=${userId || "anonymous"}`);
+    const data = await res.json();
+    return data.success ? data.data : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function checkout(userId?: string): Promise<unknown> {
+  try {
+    const res = await fetch(`${API_BASE}/commerce/checkout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId }),
     });
     const data = await res.json();
     return data.success ? data.data : null;

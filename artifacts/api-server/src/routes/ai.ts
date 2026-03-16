@@ -8,6 +8,38 @@ const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
 });
 
+const BFF_PORTS: Record<string, number> = {
+  commerce: 4001,
+  transport: 4002,
+  healthcare: 4003,
+  governance: 4004,
+  events: 4005,
+  platform: 4006,
+  iot: 4007,
+  social: 4008,
+};
+
+const INTENT_MAP: Record<string, { service: string; action: string; description: string }> = {
+  "product.search": { service: "commerce", action: "searchProducts", description: "Search for products" },
+  "product.details": { service: "commerce", action: "getProduct", description: "Get product details" },
+  "cart.add": { service: "commerce", action: "addToCart", description: "Add item to cart" },
+  "cart.view": { service: "commerce", action: "getCart", description: "View shopping cart" },
+  "order.create": { service: "commerce", action: "createOrder", description: "Place an order" },
+  "order.track": { service: "commerce", action: "trackOrder", description: "Track an order" },
+  "ride.request": { service: "transport", action: "requestRide", description: "Request a ride" },
+  "ride.status": { service: "transport", action: "getRideStatus", description: "Check ride status" },
+  "health.symptoms": { service: "healthcare", action: "triageSymptoms", description: "Symptom assessment" },
+  "health.appointment": { service: "healthcare", action: "bookAppointment", description: "Book appointment" },
+  "permit.apply": { service: "governance", action: "applyPermit", description: "Apply for permit" },
+  "permit.status": { service: "governance", action: "getPermitStatus", description: "Check permit status" },
+  "event.search": { service: "events", action: "searchEvents", description: "Find events" },
+  "event.book": { service: "events", action: "bookTicket", description: "Book event tickets" },
+  "iot.parking": { service: "iot", action: "findParking", description: "Find parking" },
+  "iot.smart-home": { service: "iot", action: "controlDevice", description: "Smart home control" },
+  "social.feed": { service: "social", action: "getFeed", description: "Community feed" },
+  "social.ambassador": { service: "social", action: "findAmbassadors", description: "Find ambassadors" },
+};
+
 const SYSTEM_PROMPT = `You are Dakkah Copilot — an AI concierge for the entire city of Riyadh, Saudi Arabia. You are part of Dakkah CityOS, a Conversational City Experience OS.
 
 Your capabilities:
@@ -28,19 +60,75 @@ Response style:
 - When suggesting places, include ratings, vibes, and price ranges
 - For bookings/actions, confirm before executing
 - Keep responses under 200 words unless detailed info is requested
-- Use natural conversational tone, not robotic`;
+- Use natural conversational tone, not robotic
+
+IMPORTANT: When your response involves structured data (products, events, status updates, etc), you MUST include an "intent" field in your JSON response to indicate the action domain. Use the format "domain.action" (e.g., "product.search", "ride.request", "event.search").
+
+When you detect a user intent that maps to a backend action, include it as a JSON code block at the END of your response:
+\`\`\`intent
+{"intent": "product.search", "params": {"query": "coffee", "category": "food"}}
+\`\`\``;
+
+interface IntentBlock {
+  intent: string;
+  params: Record<string, unknown>;
+}
+
+function extractIntent(content: string): { cleanContent: string; intentBlock: IntentBlock | null } {
+  const intentRegex = /```intent\s*\n?([\s\S]*?)\n?```/;
+  const match = content.match(intentRegex);
+  if (!match) return { cleanContent: content, intentBlock: null };
+
+  try {
+    const parsed = JSON.parse(match[1]);
+    const cleanContent = content.replace(intentRegex, "").trim();
+    return { cleanContent, intentBlock: parsed };
+  } catch {
+    return { cleanContent: content, intentBlock: null };
+  }
+}
+
+async function callBff(service: string, action: string, params: Record<string, unknown>): Promise<unknown> {
+  const port = BFF_PORTS[service];
+  if (!port) return null;
+
+  const bffHost = process.env.BFF_HOST || "localhost";
+  try {
+    const res = await fetch(`http://${bffHost}:${port}/api/${action}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (res.ok) return await res.json();
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 router.post("/chat", async (req, res) => {
   try {
-    const { messages, model } = req.body;
+    const { messages, model, threadId, context } = req.body;
     if (!messages || !Array.isArray(messages)) {
       res.status(400).json({ error: "messages array required" });
       return;
     }
 
-    const chatMessages = [
+    const systemMessages = [
       { role: "system" as const, content: SYSTEM_PROMPT },
-      ...messages.map((m: any) => ({
+    ];
+
+    if (context) {
+      systemMessages.push({
+        role: "system" as const,
+        content: `User context: location=${context.location || "Riyadh"}, language=${context.language || "en"}, tier=${context.tier || "Explorer"}`,
+      });
+    }
+
+    const chatMessages = [
+      ...systemMessages,
+      ...messages.map((m: { role: string; content: string }) => ({
         role: m.role as "user" | "assistant",
         content: m.content,
       })),
@@ -52,21 +140,35 @@ router.post("/chat", async (req, res) => {
       max_completion_tokens: 2000,
     });
 
-    const content = completion.choices[0]?.message?.content || "I'm not sure how to help with that. Could you rephrase?";
+    const rawContent = completion.choices[0]?.message?.content || "I'm not sure how to help with that. Could you rephrase?";
+    const { cleanContent, intentBlock } = extractIntent(rawContent);
+
+    let bffData: unknown = null;
+    let resolvedIntent: string | null = null;
+
+    if (intentBlock && INTENT_MAP[intentBlock.intent]) {
+      resolvedIntent = intentBlock.intent;
+      const mapping = INTENT_MAP[intentBlock.intent];
+      bffData = await callBff(mapping.service, mapping.action, intentBlock.params);
+    }
 
     res.json({
       success: true,
       data: {
-        content,
+        content: cleanContent,
         model: completion.model,
         usage: completion.usage,
+        intent: resolvedIntent,
+        bffData,
+        threadId: threadId || null,
       },
     });
-  } catch (err: any) {
-    console.error("AI chat error:", err.message);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    console.error("AI chat error:", message);
     res.status(500).json({
       success: false,
-      error: { code: "AI_ERROR", message: err.message },
+      error: { code: "AI_ERROR", message },
     });
   }
 });
@@ -94,11 +196,12 @@ router.post("/transcribe", async (req, res) => {
       success: true,
       data: { text: transcription.text },
     });
-  } catch (err: any) {
-    console.error("Transcription error:", err.message);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    console.error("Transcription error:", message);
     res.status(500).json({
       success: false,
-      error: { code: "TRANSCRIBE_ERROR", message: err.message },
+      error: { code: "TRANSCRIBE_ERROR", message },
     });
   }
 });
