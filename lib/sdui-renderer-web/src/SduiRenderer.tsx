@@ -19,7 +19,7 @@ interface SduiRendererProps {
   theme?: "light" | "dark";
 }
 
-const textVariantMap: Record<string, { tag: string; className: string }> = {
+const textVariantConfig: Record<string, { tag: "h1" | "h2" | "h3" | "h4" | "p" | "span"; className: string }> = {
   h1: { tag: "h1", className: "text-4xl font-bold" },
   h2: { tag: "h2", className: "text-3xl font-bold" },
   h3: { tag: "h3", className: "text-xl font-semibold" },
@@ -30,7 +30,7 @@ const textVariantMap: Record<string, { tag: string; className: string }> = {
   overline: { tag: "span", className: "text-xs font-semibold uppercase tracking-wider" },
 };
 
-const weightMap: Record<string, string> = {
+const weightClassMap: Record<string, string> = {
   normal: "font-normal",
   medium: "font-medium",
   semibold: "font-semibold",
@@ -38,41 +38,50 @@ const weightMap: Record<string, string> = {
   extrabold: "font-extrabold",
 };
 
-const alignMap: Record<string, string> = {
+const alignClassMap: Record<string, string> = {
   left: "text-left",
   center: "text-center",
   right: "text-right",
 };
 
-function SdTextRenderer({ node, theme }: { node: SdTextNode; theme: string }) {
-  const variant = textVariantMap[node.variant] || textVariantMap.body;
-  const Tag = variant.tag as keyof JSX.IntrinsicElements;
+function SdTextRenderer({ node, theme }: { node: SdTextNode; theme: "light" | "dark" }) {
+  const config = textVariantConfig[node.variant] || textVariantConfig.body;
   const className = [
-    variant.className,
-    node.weight ? weightMap[node.weight] : "",
-    node.align ? alignMap[node.align] : "",
+    config.className,
+    node.weight ? weightClassMap[node.weight] : "",
+    node.align ? alignClassMap[node.align] : "",
     modifiersToClassName(node.modifiers),
   ].filter(Boolean).join(" ");
 
   const style: React.CSSProperties = {
     ...(node.color ? { color: node.color } : {}),
-    ...(node.numberOfLines ? { overflow: "hidden", display: "-webkit-box", WebkitLineClamp: node.numberOfLines, WebkitBoxOrient: "vertical" as any } : {}),
+    ...(node.numberOfLines ? {
+      overflow: "hidden" as const,
+      display: "-webkit-box",
+      WebkitLineClamp: node.numberOfLines,
+      WebkitBoxOrient: "vertical" as const,
+    } : {}),
     ...modifiersToStyle(node.modifiers),
   };
 
-  const el = <Tag className={className} style={style}>{node.content}</Tag>;
+  const el = React.createElement(config.tag, { className, style }, node.content);
+
   if (node.onPress) {
-    return <button onClick={() => dispatchAction(node.onPress!)} className="cursor-pointer bg-transparent border-none p-0 text-left">{el}</button>;
+    return (
+      <button onClick={() => dispatchAction(node.onPress!)} className="cursor-pointer bg-transparent border-none p-0 text-left">
+        {el}
+      </button>
+    );
   }
   return el;
 }
 
-function SdButtonRenderer({ node, theme }: { node: SdButtonNode; theme: string }) {
-  const colors = getSemanticColors(theme as "light" | "dark");
+function SdButtonRenderer({ node, theme }: { node: SdButtonNode; theme: "light" | "dark" }) {
+  const colors = getSemanticColors(theme);
   const variant = node.variant || "solid";
   const size = node.size || "md";
 
-  const sizeClasses = { sm: "px-3 py-1.5 text-sm", md: "px-4 py-2 text-base", lg: "px-6 py-3 text-lg" };
+  const sizeClasses: Record<string, string> = { sm: "px-3 py-1.5 text-sm", md: "px-4 py-2 text-base", lg: "px-6 py-3 text-lg" };
 
   const variantClasses: Record<string, string> = {
     solid: "text-white rounded-md font-semibold",
@@ -104,24 +113,24 @@ function SdButtonRenderer({ node, theme }: { node: SdButtonNode; theme: string }
       onClick={() => !node.disabled && !node.loading && dispatchAction(node.action)}
       disabled={node.disabled || node.loading}
     >
-      {node.loading ? <span className="animate-spin mr-2">⏳</span> : null}
+      {node.loading ? <span className="animate-spin mr-2">&#8987;</span> : null}
       {node.label}
     </button>
   );
 }
 
 function SdImageRenderer({ node }: { node: SdImageNode }) {
-  const radiusMap: Record<string, string> = {
+  const radiusClassMap: Record<string, string> = {
     none: "rounded-none", sm: "rounded-sm", md: "rounded-md", lg: "rounded-lg",
     xl: "rounded-xl", "2xl": "rounded-2xl", full: "rounded-full",
   };
-  const fitMap: Record<string, string> = {
+  const fitClassMap: Record<string, string> = {
     cover: "object-cover", contain: "object-contain", fill: "object-fill", center: "object-center",
   };
 
   const className = [
-    node.borderRadius ? radiusMap[node.borderRadius] : "",
-    node.contentMode ? fitMap[node.contentMode] : "object-cover",
+    node.borderRadius ? radiusClassMap[node.borderRadius] : "",
+    node.contentMode ? fitClassMap[node.contentMode] : "object-cover",
     modifiersToClassName(node.modifiers),
   ].filter(Boolean).join(" ");
 
@@ -135,15 +144,15 @@ function SdImageRenderer({ node }: { node: SdImageNode }) {
   return <img src={node.src} alt={node.alt || ""} className={className} style={style} />;
 }
 
-function SdStackRenderer({ node, theme }: { node: SdStackNode; theme: string }) {
+function SdStackRenderer({ node, theme }: { node: SdStackNode; theme: "light" | "dark" }) {
   const direction = node.direction || "vertical";
-  const gapMap: Record<string, string> = {
+  const gapClassMap: Record<string, string> = {
     xs: "gap-1", sm: "gap-2", md: "gap-3", lg: "gap-4", xl: "gap-6", "2xl": "gap-8", "3xl": "gap-12",
   };
-  const alignCss: Record<string, string> = {
+  const alignCssMap: Record<string, string> = {
     start: "items-start", center: "items-center", end: "items-end", stretch: "items-stretch",
   };
-  const justifyCss: Record<string, string> = {
+  const justifyCssMap: Record<string, string> = {
     start: "justify-start", center: "justify-center", end: "justify-end",
     between: "justify-between", around: "justify-around", evenly: "justify-evenly",
   };
@@ -151,24 +160,24 @@ function SdStackRenderer({ node, theme }: { node: SdStackNode; theme: string }) 
   const className = [
     "flex",
     direction === "horizontal" ? "flex-row" : "flex-col",
-    node.spacing ? gapMap[node.spacing] : "gap-3",
-    node.align ? alignCss[node.align] : "",
-    node.justify ? justifyCss[node.justify] : "",
+    node.spacing ? gapClassMap[node.spacing] : "gap-3",
+    node.align ? alignCssMap[node.align] : "",
+    node.justify ? justifyCssMap[node.justify] : "",
     node.wrap ? "flex-wrap" : "",
     modifiersToClassName(node.modifiers),
   ].filter(Boolean).join(" ");
 
   return (
     <div className={className} style={modifiersToStyle(node.modifiers)}>
-      {(node.children as SdNode[]).map((child, i) => (
-        <SduiRenderer key={child.id || `child-${i}`} node={child} theme={theme as "light" | "dark"} />
+      {node.children.map((child, i) => (
+        <SduiRenderer key={child.id || `child-${i}`} node={child} theme={theme} />
       ))}
     </div>
   );
 }
 
-function SdCardRenderer({ node, theme }: { node: SdCardNode; theme: string }) {
-  const colors = getSemanticColors(theme as "light" | "dark");
+function SdCardRenderer({ node, theme }: { node: SdCardNode; theme: "light" | "dark" }) {
+  const colors = getSemanticColors(theme);
   const className = [
     "rounded-lg overflow-hidden shadow-md",
     modifiersToClassName(node.modifiers),
@@ -187,8 +196,8 @@ function SdCardRenderer({ node, theme }: { node: SdCardNode; theme: string }) {
         )}
         {node.title && <h3 className="text-lg font-semibold mb-1" style={{ color: colors.text }}>{node.title}</h3>}
         {node.subtitle && <p className="text-sm" style={{ color: colors.textSecondary }}>{node.subtitle}</p>}
-        {node.children && (node.children as SdNode[]).map((child, i) => (
-          <SduiRenderer key={child.id || `card-child-${i}`} node={child} theme={theme as "light" | "dark"} />
+        {node.children && node.children.map((child, i) => (
+          <SduiRenderer key={child.id || `card-child-${i}`} node={child} theme={theme} />
         ))}
       </div>
     </div>
@@ -200,24 +209,24 @@ function SdCardRenderer({ node, theme }: { node: SdCardNode; theme: string }) {
   return content;
 }
 
-function SdCarouselRenderer({ node, theme }: { node: SdCarouselNode; theme: string }) {
+function SdCarouselRenderer({ node, theme }: { node: SdCarouselNode; theme: "light" | "dark" }) {
   const itemWidth = node.itemWidth || 280;
   return (
     <div className={`overflow-x-auto flex gap-4 snap-x snap-mandatory pb-2 ${modifiersToClassName(node.modifiers)}`} style={modifiersToStyle(node.modifiers)}>
-      {(node.children as SdNode[]).map((child, i) => (
+      {node.children.map((child, i) => (
         <div key={child.id || `carousel-${i}`} className="snap-start flex-shrink-0" style={{ width: itemWidth }}>
-          <SduiRenderer node={child} theme={theme as "light" | "dark"} />
+          <SduiRenderer node={child} theme={theme} />
         </div>
       ))}
     </div>
   );
 }
 
-function SdGridRenderer({ node, theme }: { node: SdGridNode; theme: string }) {
-  const gapMap: Record<string, string> = {
+function SdGridRenderer({ node, theme }: { node: SdGridNode; theme: "light" | "dark" }) {
+  const gapClassMap: Record<string, string> = {
     xs: "gap-1", sm: "gap-2", md: "gap-3", lg: "gap-4", xl: "gap-6", "2xl": "gap-8", "3xl": "gap-12",
   };
-  const colsMap: Record<number, string> = {
+  const colsClassMap: Record<number, string> = {
     1: "grid-cols-1", 2: "grid-cols-2", 3: "grid-cols-3", 4: "grid-cols-4",
     5: "grid-cols-5", 6: "grid-cols-6", 7: "grid-cols-7", 8: "grid-cols-8",
     9: "grid-cols-9", 10: "grid-cols-10", 11: "grid-cols-11", 12: "grid-cols-12",
@@ -225,31 +234,38 @@ function SdGridRenderer({ node, theme }: { node: SdGridNode; theme: string }) {
 
   const className = [
     "grid",
-    colsMap[node.columns] || `grid-cols-${node.columns}`,
-    node.spacing ? gapMap[node.spacing] : "gap-3",
+    colsClassMap[node.columns] || "grid-cols-1",
+    node.spacing ? gapClassMap[node.spacing] : "gap-3",
     modifiersToClassName(node.modifiers),
   ].join(" ");
 
   return (
     <div className={className} style={modifiersToStyle(node.modifiers)}>
-      {(node.children as SdNode[]).map((child, i) => (
-        <SduiRenderer key={child.id || `grid-${i}`} node={child} theme={theme as "light" | "dark"} />
+      {node.children.map((child, i) => (
+        <SduiRenderer key={child.id || `grid-${i}`} node={child} theme={theme} />
       ))}
     </div>
   );
 }
 
-function SdMapRenderer({ node, theme }: { node: SdMapNode; theme: string }) {
-  const colors = getSemanticColors(theme as "light" | "dark");
+function SdMapRenderer({ node, theme }: { node: SdMapNode; theme: "light" | "dark" }) {
+  const colors = getSemanticColors(theme);
+  const mapHeight = node.height || 200;
+  const tileUrl = `https://tile.openstreetmap.org/{z}/{x}/{y}.png`;
+  const zoom = node.zoom || 13;
+  const embedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${node.longitude - 0.02},${node.latitude - 0.02},${node.longitude + 0.02},${node.latitude + 0.02}&layer=mapnik&marker=${node.latitude},${node.longitude}`;
+
   return (
     <div
-      className={`flex items-center justify-center rounded-lg ${modifiersToClassName(node.modifiers)}`}
-      style={{ height: node.height || 200, backgroundColor: colors.elevated, ...modifiersToStyle(node.modifiers) }}
+      className={`rounded-lg overflow-hidden ${modifiersToClassName(node.modifiers)}`}
+      style={{ height: mapHeight, ...modifiersToStyle(node.modifiers) }}
     >
-      <span className="text-sm" style={{ color: colors.textSecondary }}>
-        Map: {node.latitude.toFixed(4)}, {node.longitude.toFixed(4)}
-        {node.markers && ` (${node.markers.length} markers)`}
-      </span>
+      <iframe
+        title={`Map at ${node.latitude.toFixed(4)}, ${node.longitude.toFixed(4)}`}
+        src={embedUrl}
+        style={{ width: "100%", height: "100%", border: "none" }}
+        loading="lazy"
+      />
     </div>
   );
 }
@@ -257,21 +273,21 @@ function SdMapRenderer({ node, theme }: { node: SdMapNode; theme: string }) {
 export function SduiRenderer({ node, theme = "light" }: SduiRendererProps) {
   switch (node.type) {
     case "text":
-      return <SdTextRenderer node={node as SdTextNode} theme={theme} />;
+      return <SdTextRenderer node={node} theme={theme} />;
     case "button":
-      return <SdButtonRenderer node={node as SdButtonNode} theme={theme} />;
+      return <SdButtonRenderer node={node} theme={theme} />;
     case "image":
-      return <SdImageRenderer node={node as SdImageNode} />;
+      return <SdImageRenderer node={node} />;
     case "stack":
-      return <SdStackRenderer node={node as SdStackNode} theme={theme} />;
+      return <SdStackRenderer node={node} theme={theme} />;
     case "card":
-      return <SdCardRenderer node={node as SdCardNode} theme={theme} />;
+      return <SdCardRenderer node={node} theme={theme} />;
     case "carousel":
-      return <SdCarouselRenderer node={node as SdCarouselNode} theme={theme} />;
+      return <SdCarouselRenderer node={node} theme={theme} />;
     case "grid":
-      return <SdGridRenderer node={node as SdGridNode} theme={theme} />;
+      return <SdGridRenderer node={node} theme={theme} />;
     case "map":
-      return <SdMapRenderer node={node as SdMapNode} theme={theme} />;
+      return <SdMapRenderer node={node} theme={theme} />;
     default:
       return null;
   }

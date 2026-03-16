@@ -11,5 +11,5 @@ export {
   refreshTokens,
 } from "./token";
 export { webStorage, createNativeStorage } from "./storage";
-export type { TokenStorage } from "./storage";
+export type { TokenStorage, NativeSecureStoreModule } from "./storage";
 export type { KeycloakConfig, User, AuthTokens, AuthState } from "./types";

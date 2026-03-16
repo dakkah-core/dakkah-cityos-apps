@@ -1,68 +1,82 @@
 import type { AuthTokens } from "./types";
 
 const TOKENS_KEY = "cityos_auth_tokens";
+const PKCE_VERIFIER_KEY = "cityos_pkce_verifier";
+const PKCE_STATE_KEY = "cityos_pkce_state";
 
 export interface TokenStorage {
   save(tokens: AuthTokens): Promise<void>;
   load(): Promise<AuthTokens | null>;
   clear(): Promise<void>;
+  savePkceVerifier(verifier: string): Promise<void>;
+  loadPkceVerifier(): Promise<string | null>;
+  clearPkce(): Promise<void>;
+  savePkceState(state: string): Promise<void>;
+  loadPkceState(): Promise<string | null>;
 }
 
 export const webStorage: TokenStorage = {
   async save(tokens) {
-    try {
-      localStorage.setItem(TOKENS_KEY, JSON.stringify(tokens));
-    } catch {}
+    localStorage.setItem(TOKENS_KEY, JSON.stringify(tokens));
   },
   async load() {
-    try {
-      const raw = localStorage.getItem(TOKENS_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
+    const raw = localStorage.getItem(TOKENS_KEY);
+    return raw ? JSON.parse(raw) : null;
   },
   async clear() {
-    try {
-      localStorage.removeItem(TOKENS_KEY);
-    } catch {}
+    localStorage.removeItem(TOKENS_KEY);
+  },
+  async savePkceVerifier(verifier) {
+    sessionStorage.setItem(PKCE_VERIFIER_KEY, verifier);
+  },
+  async loadPkceVerifier() {
+    return sessionStorage.getItem(PKCE_VERIFIER_KEY);
+  },
+  async clearPkce() {
+    sessionStorage.removeItem(PKCE_VERIFIER_KEY);
+    sessionStorage.removeItem(PKCE_STATE_KEY);
+  },
+  async savePkceState(state) {
+    sessionStorage.setItem(PKCE_STATE_KEY, state);
+  },
+  async loadPkceState() {
+    return sessionStorage.getItem(PKCE_STATE_KEY);
   },
 };
 
-export function createNativeStorage(): TokenStorage {
-  let SecureStore: any = null;
+export interface NativeSecureStoreModule {
+  setItemAsync(key: string, value: string): Promise<void>;
+  getItemAsync(key: string): Promise<string | null>;
+  deleteItemAsync(key: string): Promise<void>;
+}
 
-  async function getSecureStore() {
-    if (!SecureStore) {
-      try {
-        SecureStore = await import("expo-secure-store");
-      } catch {
-        return null;
-      }
-    }
-    return SecureStore;
-  }
-
+export function createNativeStorage(secureStore: NativeSecureStoreModule): TokenStorage {
   return {
     async save(tokens) {
-      const ss = await getSecureStore();
-      if (ss) {
-        await ss.setItemAsync(TOKENS_KEY, JSON.stringify(tokens));
-      }
+      await secureStore.setItemAsync(TOKENS_KEY, JSON.stringify(tokens));
     },
     async load() {
-      const ss = await getSecureStore();
-      if (ss) {
-        const raw = await ss.getItemAsync(TOKENS_KEY);
-        return raw ? JSON.parse(raw) : null;
-      }
-      return null;
+      const raw = await secureStore.getItemAsync(TOKENS_KEY);
+      return raw ? JSON.parse(raw) : null;
     },
     async clear() {
-      const ss = await getSecureStore();
-      if (ss) {
-        await ss.deleteItemAsync(TOKENS_KEY);
-      }
+      await secureStore.deleteItemAsync(TOKENS_KEY);
+    },
+    async savePkceVerifier(verifier) {
+      await secureStore.setItemAsync(PKCE_VERIFIER_KEY, verifier);
+    },
+    async loadPkceVerifier() {
+      return secureStore.getItemAsync(PKCE_VERIFIER_KEY);
+    },
+    async clearPkce() {
+      await secureStore.deleteItemAsync(PKCE_VERIFIER_KEY);
+      await secureStore.deleteItemAsync(PKCE_STATE_KEY);
+    },
+    async savePkceState(state) {
+      await secureStore.setItemAsync(PKCE_STATE_KEY, state);
+    },
+    async loadPkceState() {
+      return secureStore.getItemAsync(PKCE_STATE_KEY);
     },
   };
 }

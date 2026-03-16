@@ -1,14 +1,19 @@
-import { Alert, Linking, Share } from "react-native";
 import type { SdAction } from "@workspace/sdui-protocol";
 
 export type NavigateHandler = (screen: string, params?: Record<string, unknown>) => void;
 export type MutationHandler = (endpoint: string, method: string, payload?: Record<string, unknown>) => Promise<unknown>;
 export type HardwareAccessHandler = (hardware: string) => Promise<boolean>;
+export type CopyTextHandler = (text: string) => Promise<void>;
+export type ShareHandler = (data: { title?: string; message: string; url?: string }) => Promise<void>;
+export type OpenUrlHandler = (url: string) => Promise<void>;
 
 export interface ActionHandlerConfig {
   onNavigate?: NavigateHandler;
   onMutation?: MutationHandler;
   onHardwareAccess?: HardwareAccessHandler;
+  onCopyText?: CopyTextHandler;
+  onShare?: ShareHandler;
+  onOpenUrl?: OpenUrlHandler;
 }
 
 let config: ActionHandlerConfig = {};
@@ -32,24 +37,25 @@ export async function dispatchAction(action: SdAction): Promise<void> {
       break;
 
     case "open_url":
-      await Linking.openURL(action.url);
+      if (config.onOpenUrl) {
+        await config.onOpenUrl(action.url);
+      }
       break;
 
     case "copy_text":
-      try {
-        const Clipboard = await import("expo-clipboard");
-        await Clipboard.setStringAsync(action.text);
-      } catch {
-        Alert.alert("Copied", action.text);
+      if (config.onCopyText) {
+        await config.onCopyText(action.text);
       }
       break;
 
     case "share":
-      await Share.share({
-        title: action.title,
-        message: action.message,
-        url: action.url,
-      });
+      if (config.onShare) {
+        await config.onShare({
+          title: action.title,
+          message: action.message,
+          url: action.url,
+        });
+      }
       break;
 
     case "trigger_workflow":
@@ -59,7 +65,9 @@ export async function dispatchAction(action: SdAction): Promise<void> {
       break;
 
     case "deep_link":
-      await Linking.openURL(action.uri);
+      if (config.onOpenUrl) {
+        await config.onOpenUrl(action.uri);
+      }
       break;
 
     case "request_hardware_access":

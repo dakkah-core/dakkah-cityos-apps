@@ -70,14 +70,15 @@ export const SdActionSchema = z.discriminatedUnion("type", [
 
 export const SdTextVariantSchema = z.enum(["h1", "h2", "h3", "h4", "body", "caption", "label", "overline"]);
 
-const SdBaseNodeSchema = z.object({
+const SdBaseNodeFields = {
   id: z.string().optional(),
   modifiers: SdModifiersSchema.optional(),
   onPress: SdActionSchema.optional(),
   testId: z.string().optional(),
-});
+} as const;
 
-export const SdTextNodeSchema = SdBaseNodeSchema.extend({
+export const SdTextNodeSchema = z.object({
+  ...SdBaseNodeFields,
   type: z.literal("text"),
   variant: SdTextVariantSchema,
   content: z.string(),
@@ -90,7 +91,8 @@ export const SdTextNodeSchema = SdBaseNodeSchema.extend({
 export const SdButtonVariantSchema = z.enum(["solid", "outline", "ghost", "link"]);
 export const SdButtonSizeSchema = z.enum(["sm", "md", "lg"]);
 
-export const SdButtonNodeSchema = SdBaseNodeSchema.extend({
+export const SdButtonNodeSchema = z.object({
+  ...SdBaseNodeFields,
   type: z.literal("button"),
   label: z.string(),
   variant: SdButtonVariantSchema.optional(),
@@ -102,7 +104,8 @@ export const SdButtonNodeSchema = SdBaseNodeSchema.extend({
   action: SdActionSchema,
 });
 
-export const SdImageNodeSchema = SdBaseNodeSchema.extend({
+export const SdImageNodeSchema = z.object({
+  ...SdBaseNodeFields,
   type: z.literal("image"),
   src: z.string(),
   alt: z.string().optional(),
@@ -113,69 +116,142 @@ export const SdImageNodeSchema = SdBaseNodeSchema.extend({
   borderRadius: z.enum(["none", "sm", "md", "lg", "xl", "2xl", "full"]).optional(),
 });
 
-export const SdStackNodeSchema: z.ZodType = SdBaseNodeSchema.extend({
-  type: z.literal("stack"),
-  direction: z.enum(["horizontal", "vertical"]).optional(),
-  spacing: SdSizeSchema.optional(),
-  align: SdAlignmentSchema.optional(),
-  justify: SdAlignmentSchema.optional(),
-  wrap: z.boolean().optional(),
-  children: z.lazy(() => SdNodeSchema.array()),
-});
-
-export const SdCardNodeSchema: z.ZodType = SdBaseNodeSchema.extend({
-  type: z.literal("card"),
+export const SdMapMarkerSchema = z.object({
+  id: z.string(),
+  latitude: z.number(),
+  longitude: z.number(),
   title: z.string().optional(),
-  subtitle: z.string().optional(),
-  image: z.string().optional(),
-  imageAspectRatio: z.number().optional(),
-  badge: z.string().optional(),
-  children: z.lazy(() => SdNodeSchema.array()).optional(),
+  icon: z.string().optional(),
+  color: SdColorSchema.optional(),
+  action: SdActionSchema.optional(),
 });
 
-export const SdCarouselNodeSchema: z.ZodType = SdBaseNodeSchema.extend({
-  type: z.literal("carousel"),
-  autoPlay: z.boolean().optional(),
-  autoPlayInterval: z.number().optional(),
-  showDots: z.boolean().optional(),
-  itemWidth: z.number().optional(),
-  children: z.lazy(() => SdNodeSchema.array()),
-});
-
-export const SdGridNodeSchema: z.ZodType = SdBaseNodeSchema.extend({
-  type: z.literal("grid"),
-  columns: z.number().min(1).max(12),
-  spacing: SdSizeSchema.optional(),
-  children: z.lazy(() => SdNodeSchema.array()),
-});
-
-export const SdMapNodeSchema = SdBaseNodeSchema.extend({
+export const SdMapNodeSchema = z.object({
+  ...SdBaseNodeFields,
   type: z.literal("map"),
   latitude: z.number(),
   longitude: z.number(),
   zoom: z.number().optional(),
   height: z.number().optional(),
-  markers: z.array(z.object({
-    id: z.string(),
-    latitude: z.number(),
-    longitude: z.number(),
-    title: z.string().optional(),
-    icon: z.string().optional(),
-    color: SdColorSchema.optional(),
-    action: SdActionSchema.optional(),
-  })).optional(),
+  markers: z.array(SdMapMarkerSchema).optional(),
 });
 
-export const SdNodeSchema: z.ZodType = z.discriminatedUnion("type", [
-  SdTextNodeSchema,
-  SdButtonNodeSchema,
-  SdImageNodeSchema,
-  SdStackNodeSchema as z.ZodObject<any>,
-  SdCardNodeSchema as z.ZodObject<any>,
-  SdCarouselNodeSchema as z.ZodObject<any>,
-  SdGridNodeSchema as z.ZodObject<any>,
-  SdMapNodeSchema,
-]);
+export type SdTextNode = z.infer<typeof SdTextNodeSchema>;
+export type SdButtonNode = z.infer<typeof SdButtonNodeSchema>;
+export type SdImageNode = z.infer<typeof SdImageNodeSchema>;
+export type SdMapNode = z.infer<typeof SdMapNodeSchema>;
+
+export interface SdStackNode {
+  type: "stack";
+  id?: string;
+  modifiers?: z.infer<typeof SdModifiersSchema>;
+  onPress?: z.infer<typeof SdActionSchema>;
+  testId?: string;
+  direction?: "horizontal" | "vertical";
+  spacing?: z.infer<typeof SdSizeSchema>;
+  align?: z.infer<typeof SdAlignmentSchema>;
+  justify?: z.infer<typeof SdAlignmentSchema>;
+  wrap?: boolean;
+  children: SdNode[];
+}
+
+export interface SdCardNode {
+  type: "card";
+  id?: string;
+  modifiers?: z.infer<typeof SdModifiersSchema>;
+  onPress?: z.infer<typeof SdActionSchema>;
+  testId?: string;
+  title?: string;
+  subtitle?: string;
+  image?: string;
+  imageAspectRatio?: number;
+  badge?: string;
+  children?: SdNode[];
+}
+
+export interface SdCarouselNode {
+  type: "carousel";
+  id?: string;
+  modifiers?: z.infer<typeof SdModifiersSchema>;
+  onPress?: z.infer<typeof SdActionSchema>;
+  testId?: string;
+  autoPlay?: boolean;
+  autoPlayInterval?: number;
+  showDots?: boolean;
+  itemWidth?: number;
+  children: SdNode[];
+}
+
+export interface SdGridNode {
+  type: "grid";
+  id?: string;
+  modifiers?: z.infer<typeof SdModifiersSchema>;
+  onPress?: z.infer<typeof SdActionSchema>;
+  testId?: string;
+  columns: number;
+  spacing?: z.infer<typeof SdSizeSchema>;
+  children: SdNode[];
+}
+
+export type SdNode =
+  | SdTextNode
+  | SdButtonNode
+  | SdImageNode
+  | SdStackNode
+  | SdCardNode
+  | SdCarouselNode
+  | SdGridNode
+  | SdMapNode;
+
+export type SdModifiers = z.infer<typeof SdModifiersSchema>;
+export type SdAction = z.infer<typeof SdActionSchema>;
+
+const SdNodeSchemaLazy: z.ZodType<SdNode> = z.lazy(() =>
+  z.union([
+    SdTextNodeSchema,
+    SdButtonNodeSchema,
+    SdImageNodeSchema,
+    z.object({
+      ...SdBaseNodeFields,
+      type: z.literal("stack"),
+      direction: z.enum(["horizontal", "vertical"]).optional(),
+      spacing: SdSizeSchema.optional(),
+      align: SdAlignmentSchema.optional(),
+      justify: SdAlignmentSchema.optional(),
+      wrap: z.boolean().optional(),
+      children: z.array(SdNodeSchemaLazy),
+    }),
+    z.object({
+      ...SdBaseNodeFields,
+      type: z.literal("card"),
+      title: z.string().optional(),
+      subtitle: z.string().optional(),
+      image: z.string().optional(),
+      imageAspectRatio: z.number().optional(),
+      badge: z.string().optional(),
+      children: z.array(SdNodeSchemaLazy).optional(),
+    }),
+    z.object({
+      ...SdBaseNodeFields,
+      type: z.literal("carousel"),
+      autoPlay: z.boolean().optional(),
+      autoPlayInterval: z.number().optional(),
+      showDots: z.boolean().optional(),
+      itemWidth: z.number().optional(),
+      children: z.array(SdNodeSchemaLazy),
+    }),
+    z.object({
+      ...SdBaseNodeFields,
+      type: z.literal("grid"),
+      columns: z.number().min(1).max(12),
+      spacing: SdSizeSchema.optional(),
+      children: z.array(SdNodeSchemaLazy),
+    }),
+    SdMapNodeSchema,
+  ])
+);
+
+export const SdNodeSchema = SdNodeSchemaLazy;
 
 export const SdCapabilitiesSchema = z.object({
   os: z.enum(["ios", "android", "web", "macos", "windows", "linux", "tvos", "watchos", "carplay"]),
@@ -190,6 +266,8 @@ export const SdCapabilitiesSchema = z.object({
   supportsNotifications: z.boolean().optional(),
 });
 
+export type SdCapabilities = z.infer<typeof SdCapabilitiesSchema>;
+
 export const SdPayloadSchema = z.object({
   version: z.string(),
   screenId: z.string(),
@@ -199,3 +277,5 @@ export const SdPayloadSchema = z.object({
   ttl: z.number().optional(),
   cacheKey: z.string().optional(),
 });
+
+export type SdPayload = z.infer<typeof SdPayloadSchema>;

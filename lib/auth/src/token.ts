@@ -9,21 +9,50 @@ export function decodeJwt(token: string): Record<string, unknown> {
   return JSON.parse(decoded);
 }
 
+interface RealmAccess {
+  roles?: string[];
+}
+
+interface ResourceAccess {
+  [key: string]: { roles?: string[] };
+}
+
+function isRealmAccess(val: unknown): val is RealmAccess {
+  return typeof val === "object" && val !== null && "roles" in val;
+}
+
+function isResourceAccess(val: unknown): val is ResourceAccess {
+  return typeof val === "object" && val !== null;
+}
+
+function asString(val: unknown): string {
+  return typeof val === "string" ? val : "";
+}
+
+function asOptionalString(val: unknown): string | undefined {
+  return typeof val === "string" ? val : undefined;
+}
+
 export function extractUser(accessToken: string): User {
   const claims = decodeJwt(accessToken);
-  const realmRoles = ((claims.realm_access as any)?.roles as string[]) || [];
-  const clientRoles = Object.values((claims.resource_access as Record<string, any>) || {})
-    .flatMap((r: any) => (r.roles as string[]) || []);
+
+  const realmAccess = claims.realm_access;
+  const realmRoles = isRealmAccess(realmAccess) ? (realmAccess.roles ?? []) : [];
+
+  const resourceAccess = claims.resource_access;
+  const clientRoles = isResourceAccess(resourceAccess)
+    ? Object.values(resourceAccess).flatMap((r) => r.roles ?? [])
+    : [];
 
   return {
-    id: (claims.sub as string) || "",
-    email: (claims.email as string) || "",
-    name: (claims.name as string) || (claims.preferred_username as string) || "",
-    givenName: claims.given_name as string | undefined,
-    familyName: claims.family_name as string | undefined,
+    id: asString(claims.sub),
+    email: asString(claims.email),
+    name: asString(claims.name) || asString(claims.preferred_username),
+    givenName: asOptionalString(claims.given_name),
+    familyName: asOptionalString(claims.family_name),
     roles: [...new Set([...realmRoles, ...clientRoles])],
-    tenantId: claims.tenant_id as string | undefined,
-    avatar: claims.picture as string | undefined,
+    tenantId: asOptionalString(claims.tenant_id),
+    avatar: asOptionalString(claims.picture),
   };
 }
 

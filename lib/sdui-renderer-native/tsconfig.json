@@ -4,10 +4,9 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "jsx": "react-jsx",
-    "lib": ["es2022", "dom"],
-    "types": ["@types/react"],
-    "skipLibCheck": true,
-    "noImplicitAny": false
+    "lib": ["es2022"],
+    "types": [],
+    "skipLibCheck": true
   },
   "include": ["src"]
 }

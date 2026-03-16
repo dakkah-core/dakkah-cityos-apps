@@ -2,7 +2,15 @@ import React, { createContext, useCallback, useContext, useEffect, useRef, useSt
 import type { KeycloakConfig, User, AuthTokens, AuthState } from "./types";
 import type { TokenStorage } from "./storage";
 import { webStorage } from "./storage";
-import { extractUser, isTokenExpired, refreshTokens as refreshTokensFn } from "./token";
+import { generatePKCE, generateState } from "./pkce";
+import {
+  extractUser,
+  isTokenExpired,
+  buildAuthorizationUrl,
+  buildLogoutUrl,
+  exchangeCodeForTokens,
+  refreshTokens as refreshTokensFn,
+} from "./token";
 
 interface AuthContextValue {
   state: AuthState;
@@ -12,6 +20,7 @@ interface AuthContextValue {
   login: () => Promise<void>;
   logout: () => Promise<void>;
   getToken: () => Promise<string | null>;
+  handleCallback: (callbackUrl: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -22,20 +31,33 @@ const AuthContext = createContext<AuthContextValue>({
   login: async () => {},
   logout: async () => {},
   getToken: async () => null,
+  handleCallback: async () => false,
 });
 
 interface AuthProviderProps {
   config: KeycloakConfig;
   storage?: TokenStorage;
-  onLogin?: () => void;
-  onLogout?: () => void;
+  onLoginRedirect?: (url: string) => void;
+  onLogoutRedirect?: (url: string) => void;
   children: React.ReactNode;
 }
 
-export function AuthProvider({ config, storage = webStorage, onLogin, onLogout, children }: AuthProviderProps) {
+export function AuthProvider({
+  config,
+  storage = webStorage,
+  onLoginRedirect,
+  onLogoutRedirect,
+  children,
+}: AuthProviderProps) {
   const [state, setState] = useState<AuthState>({ status: "loading" });
   const tokensRef = useRef<AuthTokens | null>(null);
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const setAuthenticated = useCallback((tokens: AuthTokens) => {
+    tokensRef.current = tokens;
+    const user = extractUser(tokens.accessToken);
+    setState({ status: "authenticated", user, tokens });
+  }, []);
 
   const scheduleRefresh = useCallback((tokens: AuthTokens) => {
     if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
@@ -50,8 +72,7 @@ export function AuthProvider({ config, storage = webStorage, onLogin, onLogout, 
         });
         tokensRef.current = newTokens;
         await storage.save(newTokens);
-        const user = extractUser(newTokens.accessToken);
-        setState({ status: "authenticated", user, tokens: newTokens });
+        setAuthenticated(newTokens);
         scheduleRefresh(newTokens);
       } catch {
         tokensRef.current = null;
@@ -59,7 +80,7 @@ export function AuthProvider({ config, storage = webStorage, onLogin, onLogout, 
         setState({ status: "unauthenticated" });
       }
     }, refreshIn);
-  }, [config, storage]);
+  }, [config, storage, setAuthenticated]);
 
   useEffect(() => {
     (async () => {
@@ -75,8 +96,7 @@ export function AuthProvider({ config, storage = webStorage, onLogin, onLogout, 
             });
             tokensRef.current = newTokens;
             await storage.save(newTokens);
-            const user = extractUser(newTokens.accessToken);
-            setState({ status: "authenticated", user, tokens: newTokens });
+            setAuthenticated(newTokens);
             scheduleRefresh(newTokens);
             return;
           } catch {
@@ -84,8 +104,7 @@ export function AuthProvider({ config, storage = webStorage, onLogin, onLogout, 
           }
         } else {
           tokensRef.current = saved;
-          const user = extractUser(saved.accessToken);
-          setState({ status: "authenticated", user, tokens: saved });
+          setAuthenticated(saved);
           scheduleRefresh(saved);
           return;
         }
@@ -96,19 +115,86 @@ export function AuthProvider({ config, storage = webStorage, onLogin, onLogout, 
     return () => {
       if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
     };
-  }, [config, storage, scheduleRefresh]);
+  }, [config, storage, scheduleRefresh, setAuthenticated]);
 
   const login = useCallback(async () => {
-    onLogin?.();
-  }, [onLogin]);
+    const { codeVerifier, codeChallenge } = await generatePKCE();
+    const pkceState = generateState();
+
+    await storage.savePkceVerifier(codeVerifier);
+    await storage.savePkceState(pkceState);
+
+    const authUrl = buildAuthorizationUrl({
+      baseUrl: config.baseUrl,
+      realm: config.realm,
+      clientId: config.clientId,
+      redirectUri: config.redirectUri,
+      codeChallenge,
+      state: pkceState,
+      scopes: config.scopes,
+    });
+
+    if (onLoginRedirect) {
+      onLoginRedirect(authUrl);
+    } else {
+      window.location.href = authUrl;
+    }
+  }, [config, storage, onLoginRedirect]);
+
+  const handleCallback = useCallback(async (callbackUrl: string): Promise<boolean> => {
+    const url = new URL(callbackUrl);
+    const code = url.searchParams.get("code");
+    const returnedState = url.searchParams.get("state");
+
+    if (!code) return false;
+
+    const savedState = await storage.loadPkceState();
+    if (!savedState || returnedState !== savedState) {
+      throw new Error("PKCE state mismatch or missing — possible CSRF attack");
+    }
+
+    const codeVerifier = await storage.loadPkceVerifier();
+    if (!codeVerifier) {
+      throw new Error("PKCE code verifier not found — login flow may have expired");
+    }
+
+    const tokens = await exchangeCodeForTokens({
+      baseUrl: config.baseUrl,
+      realm: config.realm,
+      clientId: config.clientId,
+      redirectUri: config.redirectUri,
+      code,
+      codeVerifier,
+    });
+
+    await storage.save(tokens);
+    await storage.clearPkce();
+    setAuthenticated(tokens);
+    scheduleRefresh(tokens);
+
+    return true;
+  }, [config, storage, setAuthenticated, scheduleRefresh]);
 
   const logout = useCallback(async () => {
+    const currentTokens = tokensRef.current;
     tokensRef.current = null;
     await storage.clear();
     if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
     setState({ status: "unauthenticated" });
-    onLogout?.();
-  }, [storage, onLogout]);
+
+    const logoutUrl = buildLogoutUrl({
+      baseUrl: config.baseUrl,
+      realm: config.realm,
+      idToken: currentTokens?.idToken,
+      redirectUri: config.redirectUri,
+    });
+
+    if (onLogoutRedirect) {
+      onLogoutRedirect(logoutUrl);
+    } else {
+      window.location.href = logoutUrl;
+    }
+  }, [config, storage, onLogoutRedirect]);
 
   const getToken = useCallback(async (): Promise<string | null> => {
     const tokens = tokensRef.current;
@@ -123,8 +209,7 @@ export function AuthProvider({ config, storage = webStorage, onLogin, onLogout, 
         });
         tokensRef.current = newTokens;
         await storage.save(newTokens);
-        const user = extractUser(newTokens.accessToken);
-        setState({ status: "authenticated", user, tokens: newTokens });
+        setAuthenticated(newTokens);
         scheduleRefresh(newTokens);
         return newTokens.accessToken;
       } catch {
@@ -135,7 +220,7 @@ export function AuthProvider({ config, storage = webStorage, onLogin, onLogout, 
       }
     }
     return tokens.accessToken;
-  }, [config, storage, scheduleRefresh]);
+  }, [config, storage, scheduleRefresh, setAuthenticated]);
 
   const user = state.status === "authenticated" ? state.user : null;
 
@@ -148,6 +233,7 @@ export function AuthProvider({ config, storage = webStorage, onLogin, onLogout, 
       login,
       logout,
       getToken,
+      handleCallback,
     }}>
       {children}
     </AuthContext.Provider>

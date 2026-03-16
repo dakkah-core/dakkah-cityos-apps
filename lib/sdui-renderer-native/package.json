@@ -11,7 +11,8 @@
     "@workspace/sdui-protocol": "workspace:*"
   },
   "devDependencies": {
-    "@types/react": "catalog:"
+    "@types/react": "catalog:",
+    "react-native": "0.81.5"
   },
   "peerDependencies": {
     "react": ">=18",
