@@ -41,10 +41,11 @@ export type SDUIResponse = {
 
 export function useDevPortalSDUI() {
   return useQuery({
-    queryKey: ["sdui", "dev_portal"],
+    queryKey: ["sdui", "dev_home"],
     queryFn: async (): Promise<SDUINode> => {
       try {
-        const res = await fetch("/api/sdui/dev_portal");
+        const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+        const res = await fetch(`${base}/api/sdui/dev_home?surface=web`);
         if (!res.ok) throw new Error("Failed to fetch SDUI");
         
         const json = await res.json();

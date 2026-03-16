@@ -7,14 +7,9 @@ import { Dashboard } from "@/pages/Dashboard";
 
 const queryClient = new QueryClient();
 
-// A simple wrapper to protect routes
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
-  const { user } = useAuth();
-  
-  if (!user) {
-    return <Login />;
-  }
-  
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) return <Login />;
   return (
     <Layout>
       <Component />

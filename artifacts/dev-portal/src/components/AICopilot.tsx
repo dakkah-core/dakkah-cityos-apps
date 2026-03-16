@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Terminal, Sparkles, Loader2, Bot, Settings2 } from "lucide-react";
+import { Send, Terminal, Sparkles, Loader2, Bot, Settings2, Box } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { cn } from "@/lib/utils";
 

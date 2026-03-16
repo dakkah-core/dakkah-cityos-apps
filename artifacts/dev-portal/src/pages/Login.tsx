@@ -2,7 +2,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { TerminalSquare, Code, Webhook, Zap } from "lucide-react";
 
 export function Login() {
-  const { loginAsDeveloper, loginAsGuest } = useAuth();
+  const { signInProduction, signInAsGuest } = useAuth();
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row relative">
@@ -60,7 +60,7 @@ export function Login() {
 
           <div className="space-y-4">
             <button
-              onClick={loginAsDeveloper}
+              onClick={signInProduction}
               className="w-full flex items-center justify-between p-4 rounded-xl border-2 border-primary/20 bg-primary/10 hover:bg-primary/20 hover:border-primary/50 transition-all group"
             >
               <div className="text-left">
@@ -73,7 +73,7 @@ export function Login() {
             </button>
 
             <button
-              onClick={loginAsGuest}
+              onClick={signInAsGuest}
               className="w-full flex items-center justify-between p-4 rounded-xl border border-border bg-secondary hover:bg-secondary/80 hover:border-border/80 transition-all group"
             >
               <div className="text-left">

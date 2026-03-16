@@ -15,15 +15,9 @@ const queryClient = new QueryClient({
   }
 });
 
-// Auth Guard component
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
-  const { user } = useAuth();
-  
-  if (!user) {
-    // Return login page if not authenticated to prevent flash of content before redirect
-    return <Login />;
-  }
-  
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) return <Login />;
   return <Component />;
 }
 

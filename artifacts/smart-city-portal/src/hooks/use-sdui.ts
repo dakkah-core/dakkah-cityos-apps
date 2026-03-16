@@ -6,10 +6,10 @@ const sduiResponseSchema = z.any();
 
 export function useDashboardSdui() {
   return useQuery({
-    queryKey: ["/api/sdui/smart_city_portal"],
+    queryKey: ["/api/sdui/citizen_home"],
     queryFn: async () => {
-      // Fetching from relative path as specified in implementation notes
-      const res = await fetch("/api/sdui/smart_city_portal", {
+      const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+      const res = await fetch(`${base}/api/sdui/citizen_home?surface=web`, {
         headers: { "Content-Type": "application/json" },
       });
       

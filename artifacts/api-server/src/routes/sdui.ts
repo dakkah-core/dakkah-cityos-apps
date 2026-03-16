@@ -199,7 +199,7 @@ router.get("/:screenId", async (req, res) => {
   } catch {}
 
   const fallbackScreens: Record<string, unknown> = {
-    "city_dashboard": {
+    "city_analytics": {
       type: "stack",
       direction: "vertical",
       spacing: "md",
@@ -270,7 +270,7 @@ router.get("/:screenId", async (req, res) => {
         },
       ],
     },
-    "business_dashboard": {
+    "merchant_overview": {
       type: "stack",
       direction: "vertical",
       spacing: "md",
@@ -342,7 +342,7 @@ router.get("/:screenId", async (req, res) => {
         },
       ],
     },
-    "smart_city_portal": {
+    "citizen_home": {
       type: "stack",
       direction: "vertical",
       spacing: "md",
@@ -411,7 +411,7 @@ router.get("/:screenId", async (req, res) => {
         },
       ],
     },
-    "dev_portal": {
+    "dev_home": {
       type: "stack",
       direction: "vertical",
       spacing: "md",

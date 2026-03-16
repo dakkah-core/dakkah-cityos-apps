@@ -69,6 +69,9 @@ The project uses a pnpm monorepo with `artifacts/` for deployable applications a
 - **Smart City Portal (`artifacts/smart-city-portal`)**: Citizen-facing portal for accessing city services. Accessible civic design with service directory (property, transport, health, education, waste), city announcements, issue reporting, community events, public consultations, and AI copilot. Port 21840, path `/smart-city-portal/`.
 - **Developer Portal (`artifacts/dev-portal`)**: API platform for third-party developers. Dark developer-focused theme with API catalog (Commerce, Transport, Healthcare, Governance, IoT), app registration, API usage metrics, playground, SDK downloads, webhook config, and AI copilot. Port 23288, path `/dev-portal/`.
 - All dashboards are AI copilot-first (conversational panel is primary interface), use SDUI widget rendering from the API server, and include auth guards with guest/demo access.
+- **Auth**: Each dashboard uses `@workspace/auth` (Keycloak PKCE with `generatePKCE`/`generateState`) for SSO login, plus guest/demo fallback for development. Role guards: city_admin (City), merchant_admin (Business), citizen (Smart City), developer (Dev Portal).
+- **SDUI Fetch**: Dashboards fetch SDUI screens with `?surface=` query params: `desktop_wide` (city), `dashboard` (business), `web` (smart-city, dev-portal). Screen IDs: `city_analytics`, `merchant_overview`, `citizen_home`, `dev_home`.
+- **Vite Proxy**: All 4 dashboard `vite.config.ts` files proxy `${basePath}api` to `http://localhost:8080` (API server) with path rewriting.
 
 ### Shared Libraries (`lib/`)
 - **Database (`lib/db`)**: Drizzle ORM for PostgreSQL schema and connections.

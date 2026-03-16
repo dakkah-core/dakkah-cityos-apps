@@ -9,14 +9,9 @@ import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
 
-// Auth Guard Component
 function ProtectedRoute({ component: Component }: { component: React.ElementType }) {
-  const { user } = useAuth();
-  
-  if (!user) {
-    return <Login />;
-  }
-  
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) return <Login />;
   return <Component />;
 }
 

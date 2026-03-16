@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function Login() {
   const [, setLocation] = useLocation();
-  const { loginAsGuest, isAuthenticated } = useAuth();
+  const { loginAsGuest, signInWithKeycloak, isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   // Redirect if already logged in
@@ -83,8 +83,8 @@ export default function Login() {
                   <Input type="password" placeholder="••••••••" className="bg-background/80" />
                 </div>
                 
-                <Button className="w-full h-12 text-base mt-2" variant="civic">
-                  Sign In <ArrowRight className="ml-2 h-4 w-4" />
+                <Button className="w-full h-12 text-base mt-2" variant="civic" onClick={() => signInWithKeycloak()}>
+                  Sign In with Keycloak <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </form>
 

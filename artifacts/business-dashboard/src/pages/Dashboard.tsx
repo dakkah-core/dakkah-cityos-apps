@@ -35,7 +35,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
                 <div className="font-bold text-sm">{user?.name}</div>
-                <div className="text-xs text-muted-foreground uppercase tracking-wider">{user?.role.replace('_', ' ')}</div>
+                <div className="text-xs text-muted-foreground uppercase tracking-wider">{user?.roles?.[0]?.replace('_', ' ') ?? 'merchant'}</div>
               </div>
               <div className="w-9 h-9 rounded-full bg-secondary overflow-hidden border border-border">
                 <img src={user?.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.name}`} alt="Avatar" />

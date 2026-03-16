@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useAuth } from "@/hooks/use-auth";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -13,6 +14,12 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) return <Login />;
+  return <Component />;
+}
 
 function NotFound() {
   return (
@@ -31,8 +38,13 @@ function NotFound() {
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Login} />
-      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/login" component={Login} />
+      <Route path="/">
+        {() => <ProtectedRoute component={Dashboard} />}
+      </Route>
+      <Route path="/dashboard">
+        {() => <ProtectedRoute component={Dashboard} />}
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );

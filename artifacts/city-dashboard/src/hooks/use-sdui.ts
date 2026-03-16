@@ -44,10 +44,11 @@ export interface SduiNode {
 
 export function useDashboardSdui() {
   return useQuery({
-    queryKey: ["/api/sdui/city_dashboard"],
+    queryKey: ["/api/sdui/city_analytics"],
     queryFn: async () => {
       try {
-        const res = await fetch("/api/sdui/city_dashboard");
+        const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+        const res = await fetch(`${base}/api/sdui/city_analytics?surface=desktop_wide`);
         if (!res.ok) throw new Error("Failed to fetch SDUI");
         const json = await res.json();
         // Handle various possible response shapes from the SDUI router

@@ -15,10 +15,11 @@ export type SDUIResponse = {
 
 export function useDashboardSDUI() {
   return useQuery({
-    queryKey: ["/api/sdui/business_dashboard"],
+    queryKey: ["/api/sdui/merchant_overview"],
     queryFn: async () => {
       try {
-        const res = await fetch("/api/sdui/business_dashboard");
+        const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+        const res = await fetch(`${base}/api/sdui/merchant_overview?surface=dashboard`);
         if (!res.ok) throw new Error("Failed to fetch SDUI");
         const json = await res.json();
         

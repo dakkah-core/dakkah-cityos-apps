@@ -4,11 +4,11 @@ import { Building2, ArrowRight } from "lucide-react";
 import { useLocation } from "wouter";
 
 export default function Login() {
-  const { loginAsGuest } = useAuth();
+  const { signInAsGuest, signInWithKeycloak } = useAuth();
   const [, setLocation] = useLocation();
 
   const handleLogin = () => {
-    loginAsGuest();
+    signInAsGuest();
     setLocation("/");
   };
 
@@ -80,10 +80,10 @@ export default function Login() {
 
             <div className="pt-4 space-y-4">
               <button 
-                disabled
-                className="w-full px-4 py-3 rounded-xl bg-secondary text-muted-foreground border border-border font-medium cursor-not-allowed"
+                onClick={signInWithKeycloak}
+                className="w-full px-4 py-3 rounded-xl bg-secondary text-foreground border border-border font-medium hover:bg-secondary/80 transition-all"
               >
-                Sign In (SSO Required)
+                Sign In with Keycloak SSO
               </button>
               
               <div className="relative">

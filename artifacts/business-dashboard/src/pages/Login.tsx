@@ -4,7 +4,7 @@ import { Loader2, LayoutDashboard, ArrowRight, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Login() {
-  const { loginAsGuest, isLoading } = useAuth();
+  const { loginAsGuest, signInWithKeycloak, isLoading } = useAuth();
   
   const bgUrl = `${import.meta.env.BASE_URL}images/login-bg.png`;
 
@@ -55,10 +55,10 @@ export default function Login() {
             </div>
 
             <button 
-              disabled
-              className="w-full py-3.5 rounded-xl font-bold bg-muted text-muted-foreground cursor-not-allowed mb-4 flex items-center justify-center"
+              onClick={signInWithKeycloak}
+              className="w-full py-3.5 rounded-xl font-bold bg-secondary text-foreground hover:bg-secondary/80 transition-all mb-4 flex items-center justify-center"
             >
-              Sign In with Credentials
+              Sign In with Keycloak SSO
             </button>
             
             <div className="relative flex items-center py-2">

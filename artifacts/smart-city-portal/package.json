@@ -75,6 +75,7 @@
     "zod": "catalog:"
   },
   "dependencies": {
-    "zustand": "^5.0.11"
+    "zustand": "^5.0.11",
+    "@workspace/auth": "workspace:*"
   }
 }
