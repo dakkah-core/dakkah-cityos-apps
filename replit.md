@@ -63,6 +63,13 @@ The project uses a pnpm monorepo with `artifacts/` for deployable applications a
 - **Commerce Merchant API (`/api/commerce/merchant/`)**: Handles merchant profiles, orders, products, inventory, bookings, tables, sales analytics, and campaigns.
 - **POS Commerce API (`/api/commerce/pos/`)**: Manages POS products, checkout processes, kitchen orders, shifts, returns, and reports.
 
+### Web Dashboards & Portals (Phase 3)
+- **City Dashboard (`artifacts/city-dashboard`)**: Municipal operations center for city administrators. Dark mode command center with real-time city stats (incidents, traffic, air quality, energy), service request tracking, infrastructure health monitoring, and AI copilot chat panel. Port 20359, path `/city-dashboard/`.
+- **Business Dashboard (`artifacts/business-dashboard`)**: Multi-location business management portal for merchants. Clean professional theme with revenue/order tracking, inventory alerts, staff scheduling, marketing campaigns, customer insights, and AI copilot. Port 26079, path `/business-dashboard/`.
+- **Smart City Portal (`artifacts/smart-city-portal`)**: Citizen-facing portal for accessing city services. Accessible civic design with service directory (property, transport, health, education, waste), city announcements, issue reporting, community events, public consultations, and AI copilot. Port 21840, path `/smart-city-portal/`.
+- **Developer Portal (`artifacts/dev-portal`)**: API platform for third-party developers. Dark developer-focused theme with API catalog (Commerce, Transport, Healthcare, Governance, IoT), app registration, API usage metrics, playground, SDK downloads, webhook config, and AI copilot. Port 23288, path `/dev-portal/`.
+- All dashboards are AI copilot-first (conversational panel is primary interface), use SDUI widget rendering from the API server, and include auth guards with guest/demo access.
+
 ### Shared Libraries (`lib/`)
 - **Database (`lib/db`)**: Drizzle ORM for PostgreSQL schema and connections.
 - **API Specification (`lib/api-spec`)**: OpenAPI 3.1 specification and Orval configuration for client/schema generation.

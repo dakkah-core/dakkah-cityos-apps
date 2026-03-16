@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/city-dashboard/"
+title = "City Dashboard"
+version = "1.0.0"
+id = "artifacts/city-dashboard"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+localPort = 20359
+name = "web"
+paths = ["/city-dashboard/"]
+
+[services.development]
+run = "pnpm --filter @workspace/city-dashboard run dev"
+
+[services.env]
+PORT = "20359"
+BASE_PATH = "/city-dashboard/"
+
+[services.production]
+build = ["pnpm", "--filter", "@workspace/city-dashboard", "run", "build"]
+publicDir = "artifacts/city-dashboard/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"

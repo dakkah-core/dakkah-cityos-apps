@@ -191,13 +191,298 @@ router.get("/:screenId", async (req, res) => {
     });
 
     if (bffRes.ok) {
-      const data = await bffRes.json();
-      res.json({ success: true, data });
+      const raw = await bffRes.json();
+      const screen = raw?.data?.screen || raw?.screen || raw?.data || raw;
+      res.json({ success: true, data: { screen, source: "bff" } });
       return;
     }
   } catch {}
 
   const fallbackScreens: Record<string, unknown> = {
+    "city_dashboard": {
+      type: "stack",
+      direction: "vertical",
+      spacing: "md",
+      children: [
+        {
+          type: "card",
+          title: "City Operations Center",
+          subtitle: "Real-time municipal overview",
+          badge: "Live",
+          children: [
+            {
+              type: "stack",
+              direction: "horizontal",
+              spacing: "sm",
+              children: [
+                { type: "stat", label: "Active Incidents", value: "7", icon: "🚨", trend: "-12%" },
+                { type: "stat", label: "Traffic Flow", value: "94%", icon: "🚗", trend: "+3%" },
+                { type: "stat", label: "Air Quality", value: "Good", icon: "🌿", trend: "stable" },
+                { type: "stat", label: "Energy Usage", value: "342 MW", icon: "⚡", trend: "-5%" },
+              ],
+            },
+          ],
+        },
+        {
+          type: "card",
+          title: "Service Requests",
+          subtitle: "24h rolling window",
+          children: [
+            {
+              type: "stack",
+              direction: "horizontal",
+              spacing: "sm",
+              children: [
+                { type: "stat", label: "Open", value: "156", icon: "📋" },
+                { type: "stat", label: "In Progress", value: "89", icon: "🔧" },
+                { type: "stat", label: "Resolved Today", value: "234", icon: "✅" },
+              ],
+            },
+          ],
+        },
+        {
+          type: "card",
+          title: "Infrastructure Health",
+          subtitle: "IoT sensor network status",
+          children: [
+            {
+              type: "stack",
+              direction: "vertical",
+              spacing: "sm",
+              children: [
+                { type: "text", content: "🟢 Water: Normal (98.7% sensors online)", variant: "body" },
+                { type: "text", content: "🟢 Power Grid: Stable (99.1% uptime)", variant: "body" },
+                { type: "text", content: "🟡 Waste: 3 bins at capacity in District 4", variant: "body" },
+                { type: "text", content: "🟢 Street Lights: 99.8% operational", variant: "body" },
+              ],
+            },
+          ],
+        },
+        {
+          type: "list",
+          title: "Quick Actions",
+          items: [
+            { title: "Emergency Response", subtitle: "View active emergency protocols", icon: "🚑", action: { type: "navigate", screen: "city/emergency" } },
+            { title: "Traffic Management", subtitle: "Signal control & congestion maps", icon: "🚦", action: { type: "navigate", screen: "city/traffic" } },
+            { title: "Citizen Reports", subtitle: "156 open reports pending review", icon: "📝", action: { type: "navigate", screen: "city/reports" } },
+            { title: "Budget Overview", subtitle: "Q1 spending vs allocation", icon: "💰", action: { type: "navigate", screen: "city/budget" } },
+          ],
+        },
+      ],
+    },
+    "business_dashboard": {
+      type: "stack",
+      direction: "vertical",
+      spacing: "md",
+      children: [
+        {
+          type: "card",
+          title: "Business Performance",
+          subtitle: "Multi-location overview",
+          badge: "Today",
+          children: [
+            {
+              type: "stack",
+              direction: "horizontal",
+              spacing: "sm",
+              children: [
+                { type: "stat", label: "Revenue", value: "45,280 SAR", icon: "💰", trend: "+8%" },
+                { type: "stat", label: "Orders", value: "312", icon: "📦", trend: "+15%" },
+                { type: "stat", label: "Customers", value: "1,847", icon: "👥", trend: "+4%" },
+                { type: "stat", label: "Avg Rating", value: "4.7", icon: "⭐", trend: "+0.2" },
+              ],
+            },
+          ],
+        },
+        {
+          type: "card",
+          title: "Location Performance",
+          subtitle: "Top 3 stores by revenue",
+          children: [
+            {
+              type: "stack",
+              direction: "vertical",
+              spacing: "sm",
+              children: [
+                { type: "text", content: "🥇 Downtown Branch — 18,450 SAR (142 orders)", variant: "body" },
+                { type: "text", content: "🥈 Mall Location — 15,200 SAR (98 orders)", variant: "body" },
+                { type: "text", content: "🥉 Airport Kiosk — 11,630 SAR (72 orders)", variant: "body" },
+              ],
+            },
+          ],
+        },
+        {
+          type: "card",
+          title: "Inventory Alerts",
+          subtitle: "Action required",
+          badge: "5 items",
+          children: [
+            {
+              type: "stack",
+              direction: "vertical",
+              spacing: "sm",
+              children: [
+                { type: "text", content: "⚠️ Espresso beans — 2 days stock remaining", variant: "body" },
+                { type: "text", content: "⚠️ Takeaway cups (M) — Below reorder point", variant: "body" },
+                { type: "text", content: "🔴 Oat milk — Out of stock at 2 locations", variant: "body" },
+              ],
+            },
+            { type: "button", label: "Manage Inventory", variant: "outline", action: { type: "navigate", screen: "business/inventory" } },
+          ],
+        },
+        {
+          type: "list",
+          title: "Quick Actions",
+          items: [
+            { title: "Staff Schedule", subtitle: "12 team members on shift today", icon: "👨‍💼", action: { type: "navigate", screen: "business/staff" } },
+            { title: "Marketing Campaigns", subtitle: "2 active, 1 pending review", icon: "📣", action: { type: "navigate", screen: "business/campaigns" } },
+            { title: "Financial Reports", subtitle: "P&L, cash flow, forecasts", icon: "📊", action: { type: "navigate", screen: "business/finance" } },
+            { title: "Customer Insights", subtitle: "Retention & loyalty analytics", icon: "🎯", action: { type: "navigate", screen: "business/customers" } },
+          ],
+        },
+      ],
+    },
+    "smart_city_portal": {
+      type: "stack",
+      direction: "vertical",
+      spacing: "md",
+      children: [
+        {
+          type: "card",
+          title: "Smart City Portal",
+          subtitle: "Citizen services & information",
+          children: [
+            {
+              type: "stack",
+              direction: "horizontal",
+              spacing: "sm",
+              children: [
+                { type: "stat", label: "Active Services", value: "47", icon: "🏛️" },
+                { type: "stat", label: "Avg Wait Time", value: "2.3 min", icon: "⏱️" },
+                { type: "stat", label: "Satisfaction", value: "92%", icon: "😊" },
+              ],
+            },
+          ],
+        },
+        {
+          type: "card",
+          title: "Popular Services",
+          subtitle: "Most accessed by citizens",
+          children: [
+            {
+              type: "stack",
+              direction: "vertical",
+              spacing: "sm",
+              children: [
+                { type: "button", label: "🏠 Property & Housing", variant: "outline", action: { type: "navigate", screen: "portal/property" } },
+                { type: "button", label: "🚗 Transport & Parking", variant: "outline", action: { type: "navigate", screen: "portal/transport" } },
+                { type: "button", label: "🏥 Health & Wellness", variant: "outline", action: { type: "navigate", screen: "portal/health" } },
+                { type: "button", label: "📚 Education & Libraries", variant: "outline", action: { type: "navigate", screen: "portal/education" } },
+                { type: "button", label: "♻️ Waste & Recycling", variant: "outline", action: { type: "navigate", screen: "portal/waste" } },
+              ],
+            },
+          ],
+        },
+        {
+          type: "card",
+          title: "City Announcements",
+          subtitle: "Latest updates",
+          children: [
+            {
+              type: "stack",
+              direction: "vertical",
+              spacing: "sm",
+              children: [
+                { type: "text", content: "📢 New metro line Phase 2 construction begins March 20", variant: "body" },
+                { type: "text", content: "🌳 City park renovation — temporary closures this weekend", variant: "body" },
+                { type: "text", content: "💧 Water conservation advisory in effect until April 1", variant: "body" },
+              ],
+            },
+          ],
+        },
+        {
+          type: "list",
+          title: "Report & Engage",
+          items: [
+            { title: "Report an Issue", subtitle: "Potholes, streetlights, graffiti", icon: "📝", action: { type: "navigate", screen: "portal/report" } },
+            { title: "Community Events", subtitle: "18 events this week", icon: "🎉", action: { type: "navigate", screen: "portal/events" } },
+            { title: "Public Consultations", subtitle: "3 active proposals for feedback", icon: "🗳️", action: { type: "navigate", screen: "portal/consult" } },
+          ],
+        },
+      ],
+    },
+    "dev_portal": {
+      type: "stack",
+      direction: "vertical",
+      spacing: "md",
+      children: [
+        {
+          type: "card",
+          title: "Developer Portal",
+          subtitle: "Dakkah CityOS API Platform",
+          children: [
+            {
+              type: "stack",
+              direction: "horizontal",
+              spacing: "sm",
+              children: [
+                { type: "stat", label: "APIs Available", value: "24", icon: "🔌" },
+                { type: "stat", label: "Your Apps", value: "3", icon: "📱" },
+                { type: "stat", label: "API Calls (24h)", value: "12.4K", icon: "📊" },
+                { type: "stat", label: "Health", value: "99.9%", icon: "🟢" },
+              ],
+            },
+          ],
+        },
+        {
+          type: "card",
+          title: "API Catalog",
+          subtitle: "Browse available APIs",
+          children: [
+            {
+              type: "stack",
+              direction: "vertical",
+              spacing: "sm",
+              children: [
+                { type: "button", label: "🛒 Commerce API — Products, orders, payments", variant: "outline", action: { type: "navigate", screen: "dev/api/commerce" } },
+                { type: "button", label: "🚗 Transport API — Routes, vehicles, bookings", variant: "outline", action: { type: "navigate", screen: "dev/api/transport" } },
+                { type: "button", label: "🏥 Healthcare API — Providers, appointments", variant: "outline", action: { type: "navigate", screen: "dev/api/healthcare" } },
+                { type: "button", label: "🏛️ Governance API — Services, permits, reports", variant: "outline", action: { type: "navigate", screen: "dev/api/governance" } },
+                { type: "button", label: "📡 IoT API — Sensors, telemetry, alerts", variant: "outline", action: { type: "navigate", screen: "dev/api/iot" } },
+              ],
+            },
+          ],
+        },
+        {
+          type: "card",
+          title: "Your Applications",
+          subtitle: "Registered apps & credentials",
+          children: [
+            {
+              type: "stack",
+              direction: "vertical",
+              spacing: "sm",
+              children: [
+                { type: "text", content: "🟢 MyCity App — 8,234 calls/day — Commerce, Transport", variant: "body" },
+                { type: "text", content: "🟢 SmartHome Hub — 3,100 calls/day — IoT, Governance", variant: "body" },
+                { type: "text", content: "🟡 TestApp — 12 calls/day — Sandbox mode", variant: "body" },
+              ],
+            },
+            { type: "button", label: "Register New App", variant: "solid", action: { type: "navigate", screen: "dev/apps/new" } },
+          ],
+        },
+        {
+          type: "list",
+          title: "Developer Resources",
+          items: [
+            { title: "Getting Started", subtitle: "Quick-start guide & tutorials", icon: "📖", action: { type: "navigate", screen: "dev/docs/start" } },
+            { title: "API Playground", subtitle: "Interactive API testing sandbox", icon: "🧪", action: { type: "navigate", screen: "dev/playground" } },
+            { title: "SDKs & Libraries", subtitle: "JavaScript, Python, Go, Swift", icon: "📦", action: { type: "navigate", screen: "dev/sdks" } },
+            { title: "Webhooks & Events", subtitle: "Real-time event subscriptions", icon: "🔔", action: { type: "navigate", screen: "dev/webhooks" } },
+          ],
+        },
+      ],
+    },
     "home-hero": {
       type: "stack",
       direction: "vertical",
@@ -321,8 +606,9 @@ router.post("/:screenId", async (req, res) => {
       signal: AbortSignal.timeout(5000),
     });
     if (bffRes.ok) {
-      const data = await bffRes.json();
-      res.json({ success: true, data });
+      const raw = await bffRes.json();
+      const screen = raw?.data?.screen || raw?.screen || raw?.data || raw;
+      res.json({ success: true, data: { screen, source: "bff" } });
       return;
     }
   } catch {}

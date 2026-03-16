@@ -1,0 +1,16 @@
+packages:
+  "framer-motion": "For smooth transitions and layout animations in the dashboard and chat"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility to merge tailwind classes safely"
+  "date-fns": "For formatting timestamps in the copilot chat"
+
+images:
+  - path: "artifacts/city-dashboard/public/images/login-bg.png"
+    description: "Abstract dark blue and cyan geometric data visualization network glowing lines, futuristic city operations center background, professional, cinematic lighting"
+    aspect_ratio: "16:9"
+
+notes:
+  - "App is an AI copilot-first interface. Traditional navigation is replaced by natural language input."
+  - "Left side renders Server-Driven UI (SDUI) fetched from /api/sdui/city_dashboard."
+  - "Right side is a persistent AI chat interface."
+  - "Auth is mock-based for demonstration (role: city_admin)."

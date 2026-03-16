@@ -1,0 +1,19 @@
+packages:
+  "framer-motion": "For smooth page transitions and chat message entrance animations"
+  "clsx": "Utility for conditionally joining classNames"
+  "tailwind-merge": "Utility for merging tailwind classes without style conflicts"
+  "date-fns": "For formatting timestamps in the chat interface"
+  "zustand": "For lightweight global state management (auth, chat)"
+
+images:
+  - path: "artifacts/smart-city-portal/public/images/civic-hero.png"
+    description: "Abstract, clean modern architectural rendering of a smart city at dawn, showing subtle glowing data streams integrating with physical buildings. Trustworthy blues, clean whites, and subtle teal accents. High-end architectural visualization style."
+    aspect_ratio: "16:9"
+  - path: "artifacts/smart-city-portal/public/images/logo-mark.png"
+    description: "Minimalist, elegant geometric logo mark for a modern smart city portal. Interlocking precise shapes forming an abstract building or node. Trustworthy deep blue color, transparent background."
+    aspect_ratio: "1:1"
+
+notes:
+  - The application relies on a single AI Copilot interface for navigation, replacing traditional menus.
+  - SDUI widgets are fetched from the same origin API at /api/sdui/smart_city_portal.
+  - Auth is simulated via Zustand store for the purpose of the frontend demo, utilizing a 'citizen' role.
