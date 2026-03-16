@@ -7,6 +7,7 @@ import sduiRouter from "./sdui";
 import commerceRouter from "./commerce";
 import notificationsRouter from "./notifications";
 import transportRouter from "./transport";
+import merchantRouter from "./merchant";
 
 const router: IRouter = Router();
 
@@ -16,6 +17,7 @@ router.use("/ai", aiRouter);
 router.use(threadsRouter);
 router.use("/sdui", sduiRouter);
 router.use("/commerce", commerceRouter);
+router.use("/commerce", merchantRouter);
 router.use(notificationsRouter);
 router.use(transportRouter);
 

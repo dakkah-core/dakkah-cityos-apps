@@ -81,6 +81,31 @@ The project is structured as a pnpm monorepo with separate `artifacts/` for depl
 - **Offline Sync**: POST `/transport/driver/sync` — batch sync queued offline actions.
 - **Auth**: `requireAuth` on all mutations, `optionalAuth` on reads.
 
+### Merchant App (`artifacts/mobile/app/merchant/`)
+
+- **Role-Based Experience**: Built within the existing Expo mobile artifact as a route group under `/merchant`, sharing auth, design tokens, and shared packages.
+- **MerchantRoleGate**: Enforces `merchant/vendor/store_manager/store_staff` roles on mobile; dev bypass via `NODE_ENV=development` or `EXPO_PUBLIC_ALLOW_DEV_MERCHANT=true`.
+- **SDUI Home**: `merchant_home` screen with Store Dashboard stats (revenue, orders, rating), pending order alerts, quick action grid.
+- **Order Management**: Real-time order feed with 15s polling, accept/reject with reason, status progression (pending → accepted → preparing → ready), status color badges.
+- **Catalog Management**: Product CRUD with name, description, price, category, SKU, availability toggle, stock level. Category filtering, search, modal editor.
+- **Inventory Tracking**: Stock levels with in_stock/low_stock/out_of_stock status, inline stock adjustment, low-stock alerts with summary bar.
+- **Bookings & Tables**: Reservation list with confirm/cancel/seat/complete workflow, table management with status (available/occupied/reserved/maintenance).
+- **Sales Analytics**: Revenue trend bar charts, peak hours visualization, top items ranking, customer insights (new/returning/rating), period toggles (today/week/month).
+- **Campaigns**: Promotion/flash sale/loyalty campaign creation, activate/pause toggle, discount configuration (percentage/fixed).
+- **Push Notifications**: Listens for `new_order`, `order_updated`, `booking_request` notification categories.
+
+### Commerce Merchant API (`/api/commerce/merchant/`)
+
+- **Profile**: GET/POST `/commerce/merchant/profile`, `/commerce/merchant/store-status` — merchant profile and open/closed toggle.
+- **Orders**: GET `/commerce/merchant/orders`, POST `.../orders/:orderId/status` — order listing with status filter, status updates.
+- **Products**: GET/POST/PUT/DELETE `/commerce/merchant/products` — full CRUD with variants.
+- **Inventory**: GET `/commerce/merchant/inventory`, POST `.../inventory/:productId` — stock levels and restocking.
+- **Bookings**: GET `/commerce/merchant/bookings`, POST `.../bookings/:bookingId/status` — reservation management.
+- **Tables**: GET `/commerce/merchant/tables` — table status listing.
+- **Analytics**: GET `/commerce/merchant/analytics?period=today|week|month` — sales data with top items, peak hours, customer insights.
+- **Campaigns**: GET/POST `/commerce/merchant/campaigns`, POST `.../campaigns/:campaignId/status` — campaign CRUD and activation.
+- **Auth**: `requireAuth + requireRole(merchant, vendor, store_manager, store_staff)` on all endpoints.
+
 ### Shared Libraries (`lib/`)
 
 - **Database (`lib/db`)**: Drizzle ORM for PostgreSQL, defining schema and handling database connections.
