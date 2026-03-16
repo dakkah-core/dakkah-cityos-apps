@@ -1,7 +1,24 @@
 import type { Request, Response } from "express";
 
+interface ChatMessage {
+  role: "user" | "assistant" | "system";
+  content: string;
+}
+
+interface OrderItem {
+  productId: string;
+  quantity: number;
+  price?: number;
+}
+
+interface WorkflowTriggerData {
+  [key: string]: string | number | boolean | null;
+}
+
+type ServiceMethodParams = Record<string, unknown>;
+
 interface ServiceMethod {
-  (params: any): Promise<any>;
+  (params: ServiceMethodParams): Promise<Record<string, unknown>>;
 }
 
 interface ServiceModule {
@@ -9,20 +26,23 @@ interface ServiceModule {
 }
 
 const AIService: ServiceModule = {
-  async chat(params: { messages: any[]; model?: string }) {
+  async chat(params: ServiceMethodParams) {
+    const p = params as { messages?: ChatMessage[]; model?: string };
     return {
       response: "I'd be happy to help you explore the city! What are you looking for?",
-      model: params.model || "dakkah-copilot-v1",
+      model: p.model || "dakkah-copilot-v1",
       usage: { promptTokens: 120, completionTokens: 45 },
     };
   },
-  async summarize(params: { text: string }) {
-    return { summary: params.text?.slice(0, 100) + "..." };
+  async summarize(params: ServiceMethodParams) {
+    const p = params as { text?: string };
+    return { summary: (p.text || "").slice(0, 100) + "..." };
   },
 };
 
 const CommerceService: ServiceModule = {
-  async getProducts(params: { category?: string; limit?: number }) {
+  async getProducts(params: ServiceMethodParams) {
+    const _p = params as { category?: string; limit?: number };
     return {
       products: [
         { id: "prod_1", name: "Artisan Coffee Blend", price: 24.99, currency: "SAR", category: "food", rating: 4.8, inStock: true },
@@ -32,7 +52,8 @@ const CommerceService: ServiceModule = {
       total: 3,
     };
   },
-  async getVendors(params: { query?: string }) {
+  async getVendors(params: ServiceMethodParams) {
+    const _p = params as { query?: string };
     return {
       vendors: [
         { id: "v_1", name: "Al-Medina Crafts", rating: 4.7, products: 42, verified: true },
@@ -40,27 +61,31 @@ const CommerceService: ServiceModule = {
       ],
     };
   },
-  async createOrder(params: { items: any[] }) {
+  async createOrder(params: ServiceMethodParams) {
+    const _p = params as { items?: OrderItem[] };
     return { orderId: "ORD-" + Date.now(), status: "confirmed", estimatedDelivery: "30 min" };
   },
 };
 
 const PaymentsService: ServiceModule = {
-  async createInvoice(params: { amount: number; currency?: string }) {
-    return { invoiceId: "INV-" + Date.now(), amount: params.amount, currency: params.currency || "SAR", status: "pending" };
+  async createInvoice(params: ServiceMethodParams) {
+    const p = params as { amount: number; currency?: string };
+    return { invoiceId: "INV-" + Date.now(), amount: p.amount, currency: p.currency || "SAR", status: "pending" };
   },
   async getBalance() {
     return { balance: 2450.0, currency: "SAR", lastUpdated: new Date().toISOString() };
   },
-  async processPayment(params: { invoiceId: string; method: string }) {
-    return { transactionId: "TXN-" + Date.now(), status: "completed", timestamp: new Date().toISOString() };
+  async processPayment(params: ServiceMethodParams) {
+    const p = params as { invoiceId: string; method: string };
+    return { transactionId: "TXN-" + Date.now(), status: "completed", timestamp: new Date().toISOString(), invoiceId: p.invoiceId, method: p.method };
   },
 };
 
 const IdentityService: ServiceModule = {
-  async getProfile(params: { userId?: string }) {
+  async getProfile(params: ServiceMethodParams) {
+    const p = params as { userId?: string };
     return {
-      id: params.userId || "user_default",
+      id: p.userId || "user_default",
       name: "City Explorer",
       email: "explorer@dakkah.city",
       level: 12,
@@ -68,28 +93,32 @@ const IdentityService: ServiceModule = {
       badges: ["early_adopter", "city_walker", "event_goer"],
     };
   },
-  async verifyIdentity(params: { documentType: string }) {
-    return { verified: true, documentType: params.documentType, verifiedAt: new Date().toISOString() };
+  async verifyIdentity(params: ServiceMethodParams) {
+    const p = params as { documentType: string };
+    return { verified: true, documentType: p.documentType, verifiedAt: new Date().toISOString() };
   },
 };
 
 const LogisticsService: ServiceModule = {
-  async trackDelivery(params: { orderId: string }) {
+  async trackDelivery(params: ServiceMethodParams) {
+    const p = params as { orderId: string };
     return {
-      orderId: params.orderId,
+      orderId: p.orderId,
       status: "on-the-way",
       eta: "15 min",
       driver: { name: "Ahmed", vehicle: "Motorcycle", plate: "ABC 1234" },
       location: { lat: 24.7136, lng: 46.6753 },
     };
   },
-  async estimateDelivery(params: { from: string; to: string }) {
+  async estimateDelivery(params: ServiceMethodParams) {
+    const _p = params as { from: string; to: string };
     return { estimatedTime: "25 min", distance: "8.2 km", cost: 15.0, currency: "SAR" };
   },
 };
 
 const HealthService: ServiceModule = {
-  async getMetrics(params: { userId?: string }) {
+  async getMetrics(params: ServiceMethodParams) {
+    const _p = params as { userId?: string };
     return {
       steps: 8432,
       heartRate: 72,
@@ -99,13 +128,15 @@ const HealthService: ServiceModule = {
       lastSync: new Date().toISOString(),
     };
   },
-  async getAirQuality(params: { zone?: string }) {
-    return { aqi: 42, level: "Good", pm25: 12.3, zone: params.zone || "Downtown" };
+  async getAirQuality(params: ServiceMethodParams) {
+    const p = params as { zone?: string };
+    return { aqi: 42, level: "Good", pm25: 12.3, zone: p.zone || "Downtown" };
   },
 };
 
 const ERPService: ServiceModule = {
-  async getInventory(params: { warehouseId?: string }) {
+  async getInventory(params: ServiceMethodParams) {
+    const _p = params as { warehouseId?: string };
     return {
       items: [
         { sku: "SKU-001", name: "Event Tickets", quantity: 250, reorderAt: 50 },
@@ -113,13 +144,15 @@ const ERPService: ServiceModule = {
       ],
     };
   },
-  async getReport(params: { type: string; period?: string }) {
-    return { type: params.type, period: params.period || "monthly", revenue: 125000, transactions: 3420 };
+  async getReport(params: ServiceMethodParams) {
+    const p = params as { type: string; period?: string };
+    return { type: p.type, period: p.period || "monthly", revenue: 125000, transactions: 3420 };
   },
 };
 
 const ContentService: ServiceModule = {
-  async getArticles(params: { category?: string; limit?: number }) {
+  async getArticles(params: ServiceMethodParams) {
+    const _p = params as { category?: string; limit?: number };
     return {
       articles: [
         { id: "art_1", title: "Hidden Gems of Al-Balad", author: "Sarah Al-Rashid", readTime: "5 min", category: "explore" },
@@ -127,7 +160,8 @@ const ContentService: ServiceModule = {
       ],
     };
   },
-  async getEvents(params: { date?: string }) {
+  async getEvents(params: ServiceMethodParams) {
+    const _p = params as { date?: string };
     return {
       events: [
         { id: "evt_1", name: "Jazz at the Park", date: "Tonight", time: "8:00 PM", venue: "City Park", tickets: 120 },
@@ -138,10 +172,12 @@ const ContentService: ServiceModule = {
 };
 
 const CommsService: ServiceModule = {
-  async sendNotification(params: { userId: string; title: string; body: string }) {
+  async sendNotification(params: ServiceMethodParams) {
+    const _p = params as { userId: string; title: string; body: string };
     return { sent: true, notificationId: "notif_" + Date.now() };
   },
-  async getNotifications(params: { userId?: string; limit?: number }) {
+  async getNotifications(params: ServiceMethodParams) {
+    const _p = params as { userId?: string; limit?: number };
     return {
       notifications: [
         { id: "n_1", title: "Quest Complete!", body: "You earned 50 XP", read: false, timestamp: Date.now() - 3600000 },
@@ -152,7 +188,8 @@ const CommsService: ServiceModule = {
 };
 
 const WorkflowsService: ServiceModule = {
-  async getActiveWorkflows(params: { userId?: string }) {
+  async getActiveWorkflows(params: ServiceMethodParams) {
+    const _p = params as { userId?: string };
     return {
       workflows: [
         { id: "wf_1", name: "Trip Planning", status: "active", progress: 60, steps: ["Search", "Compare", "Book", "Confirm"] },
@@ -160,16 +197,19 @@ const WorkflowsService: ServiceModule = {
       ],
     };
   },
-  async triggerWorkflow(params: { name: string; data: any }) {
-    return { workflowId: "wf_" + Date.now(), name: params.name, status: "started" };
+  async triggerWorkflow(params: ServiceMethodParams) {
+    const p = params as { name: string; data?: WorkflowTriggerData };
+    return { workflowId: "wf_" + Date.now(), name: p.name, status: "started" };
   },
 };
 
 const StorageService: ServiceModule = {
-  async upload(params: { fileName: string; mimeType: string }) {
-    return { fileId: "file_" + Date.now(), url: "https://storage.dakkah.city/" + params.fileName, size: 0 };
+  async upload(params: ServiceMethodParams) {
+    const p = params as { fileName: string; mimeType: string };
+    return { fileId: "file_" + Date.now(), url: "https://storage.dakkah.city/" + p.fileName, size: 0 };
   },
-  async listFiles(params: { folder?: string }) {
+  async listFiles(params: ServiceMethodParams) {
+    const _p = params as { folder?: string };
     return {
       files: [
         { id: "f_1", name: "city_photo.jpg", size: 2400000, mimeType: "image/jpeg", uploadedAt: new Date().toISOString() },
@@ -194,7 +234,11 @@ const services: Record<string, ServiceModule> = {
 };
 
 export async function handleGatewayRequest(req: Request, res: Response) {
-  const { service, method, params } = req.body;
+  const { service, method, params } = req.body as {
+    service?: string;
+    method?: string;
+    params?: ServiceMethodParams;
+  };
 
   if (!service || !method) {
     return res.status(400).json({ success: false, error: { code: "INVALID_REQUEST", message: "service and method are required" } });
@@ -217,8 +261,9 @@ export async function handleGatewayRequest(req: Request, res: Response) {
       data,
       meta: { source: service, timestamp: new Date().toISOString(), requestId: "req_" + Date.now() },
     });
-  } catch (err: any) {
-    return res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Internal error";
+    return res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message } });
   }
 }
 

@@ -132,31 +132,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const localResponse = processUserMessage(text);
-      const hasScenarioMatch = localResponse.content !== "I'm not sure how to help with that yet, but I'm always learning! Try asking about places, events, services, transit, shopping, health, work, or city life.";
 
-      if (hasScenarioMatch || !useAI) {
-        await new Promise((r) => setTimeout(r, 400 + Math.random() * 600));
-        if (requestTokenRef.current !== reqToken) return;
-
-        const assistantMsg: Message = {
-          id: generateId("msg"),
-          role: "assistant",
-          content: localResponse.content,
-          timestamp: Date.now(),
-          artifacts: localResponse.artifacts,
-          mode: localResponse.mode,
-        };
-
-        if (requestTokenRef.current !== reqToken) return;
-
-        setMessages((prev) => {
-          const finalMsgs = [...prev, assistantMsg];
-          if (threadIdRef.current === threadId || threadIdRef.current === null) {
-            saveThread(threadId, finalMsgs);
-          }
-          return finalMsgs;
-        });
-      } else {
+      if (useAI) {
         const recentMsgs = messages.slice(-6).map((m) => ({
           role: m.role as "user" | "assistant",
           content: m.content,
@@ -164,30 +141,36 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         recentMsgs.push({ role: "user", content: text });
 
         const accessToken = await getAccessToken();
-        const aiResponse = await aiChat(recentMsgs, {
-          threadId,
-          model: copilotSettingsRef.current.model,
-          context: {
-            language: copilotSettingsRef.current.language,
-          },
-          accessToken: accessToken || undefined,
-        });
+        let aiResponse;
+        try {
+          aiResponse = await aiChat(recentMsgs, {
+            threadId,
+            model: copilotSettingsRef.current.model,
+            context: {
+              language: copilotSettingsRef.current.language,
+            },
+            accessToken: accessToken || undefined,
+          });
+        } catch {
+          aiResponse = null;
+        }
         if (requestTokenRef.current !== reqToken) return;
 
-        const content = aiResponse.success && aiResponse.data?.content
-          ? aiResponse.data.content
+        const aiSucceeded = aiResponse && aiResponse.success && aiResponse.data?.content;
+        const content = aiSucceeded && aiResponse
+          ? aiResponse.data!.content
           : localResponse.content;
 
         const artifacts: Artifact[] = [];
 
-        if (aiResponse.data?.sdui) {
+        if (aiSucceeded && aiResponse && aiResponse.data?.sdui) {
           artifacts.push({
             type: "sdui-node",
             data: { node: aiResponse.data.sdui, theme: "dark" as const },
           });
         }
 
-        if (aiResponse.data?.intent && !aiResponse.data?.sdui) {
+        if (aiSucceeded && aiResponse && aiResponse.data?.intent && !aiResponse.data?.sdui) {
           try {
             const execResult = await aiExecute(
               aiResponse.data.intent,
@@ -203,7 +186,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           } catch {}
         }
 
-        if (artifacts.length === 0 && aiResponse.data?.intent) {
+        if (artifacts.length === 0 && aiSucceeded && aiResponse && aiResponse.data?.intent) {
           artifacts.push({
             type: "toast",
             data: {
@@ -214,14 +197,40 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           });
         }
 
+        if (!aiSucceeded && localResponse.artifacts) {
+          artifacts.push(...localResponse.artifacts);
+        }
+
         const assistantMsg: Message = {
           id: generateId("msg"),
           role: "assistant",
           content,
           timestamp: Date.now(),
-          mode: "suggest",
+          mode: aiSucceeded ? "suggest" : localResponse.mode,
           ...(artifacts.length > 0 ? { artifacts } : {}),
         };
+
+        setMessages((prev) => {
+          const finalMsgs = [...prev, assistantMsg];
+          if (threadIdRef.current === threadId || threadIdRef.current === null) {
+            saveThread(threadId, finalMsgs);
+          }
+          return finalMsgs;
+        });
+      } else {
+        await new Promise((r) => setTimeout(r, 400 + Math.random() * 600));
+        if (requestTokenRef.current !== reqToken) return;
+
+        const assistantMsg: Message = {
+          id: generateId("msg"),
+          role: "assistant",
+          content: localResponse.content,
+          timestamp: Date.now(),
+          artifacts: localResponse.artifacts,
+          mode: localResponse.mode,
+        };
+
+        if (requestTokenRef.current !== reqToken) return;
 
         setMessages((prev) => {
           const finalMsgs = [...prev, assistantMsg];
