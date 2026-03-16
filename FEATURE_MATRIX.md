@@ -1,52 +1,160 @@
-# Dakkah CityOS — Full Feature Matrix
+# Dakkah CityOS — Universal Super App Feature Matrix
 
-## Comparison: Current App vs Reference App vs Recommended Additions
+## Three-Way Comparison: Current Mobile App vs Reference Chat App vs CMS Backend
+
+> **Vision**: Dakkah CityOS is a Universal Super App — a Conversational City Experience OS where
+> ALL capabilities are accessed through an AI copilot. The mobile app (this project) will eventually
+> move to `apps/superapp` inside the CMS monorepo after all implementations are complete.
+
+---
+
+## TABLE OF CONTENTS
+
+1. [Architecture & Platform](#1-architecture--platform)
+2. [Backend Systems (CMS Monorepo)](#2-backend-systems-cms-monorepo)
+3. [BFF Layer (Backend-for-Frontend)](#3-bff-layer)
+4. [API Routes (392 endpoints in CMS)](#4-api-routes)
+5. [Core Copilot Interface](#5-core-copilot-interface)
+6. [Chat Features](#6-chat-features)
+7. [UI Panels & Navigation](#7-ui-panels--navigation)
+8. [Right Drawer — City Context](#8-right-drawer--city-context)
+9. [Discovery Sheet](#9-discovery-sheet)
+10. [Scenario Data Files](#10-scenario-data-files)
+11. [Artifact Types — City OS Core (48)](#11-artifact-types--city-os-core)
+12. [Artifact Types — Domain Verticals (157+)](#12-artifact-types--domain-verticals)
+13. [CMS Collections (180+)](#13-cms-collections)
+14. [CMS Domain Packages (65+)](#14-cms-domain-packages)
+15. [Medusa Commerce Modules (129)](#15-medusa-commerce-modules)
+16. [CMS Block Types (920+)](#16-cms-block-types)
+17. [Multi-Surface Apps (14 surfaces)](#17-multi-surface-apps)
+18. [SDUI Protocol & Capability Negotiation](#18-sdui-protocol)
+19. [Microservices & Infrastructure](#19-microservices--infrastructure)
+20. [Current App Exclusive Features](#20-current-app-exclusive-features)
+21. [Additional Recommended Capabilities](#21-additional-recommended-capabilities)
+22. [Summary Scorecard](#22-summary-scorecard)
+23. [Prioritized Roadmap](#23-prioritized-roadmap)
 
 ---
 
 ## 1. ARCHITECTURE & PLATFORM
 
-| Feature | Current App (Expo/RN) | Reference App (React/Vite Web) | Recommended |
-|---|---|---|---|
-| Platform | Expo React Native (iOS/Android/Web) | React + Vite (Web SPA only) | Keep Expo — mobile-first is stronger |
-| Backend API | Express.js API server (11 gateway routes) | Payload CMS as API Gateway | Add Payload CMS or keep Express with more routes |
-| Auth | AsyncStorage-based local profile | Supabase Auth (email/password, sessions, JWT) | Add Supabase Auth or Replit Auth |
-| Database | AsyncStorage (client-side only) | Supabase PostgreSQL + server threads | Add PostgreSQL for server-side persistence |
-| AI Model | OpenAI gpt-5-mini via Replit AI Integrations | OpenAI gpt-4o via direct API key | Keep Replit AI Integrations (no key needed) |
-| Commerce Backend | Mock/scenario-based | Medusa Commerce (real products, carts, orders) | Add Medusa or mock commerce service |
-| Logistics Backend | Mock/scenario-based | Fleetbase (real fleets, drivers, vehicles) | Add Fleetbase or mock logistics service |
-| ERP Backend | Not present | ERPNext (invoices, inventory, HR) | Add ERPNext or mock ERP service |
-| Identity/DID | Not present | Walt.id (DID, verifiable credentials) | Add Walt.id or mock identity service |
-| Payments | Not present | Stripe (payments, subscriptions) | Add Stripe integration |
-| Orchestration | Not present | Temporal Cloud (workflow orchestration) | Future phase |
-| Email/Comms | Not present | SendGrid (transactional email) | Future phase |
-| Object Storage | Not present | MinIO (file storage) | Add Replit Object Storage |
-| System Health Dashboard | Not present | Full health check panel testing all backends | Add system health endpoint |
+| Feature | Current App | Reference Chat App | CMS Backend | Status |
+|---|---|---|---|---|
+| **Platform** | Expo React Native (iOS/Android/Web) | React + Vite (Web SPA) | Next.js 16 + Payload CMS 3 | Current app is mobile-first — strongest |
+| **Backend API** | Express.js (11 routes) | Payload CMS Gateway | Payload CMS + 392 API routes | GAP — need to connect to CMS |
+| **Auth** | AsyncStorage local profile | Supabase Auth | Keycloak IAM (OIDC, MFA, RBAC) | GAP — need Keycloak integration |
+| **Database** | AsyncStorage (client-only) | Supabase PostgreSQL | Neon PostgreSQL + PostGIS + pgvector | GAP — need server persistence |
+| **AI Model** | OpenAI gpt-5-mini (Replit AI) | OpenAI gpt-4o | OpenAI + embeddings + AI compose | PARTIAL |
+| **Search** | Local keyword matching | Local scenarios | Meilisearch (universal cross-domain) | GAP |
+| **Storage** | None | MinIO | Replit Object Storage + MinIO fallback | GAP |
+| **Monorepo** | pnpm workspace (3 artifacts) | Standalone Vite app | pnpm + Turborepo (30+ apps, 65+ packages) | GAP |
+| **Multi-tenancy** | None | None | Hierarchical 5-tier (Master→City) | GAP |
+| **Localization** | en + ar (60+ keys, RTL) | en only | en + fr + ar (full RTL, logical CSS) | PARTIAL MATCH |
+| **Design System** | constants/colors.ts | Tailwind + shadcn/ui | Token Bridge + 51 components + SCSS | GAP |
 
 ---
 
-## 2. CORE COPILOT INTERFACE
+## 2. BACKEND SYSTEMS (CMS Monorepo)
 
-| Feature | Current App | Reference App | Status |
-|---|---|---|---|
-| Conversational AI copilot (single-screen) | ✅ | ✅ | MATCH |
-| No traditional UI (no tabs/dashboards) | ✅ | ✅ | MATCH |
-| Three response modes (Suggest/Propose/Execute) | ✅ | ✅ | MATCH |
-| Scenario Brain (keyword → artifact matching) | ✅ (copilot-brain.ts) | ✅ (copilot-brain + gateway) | MATCH |
-| Real AI integration (OpenAI) | ✅ | ✅ | MATCH |
-| AI fallback to local scenarios | ✅ | ✅ | MATCH |
-| Message sending with attachments | ✅ | ✅ | MATCH |
-| Selection chips (quick-reply buttons) | ✅ | ✅ | MATCH |
-| Typing indicator / processing state | ✅ | ✅ | MATCH |
-| Welcome message | ✅ | ✅ | MATCH |
+The CMS repo contains a full-stack multi-system platform. These are the backend systems our Super App needs to connect to:
+
+| System | Port | Technology | Purpose | Current App Status |
+|---|---|---|---|---|
+| **Payload CMS** | 5000 | Next.js + Payload 3 | Master CMS, API Gateway, Admin Panel | NOT CONNECTED |
+| **Medusa Commerce** | 9000 | Medusa v2 (129 modules) | Commerce engine (products, orders, carts) | NOT CONNECTED |
+| **Fleetbase** | — | Laravel + Octane | Logistics execution, dispatch, fleet tracking | NOT CONNECTED |
+| **FleetOps** | — | Next.js + Drizzle | Fleet operations dashboard | NOT CONNECTED |
+| **ERPNext** | — | Python/Frappe (35 doctypes) | Enterprise backbone (invoices, inventory, HR) | NOT CONNECTED |
+| **Tryton ERP** | — | Python | SME backbone with cityos_sync | NOT CONNECTED |
+| **Keycloak** | 8080 | Java | IAM — SSO, OIDC, MFA, RBAC | NOT CONNECTED |
+| **Walt.id** | 7000/7001 | Kotlin | Digital identity — DID, verifiable credentials | NOT CONNECTED |
+| **Kuzzle IoT** | 7512 | Node.js | IoT data platform, real-time WebSocket, MQTT | NOT CONNECTED |
+| **Meilisearch** | — | Rust | Universal cross-domain search | NOT CONNECTED |
+| **MinIO** | 9002 | Go | S3-compatible object storage | NOT CONNECTED |
+| **Temporal Cloud** | — | Cloud | Workflow orchestration engine | NOT CONNECTED |
+| **Stripe** | — | API | Payment processing | NOT CONNECTED |
+| **Ably** | — | API | Real-time WebSocket (live auctions) | NOT CONNECTED |
+| **SendGrid** | — | API | Transactional email | NOT CONNECTED |
+| **Plausible** | — | Self-hosted | Privacy-first analytics | NOT CONNECTED |
+| **Sentry** | — | Cloud | Error tracking and monitoring | NOT CONNECTED |
+| **Prometheus** | — | Self-hosted | Metrics and monitoring | NOT CONNECTED |
 
 ---
 
-## 3. CHAT FEATURES
+## 3. BFF LAYER (Backend-for-Frontend)
+
+The CMS has **8 BFF microservices** that sit between frontend apps and the backend systems:
+
+| BFF Service | Port | Domains Covered | Current App Status |
+|---|---|---|---|
+| **bff-commerce** | 4001 | Commerce, Facilities, Community | NOT CONNECTED |
+| **bff-governance** | 4002 | Governance, Finance, Citizen Services | NOT CONNECTED |
+| **bff-healthcare** | 4003 | Healthcare | NOT CONNECTED |
+| **bff-transport** | 4004 | Transportation, Fleet & Logistics | NOT CONNECTED |
+| **bff-events** | 4005 | Events, Sports, Culture & Tourism | NOT CONNECTED |
+| **bff-platform** | 4006 | Auth, Tenancy, Notifications | NOT CONNECTED |
+| **bff-iot** | 4007 | IoT, Agriculture, Environment | NOT CONNECTED |
+| **bff-social** | 4008 | Social Media, Engagement, Media Assets | NOT CONNECTED |
+
+Each BFF includes:
+- Correlation ID middleware
+- Keycloak auth middleware
+- Multi-tenant resolution
+- Prometheus metrics
+- Kuzzle WebSocket proxy (real-time IoT)
+- Health checks
+- Payload CMS REST API proxy
+
+---
+
+## 4. API ROUTES (392 Endpoints in CMS)
+
+| Route Group | Endpoint Count | Description | Current App Status |
+|---|---|---|---|
+| **AI** | 10 | chat, compose, execute, embeddings, search, playground, backfill, prompts seed, manifests seed, page-builder compose | NOT CONNECTED |
+| **Auth** | 7 | login, register, logout, me, api-keys, keycloak-callback, social-callback | NOT CONNECTED |
+| **BFF Auth** | 5 | login, logout, register, reset-password, session | NOT CONNECTED |
+| **BFF Commerce** | 40+ | products, cart, checkout, orders, categories, inventory, loyalty, gift-cards, wallet, returns, store-credits, trade-in, digital-downloads, installments, b2b-approvals, refunds, warranties, store-pickup, payment-sessions, auctions, bookings, delivery, marketplace, commissions, vendors, reviews, subscriptions, quotes, company | NOT CONNECTED |
+| **BFF AI** | 3 | context, moderation, recommendations | NOT CONNECTED |
+| **BFF Analytics** | 1 | dashboard | NOT CONNECTED |
+| **BFF Catalog** | 1 | unified catalog | NOT CONNECTED |
+| **Analytics** | 2 | events, realtime | NOT CONNECTED |
+| **Workflow** | 80+ | triggers, schedules, temporal, diagnostics, sync, governance, personas, nodes, cross-system dispatch, SSE streams, event-router, handlers, import/export, versioning | NOT CONNECTED |
+| **Content** | 5+ | pages, POIs, media, templates, search | NOT CONNECTED |
+| **Commerce Direct** | 15+ | products, checkout, orders, payments, subscriptions | NOT CONNECTED |
+| **Governance** | 5+ | authorities, policies, resolve | NOT CONNECTED |
+| **Domain-specific** | 50+ | agriculture/forecast, ads/impression, availability/hotel, b2b/quote, social, fleet, healthcare, etc. | NOT CONNECTED |
+| **Admin** | 5+ | collections, integration-log, tree-view, keycloak MFA enforcement | NOT CONNECTED |
+| **Health** | 3 | system health, integration health, workflow health | NOT CONNECTED |
+| **Webhooks** | 5+ | CMS webhooks, system webhooks, webhook signatures | NOT CONNECTED |
+
+---
+
+## 5. CORE COPILOT INTERFACE
+
+| Feature | Current App | Reference App | CMS Backend | Status |
+|---|---|---|---|---|
+| Conversational AI copilot (single screen) | ✅ | ✅ | AI routes ready | MATCH |
+| No traditional UI (no tabs/dashboards) | ✅ | ✅ | — | MATCH |
+| Three modes (Suggest/Propose/Execute) | ✅ | ✅ | — | MATCH |
+| Scenario Brain (keyword → artifact) | ✅ | ✅ | AI compose endpoint | MATCH |
+| Real AI integration (OpenAI) | ✅ | ✅ | OpenAI + embeddings | MATCH |
+| AI fallback to local scenarios | ✅ | ✅ | — | MATCH |
+| Message sending with attachments | ✅ | ✅ | Storage ready | MATCH |
+| Selection chips (quick-reply buttons) | ✅ | ✅ | — | MATCH |
+| Typing indicator | ✅ | ✅ | — | MATCH |
+| Intent detection → backend routing | ❌ | ✅ (CopilotGateway) | AI execute endpoint | GAP |
+| AI context enrichment | ❌ | ❌ | BFF AI context endpoint | GAP |
+| AI content moderation | ❌ | ❌ | BFF AI moderation endpoint | GAP |
+| AI recommendations | ❌ | ❌ | BFF AI recommendations endpoint | GAP |
+
+---
+
+## 6. CHAT FEATURES
 
 | Feature | Current App | Reference App | Status |
 |---|---|---|---|
-| Multi-thread conversations | ✅ | ✅ (Supabase-backed) | PARTIAL — ours is local-only |
+| Multi-thread conversations | ✅ (local) | ✅ (Supabase) | PARTIAL — ours is local-only |
 | Thread list (left drawer) | ✅ | ✅ | MATCH |
 | New thread creation | ✅ | ✅ | MATCH |
 | Thread deletion | ✅ | ✅ | MATCH |
@@ -59,50 +167,52 @@
 | Mute notifications | ✅ | ✅ | MATCH |
 | Slash commands (/) | ✅ | ✅ | MATCH |
 | @Mentions | ✅ | ✅ | MATCH |
-| Voice input (transcription) | ✅ | ✅ (via Supabase functions) | MATCH |
+| Voice input (transcription) | ✅ | ✅ | MATCH |
 | Media/image attachments | ✅ | ✅ | MATCH |
+| Server-side thread persistence | ❌ | ✅ | GAP |
 
 ---
 
-## 4. UI PANELS & NAVIGATION
+## 7. UI PANELS & NAVIGATION
 
-| Feature | Current App | Reference App | Status |
-|---|---|---|---|
-| Threads Drawer (left swipe) | ✅ | ✅ | MATCH |
-| Right Drawer (City Context) | ✅ | ✅ | MATCH |
-| Discovery Sheet (bottom) | ✅ | ✅ | MATCH |
-| Details Drawer (item detail viewer) | ✅ | ✅ | MATCH |
-| Chat Header (title, members, actions) | ✅ | ✅ | MATCH |
-| Full Settings Dialog | ✅ | ✅ | MATCH |
-| Group Info Dialog | ✅ | ✅ | MATCH |
-| Shared Media Dialog | ✅ | ✅ | MATCH |
-| Support Dialog | ✅ | ✅ | MATCH |
-| Coming Soon Modal | ✅ | ✅ | MATCH |
-| Add Member Dialog | ✅ | ✅ | MATCH |
-| Contact Profile Modal | ✅ | ❌ | OUR APP ONLY |
-| User Profile Screen | ✅ | ✅ (Profile Dialog) | MATCH |
-| Active Quests Widget | ✅ | ❌ | OUR APP ONLY |
-| Auth Dialog (Sign In/Sign Up) | ❌ | ✅ (Supabase) | GAP |
-| Copilot Settings Dialog (AI tuning) | ❌ | ✅ (temperature, model, privacy) | GAP |
+| Feature | Current App | Reference App | CMS Backend | Status |
+|---|---|---|---|---|
+| Threads Drawer (left) | ✅ | ✅ | — | MATCH |
+| Right Drawer (City Context) | ✅ | ✅ | — | MATCH |
+| Discovery Sheet (bottom) | ✅ | ✅ | — | MATCH |
+| Details Drawer (item viewer) | ✅ | ✅ | — | MATCH |
+| Chat Header | ✅ | ✅ | — | MATCH |
+| Full Settings Dialog | ✅ | ✅ | — | MATCH |
+| Group Info Dialog | ✅ | ✅ | — | MATCH |
+| Shared Media Dialog | ✅ | ✅ | — | MATCH |
+| Support Dialog | ✅ | ✅ | — | MATCH |
+| Coming Soon Modal | ✅ | ✅ | — | MATCH |
+| Add Member Dialog | ✅ | ✅ | — | MATCH |
+| Contact Profile Modal | ✅ | ❌ | — | OUR APP ONLY |
+| Active Quests Widget | ✅ | ❌ | — | OUR APP ONLY |
+| User Profile Screen | ✅ | ✅ | — | MATCH |
+| Auth Dialog (Sign In/Up) | ❌ | ✅ (Supabase) | Keycloak IAM | GAP |
+| Copilot Settings (AI tuning) | ❌ | ✅ (temp, model, privacy) | — | GAP |
+| System Health Dashboard | ❌ | ✅ | Health API endpoints | GAP |
 
 ---
 
-## 5. RIGHT DRAWER — CITY CONTEXT
+## 8. RIGHT DRAWER — CITY CONTEXT
 
 | Feature | Current App | Reference App | Status |
 |---|---|---|---|
-| Weather card (temp, humidity, wind) | ✅ | ✅ | MATCH |
+| Weather card | ✅ | ✅ | MATCH |
 | Daily agenda | ✅ | ✅ | MATCH |
 | Live Activity tracking | ✅ | ✅ | MATCH |
 | Community feed | ✅ | ✅ | MATCH |
 | Quick actions (Ride, Book, Events, Map) | ✅ | ✅ | MATCH |
 | SOS / Emergency button | ✅ | ✅ | MATCH |
 | Location sharing | ✅ | ✅ | MATCH |
-| Zone Experience Score display | ✅ | ✅ | MATCH |
+| Zone Experience Score | ✅ | ✅ | MATCH |
 
 ---
 
-## 6. DISCOVERY SHEET CATEGORIES
+## 9. DISCOVERY SHEET (20 Categories)
 
 | Category | Current App | Reference App | Status |
 |---|---|---|---|
@@ -118,7 +228,7 @@
 | Education | ✅ | ✅ | MATCH |
 | Home | ✅ | ✅ | MATCH |
 | Social | ✅ | ✅ | MATCH |
-| Intel (City Intelligence) | ✅ | ✅ | MATCH |
+| Intel | ✅ | ✅ | MATCH |
 | Planning | ✅ | ✅ | MATCH |
 | Outdoor | ✅ | ✅ | MATCH |
 | Beauty | ✅ | ✅ | MATCH |
@@ -129,422 +239,378 @@
 
 ---
 
-## 7. SCENARIO DATA FILES
+## 10. SCENARIO DATA FILES (21 files — FULL MATCH)
 
-| Scenario File | Current App | Reference App | Status |
+All 21 scenario JSON files are present in both apps:
+beauty, commerce, culture, education, events, family, health, home, intel, misc, my_activity, outdoor, pets, places, planning, services, social, transit, utility, wellness, work.
+
+---
+
+## 11. ARTIFACT TYPES — CITY OS CORE (48 types — FULL MATCH)
+
+All 48 core artifact types match between our app and the reference app:
+
+| Category | Artifacts |
+|---|---|
+| **Discovery** | poi-carousel, event-carousel, ambassador-carousel, zone-heatmap |
+| **Planning** | itinerary-timeline, calendar-selector |
+| **Commerce** | product-carousel, product-card, flash-sale, vendor-trust, invoice-preview |
+| **Navigation** | selection-chips, map-view |
+| **Booking** | confirmation-card, reservation-card, ticket-pass |
+| **Tracking** | order-tracker, ride-status, parking-meter, parcel-locker |
+| **Finance** | payment-request, credit-gauge, escrow-status, receipt-card, crypto-wallet |
+| **Health** | health-snapshot, symptom-triage |
+| **Home** | smart-home-control |
+| **Education** | lesson-tracker |
+| **Civic** | permit-app, issue-reporter |
+| **Travel** | boarding-pass, currency-converter |
+| **Media** | media-player, voice-note |
+| **Social** | poll-card, profile-card, progress-card |
+| **Info** | weather-card, alert-card, document-card |
+| **Analytics** | analytics-snapshot, comparison-table |
+| **Agent** | agent-sync-card |
+| **Forms** | form-group |
+| **Services** | service-menu |
+| **Tasks** | task-checklist |
+
+---
+
+## 12. ARTIFACT TYPES — DOMAIN VERTICALS (157 additional in Reference App)
+
+### 12A. LOGISTICS (50+ artifacts)
+Fleet tracking, proof-of-delivery, IoT dashboards, warehouse ops, customs clearance, driver management, route optimization, cold chain monitoring, yard management, reverse logistics, EV charging, compliance logging, fuel analytics, carbon tracking, etc.
+
+### 12B. COMMERCE DEEP OPS (6)
+comparison-grid, smart-filters, vendor-performance-scorecard, omni-channel-inventory, customer-lifetime-value-crm
+
+### 12C. FINTECH DEEP OPS (3)
+kyc-verification-portal, loan-underwriting-desk, fraud-detection-console
+
+### 12D. HEALTH DEEP OPS (3)
+emr-patient-record, insurance-claims-processor, telehealth-doctor-console
+
+### 12E. GOVTECH DEEP OPS (4)
+civil-registry-record, judicial-case-manager, urban-planning-grid, tax-summary
+
+### 12F. EDUCATION DEEP OPS (3)
+student-info-system, curriculum-builder, campus-safety-monitor
+
+### 12G. REAL ESTATE DEEP OPS (5)
+property-listing, maintenance-req, lease-admin-ledger, facility-energy-manager, construction-project-tracker
+
+### 12H. INSURANCE (3)
+policy-admin-system, claims-adjuster-workbench, actuarial-risk-heatmap
+
+### 12I. MANUFACTURING (3)
+production-schedule-gantt, oee-dashboard, quality-control-station
+
+### 12J. AUTOMOTIVE (3)
+ev-status, vehicle-remote, toll-pass
+
+### 12K. PROFESSIONAL SERVICES (3)
+freelancer-card, consultation-timer, doc-scanner
+
+### 12L. UTILITIES (3)
+energy-graph, bill-pay, outage-map
+
+### 12M. TRAVEL (1 additional)
+hotel-concierge
+
+### 12N. AGTECH (3)
+livestock-tracker, crop-map, carbon-credit
+
+### 12O. ENTERPRISE (3)
+hr-onboarding, digital-signage, asset-tracker
+
+### 12P. SPECTRUM — Non-Profit (7)
+donor-profile, campaign-dashboard, volunteer-roster, impact-report, aid-distribution-map, donation-card, outcome-tracker
+
+### 12Q. SPECTRUM — Science (5)
+experiment-designer, lab-data-feed, sample-inventory, biohazard-monitor, research-paper-draft
+
+### 12R. SPECTRUM — Security (4)
+threat-radar, contract-lifecycle, compliance-checklist, incident-war-room
+
+### 12S. SOCIAL MEDIA (2)
+mini-video, game-scoreboard
+
+### 12T. DEEP OPS Cross-Domain (15+)
+community-moderation-queue, lab-sample-manager, donor-impact-crm, fleet-telematics-hub, smart-grid-load-balancer, gds-booking-terminal, recruitment-pipeline, soc-incident-response, precision-ag-dashboard, and more.
+
+---
+
+## 13. CMS COLLECTIONS (180+ Registered Verticals)
+
+The CMS `verticals.registry.yaml` defines **180+ collections** organized by domain:
+
+| Domain | Collections | Examples |
+|---|---|---|
+| **Commerce** | 12+ | products, service-plans, categories, price-lists, promotions, orders, memberships, loyalty-accounts, vendors, digital-products |
+| **Healthcare** | 12+ | appointments, medical-records, prescriptions, lab-results, facilities, services, practitioners, health-alerts, community-programs |
+| **Transportation** | 12+ | fleet-vehicles, fleet-drivers, fleet-shipments, fleet-trips, transit-routes, transit-passes, traffic-incidents, fleet-maintenance, fleet-inspections, fleet-iot-devices |
+| **Governance** | 10+ | governance-authorities, proposals, votes, permits, public-consultations, tenders, grants, fines |
+| **Finance** | 8+ | invoices, wallets, ledger-transactions, tax-records |
+| **Events & Culture** | 10+ | events, event-categories, event-registrations, venues, venue-bookings, exhibitions, cultural-sites, heritage-sites, artists, tourism-packages |
+| **Sports** | 4+ | sports-events, sports-venues |
+| **Real Estate** | 6+ | properties, property-agents, rentals, rental-items |
+| **Insurance** | 2+ | insurance-products |
+| **Education** | 4+ | courses, course-enrollments |
+| **Agriculture** | 4+ | crops, farming-activities, agriculture-sensor-readings |
+| **IoT** | 4+ | iot-devices, iot-sensor-readings |
+| **Jobs** | 3+ | job-listings, job-applications |
+| **Social** | 3+ | social-posts |
+| **Restaurants** | 2+ | restaurants, grocery-listings |
+| **Pet Services** | 2+ | pet-services |
+| **Parking** | 2+ | parking-zones, parking-facilities |
+| **Legal** | 2+ | legal-services |
+| **Community** | 3+ | charity-campaigns, crowdfunding-projects |
+| **Identity** | 4+ | credentials, sso-providers, identity-api-keys |
+| **Platform** | 20+ | nodes, tenants, personas, workflows, feature-flags, audit-logs, notifications, system-health, etc. |
+| **POI (Points of Interest)** | 35+ | pois + 30+ satellite tables (hours, capabilities, media, accessibility, security, commerce-summary, etc.) |
+
+---
+
+## 14. CMS DOMAIN PACKAGES (65+ Packages)
+
+The `packages/domains/` directory contains 65+ domain packages, each providing collection schemas, block definitions, and business logic:
+
+| Category | Domain Packages |
+|---|---|
+| **Core** | core-cms, registry, multi-tenancy, identity-auth, personas, notifications, workflow |
+| **Commerce** | commerce, auctions, classifieds, digital-products, print-on-demand, trade-in, restaurants, grocery |
+| **Finance** | finance, insurance |
+| **Fulfillment** | fleet-logistics, parking-zones, transportation |
+| **Services** | beauty-grooming, pet-services, fitness |
+| **Government** | governance, citizen-services, legal, public-safety |
+| **Health** | healthcare, health-human-services |
+| **Education** | education |
+| **Property** | real-estate, construction, facilities |
+| **Events** | events-culture, sports-recreation, culture-tourism, hospitality |
+| **Tech** | iot-telemetry, ai-ml, data-visualization, gis-maps |
+| **Environment** | agriculture, environment |
+| **Industry** | industrial, franchise-management |
+| **Media** | media-assets, social-media, social-engagement, creator-economy, advertising |
+| **Jobs** | jobs-economy |
+| **Platform** | saas-platform, white-label, analytics, system-observability, search |
+| **Community** | community |
+| **i18n** | i18n |
+| **Shared** | shared, _shared, domain-shared |
+
+---
+
+## 15. MEDUSA COMMERCE MODULES (129 Modules)
+
+The CMS contains a **Medusa v2 commerce backend** with 129 custom modules:
+
+| Category | Modules |
+|---|---|
+| **Core Commerce** | cart-extension, cart-rules, channel, commission, company, commerce-contract, dispute, entitlements, fulfillment-legs, inventory, inventory-extension, invoice, loyalty, membership, order-orchestration, payout, quote, review, subscription, vendor, volume-pricing, wallet, warranty, wishlist |
+| **Marketplace** | affiliate, auction, classified, crowdfunding, freelance, marketplace-pulse, social-commerce |
+| **Payments** | Stripe integration, installments, store-credits, trade-in |
+| **Verticals** | automotive, beauty-grooming, booking, campus-service, childcare, construction, coworking, creator-economy, education, eldercare, event-ticketing, fitness, government, grocery, healthcare, home-services, hospitality, industrial-mro, insurance, laundry, legal, manufacturing, parking, pet-service, pharmacy, real-estate, rental, restaurants, sports, travel, utilities |
+| **Platform** | analytics, advertising, attribution, audit, charity, chargeback, cms-content, data-api, digital-product, economic-health, employment-hr, event-outbox, file-replit, file-vercel-blob, financial-product, fraud, governance, i18n, identity-gate, kernel, ledger, ledger-snapshot, logistics, metering, node, notification-preferences, persona, policy-engine, print-on-demand, tax-config, tenant, white-label |
+
+---
+
+## 16. CMS BLOCK TYPES (920+ Planned)
+
+The CMS content system uses "blocks" (SDUI-compatible components) stored in a centralized JSONB table:
+
+| Phase | Block Count | Description |
+|---|---|---|
+| Foundation (Phase 0) | 135 migrated | Existing blocks migrated to new system |
+| Core Commerce (Phase 1) | ~180 new | Product cards, checkout flows, cart, orders |
+| Finance & Marketplace (Phase 2) | ~80 new | Invoices, wallets, auctions, B2B |
+| Service Verticals (Phase 3) | ~200 new | Healthcare, education, fitness, beauty |
+| City Platform (Phase 4) | ~240 new | Governance, IoT, agriculture, environment |
+| AI & Platform (Phase 5) | ~220 new | AI tools, analytics, platform admin |
+| **TOTAL** | **~920 + 135** | Full block library |
+
+Block rendering pipeline: `BlockRenderer → DomainAwareBlockRenderer` (with domain gating + role-based visibility)
+
+---
+
+## 17. MULTI-SURFACE APPS (14 Surfaces)
+
+The CMS monorepo contains apps for 14+ different "surfaces" (user interfaces):
+
+| App | Technology | Purpose | Current App Status |
 |---|---|---|---|
-| places.json | ✅ | ✅ | MATCH |
-| events.json | ✅ | ✅ | MATCH |
-| transit.json | ✅ | ✅ | MATCH |
-| services.json | ✅ | ✅ | MATCH |
-| commerce.json | ✅ | ✅ | MATCH |
-| health.json | ✅ | ✅ | MATCH |
-| education.json | ✅ | ✅ | MATCH |
-| home.json | ✅ | ✅ | MATCH |
-| work.json | ✅ | ✅ | MATCH |
-| social.json | ✅ | ✅ | MATCH |
-| intel.json | ✅ | ✅ | MATCH |
-| planning.json | ✅ | ✅ | MATCH |
-| outdoor.json | ✅ | ✅ | MATCH |
-| beauty.json | ✅ | ✅ | MATCH |
-| wellness.json | ✅ | ✅ | MATCH |
-| family.json | ✅ | ✅ | MATCH |
-| utility.json | ✅ | ✅ | MATCH |
-| misc.json | ✅ | ✅ | MATCH |
-| pets.json | ✅ | ✅ | MATCH |
-| culture.json | ✅ | ✅ | MATCH |
-| my_activity.json | ✅ | ✅ | MATCH |
+| **superapp** | Expo React Native | Universal consumer app (THIS PROJECT) | IN DEVELOPMENT |
+| **storefront** | Next.js | Web commerce front | NOT CONNECTED |
+| **city-dashboard** | Next.js | City operations dashboard | NOT CONNECTED |
+| **business-dashboard** | Next.js | Business analytics dashboard | NOT CONNECTED |
+| **smart-city-portal** | Next.js | Citizen-facing portal | NOT CONNECTED |
+| **web-platform** | Next.js | General web platform | NOT CONNECTED |
+| **dev-portal** | Next.js | Developer documentation portal | NOT CONNECTED |
+| **driver-app** | Expo React Native | Driver/delivery companion | NOT CONNECTED |
+| **merchant-app** | Expo React Native | Merchant management app | NOT CONNECTED |
+| **tv-app** | React Native | Smart TV interface | NOT CONNECTED |
+| **car-app** | React Native | In-car dashboard (CarPlay/Android Auto) | NOT CONNECTED |
+| **watch-app** | — | Smartwatch companion | SCAFFOLD ONLY |
+| **kiosk-runtime** | — | Public kiosk interface | SCAFFOLD ONLY |
+| **ai-assistant** | React | Embedded AI assistant widget | NOT CONNECTED |
+| **storybook** | Storybook | Component documentation | NOT CONNECTED |
+| **payload-cms** | Next.js + Payload | Admin panel | NOT CONNECTED |
 
 ---
 
-## 8. ARTIFACT TYPES — CITY OS CORE (48 types)
+## 18. SDUI PROTOCOL & CAPABILITY NEGOTIATION
 
-These are the foundational city experience artifacts. Both apps share these.
+The CMS includes a **Server-Driven UI** protocol for rendering content across all surfaces:
 
-| Artifact | Current App | Reference App | Status |
-|---|---|---|---|
-| poi-carousel (Place cards) | ✅ | ✅ | MATCH |
-| event-carousel (Event cards) | ✅ | ✅ | MATCH |
-| ambassador-carousel (Trust profiles) | ✅ | ✅ | MATCH |
-| itinerary-timeline (Trip plans) | ✅ | ✅ | MATCH |
-| confirmation-card (Approve/deny) | ✅ | ✅ | MATCH |
-| comparison-table (Side-by-side) | ✅ | ✅ | MATCH |
-| progress-card (XP/badges) | ✅ | ✅ | MATCH |
-| zone-heatmap (ZES scores) | ✅ | ✅ | MATCH |
-| selection-chips (Quick actions) | ✅ | ✅ | MATCH |
-| ticket-pass (QR code tickets) | ✅ | ✅ | MATCH |
-| order-tracker (Order status) | ✅ | ✅ | MATCH |
-| analytics-snapshot | ✅ | ✅ | MATCH |
-| product-carousel | ✅ | ✅ | MATCH |
-| service-menu | ✅ | ✅ | MATCH |
-| agent-sync-card | ✅ | ✅ | MATCH |
-| calendar-selector | ✅ | ✅ | MATCH |
-| form-group | ✅ | ✅ | MATCH |
-| map-view | ✅ | ✅ | MATCH |
-| media-player | ✅ | ✅ | MATCH |
-| payment-request | ✅ | ✅ | MATCH |
-| ride-status (Uber-like tracking) | ✅ | ✅ | MATCH |
-| weather-card | ✅ | ✅ | MATCH |
-| poll-card | ✅ | ✅ | MATCH |
-| alert-card | ✅ | ✅ | MATCH |
-| document-card | ✅ | ✅ | MATCH |
-| receipt-card | ✅ | ✅ | MATCH |
-| health-snapshot | ✅ | ✅ | MATCH |
-| smart-home-control | ✅ | ✅ | MATCH |
-| parking-meter | ✅ | ✅ | MATCH |
-| parcel-locker | ✅ | ✅ | MATCH |
-| reservation-card | ✅ | ✅ | MATCH |
-| crypto-wallet | ✅ | ✅ | MATCH |
-| task-checklist | ✅ | ✅ | MATCH |
-| voice-note | ✅ | ✅ | MATCH |
-| profile-card | ✅ | ✅ | MATCH |
-| flash-sale (Countdown) | ✅ | ✅ | MATCH |
-| product-card | ✅ | ✅ | MATCH |
-| vendor-trust (Trust profile) | ✅ | ✅ | MATCH |
-| invoice-preview | ✅ | ✅ | MATCH |
-| credit-gauge | ✅ | ✅ | MATCH |
-| escrow-status | ✅ | ✅ | MATCH |
-| symptom-triage | ✅ | ✅ | MATCH |
-| lesson-tracker | ✅ | ✅ | MATCH |
-| permit-app | ✅ | ✅ | MATCH |
-| issue-reporter | ✅ | ✅ | MATCH |
-| boarding-pass | ✅ | ✅ | MATCH |
-| currency-converter | ✅ | ✅ | MATCH |
+| Feature | Description | Current App Status |
+|---|---|---|
+| **SDUI Protocol** (`@dakkah/sdui-protocol`) | Typed JSON protocol for server-driven layouts | NOT IMPLEMENTED |
+| **Capability Negotiator** (`@cityos/capability-negotiator`) | Downgrades complex layouts for constrained devices (watch, car, TV) | NOT IMPLEMENTED |
+| **Experience Composer** (`@cityos/experience-composer`) | Composes SDUI payloads from block data | NOT IMPLEMENTED |
+| **Tenant Router** (`@cityos/tenant-router`) | Routes SDUI requests per tenant configuration | NOT IMPLEMENTED |
+| **Node types** | stack, grid, carousel, card, text, image, map, video | NOT IMPLEMENTED |
+| **Device targets** | iOS, Android, Web, tvOS, watchOS, CarPlay, Kiosk | NOT IMPLEMENTED |
 
 ---
 
-## 9. ARTIFACT TYPES — DOMAIN VERTICALS (Reference App Only: 157 additional types)
+## 19. MICROSERVICES & INFRASTRUCTURE
 
-These exist ONLY in the reference app. They represent deep enterprise/B2B/government capabilities.
-
-### 9A. LOGISTICS DOMAIN (50+ artifacts)
-
-| Artifact | Description | Priority |
+| Service | Description | Current App Status |
 |---|---|---|
-| logistics-map | Live GPS fleet tracking | HIGH |
-| logistics-timeline | Shipment timeline | HIGH |
-| proof-of-delivery | Digital POD capture | HIGH |
-| iot-dashboard | IoT sensor monitoring | MEDIUM |
-| fleet-maintenance | Vehicle health alerts | HIGH |
-| warehouse-picker | Pick/pack workflow | MEDIUM |
-| freight-quote | Rate calculator | MEDIUM |
-| shipment-label | Label generator | MEDIUM |
-| driver-manifest | Daily route sheet | HIGH |
-| load-balancer | Load optimization | MEDIUM |
-| incident-report | Incident forms | HIGH |
-| delivery-prefs | Customer preferences | MEDIUM |
-| return-manager | Returns processing | MEDIUM |
-| smart-locker | Locker selection | LOW |
-| driver-stats | Performance metrics | MEDIUM |
-| ar-package-sizer | AR package sizing | LOW |
-| eco-route-planner | Green routing | MEDIUM |
-| dock-scheduler | Dock appointment | MEDIUM |
-| customs-clearance | Customs forms | LOW |
-| telematics-scorecard | Driver telematics | MEDIUM |
-| fuel-analytics | Fuel consumption | MEDIUM |
-| digital-logbook | ELD compliance | LOW |
-| fleet-health-matrix | Fleet-wide triage | HIGH |
-| asset-lifecycle-tco | TCO dashboard | MEDIUM |
-| parts-inventory | Spare parts | MEDIUM |
-| procurement-request | Purchase requests | MEDIUM |
-| demand-forecast | AI demand prediction | HIGH |
-| inventory-planning | Stock optimization | MEDIUM |
-| carrier-network | 3PL management | MEDIUM |
-| yard-monitor | Yard digital twin | LOW |
-| reverse-logistics | Returns flow | MEDIUM |
-| driver-safety-score | Safety scoring | MEDIUM |
-| citation-manager | Traffic citations | LOW |
-| registration-tracker | Vehicle registration | LOW |
-| asset-remarketing | Resale value | LOW |
-| ev-charging-monitor | EV charging | MEDIUM |
-| grey-fleet-manager | Employee vehicle | LOW |
-| driver-qualification | CDL management | LOW |
-| vehicle-booking | Vehicle reservations | MEDIUM |
-| technician-job-card | Mechanic work orders | MEDIUM |
-| esg-carbon-tracker | Carbon emissions | MEDIUM |
-| driver-coaching | AI coaching | LOW |
-| accident-report-fnol | Accident reporting | MEDIUM |
-| vendor-repair-approval | Repair approval | LOW |
-| lease-contract-manager | Lease management | LOW |
-| eld-compliance-log | Electronic logbook | LOW |
-| yard-dock-scheduler | Dock scheduling | LOW |
-| digital-pod-manifest | Digital manifest | LOW |
-| driver-settlement-sheet | Driver pay | LOW |
-| ifta-fuel-tax-manager | Fuel tax | LOW |
-| cold-chain-monitor | Temperature monitoring | MEDIUM |
-
-### 9B. COMMERCE DOMAIN (6 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| comparison-grid | Product comparison | HIGH |
-| smart-filters | AI filter chips | HIGH |
-| vendor-performance-scorecard | Vendor ratings | MEDIUM |
-| omni-channel-inventory | Cross-channel stock | MEDIUM |
-| customer-lifetime-value-crm | CRM analytics | MEDIUM |
-
-### 9C. FINTECH DOMAIN (6 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| kyc-verification-portal | KYC verification | HIGH |
-| loan-underwriting-desk | Loan processing | MEDIUM |
-| fraud-detection-console | Fraud detection | MEDIUM |
-
-### 9D. HEALTH DOMAIN (6 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| emr-patient-record | Electronic medical records | HIGH |
-| insurance-claims-processor | Claims processing | MEDIUM |
-| telehealth-doctor-console | Telehealth UI | HIGH |
-
-### 9E. GOVTECH DOMAIN (6 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| civil-registry-record | Civil records | MEDIUM |
-| judicial-case-manager | Court case tracking | LOW |
-| urban-planning-grid | City planning | MEDIUM |
-| tax-summary | Tax overview | HIGH |
-
-### 9F. EDUCATION DOMAIN (3 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| student-info-system | Student records | MEDIUM |
-| curriculum-builder | Course builder | MEDIUM |
-| campus-safety-monitor | Campus safety | LOW |
-
-### 9G. REAL ESTATE DOMAIN (5 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| property-listing | Real estate listings | HIGH |
-| maintenance-req | Maintenance requests | MEDIUM |
-| lease-admin-ledger | Lease accounting | LOW |
-| facility-energy-manager | Building energy | LOW |
-| construction-project-tracker | Construction | LOW |
-
-### 9H. INSURANCE DOMAIN (3 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| policy-admin-system | Policy management | MEDIUM |
-| claims-adjuster-workbench | Claims adjustment | MEDIUM |
-| actuarial-risk-heatmap | Risk visualization | LOW |
-
-### 9I. MANUFACTURING DOMAIN (3 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| production-schedule-gantt | Production planning | MEDIUM |
-| oee-dashboard | Equipment efficiency | MEDIUM |
-| quality-control-station | QC workflow | MEDIUM |
-
-### 9J. AUTOMOTIVE DOMAIN (3 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| ev-status | EV charging status | MEDIUM |
-| vehicle-remote | Remote vehicle control | MEDIUM |
-| toll-pass | Toll payment | HIGH |
-
-### 9K. PROFESSIONAL SERVICES (3 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| freelancer-card | Freelancer profile | MEDIUM |
-| consultation-timer | Session timer | LOW |
-| doc-scanner | Document OCR | MEDIUM |
-
-### 9L. UTILITIES (3 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| energy-graph | Energy consumption | MEDIUM |
-| bill-pay | Utility payments | HIGH |
-| outage-map | Service outage map | MEDIUM |
-
-### 9M. TRAVEL (2 artifacts — boarding-pass and currency-converter already in our app)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| hotel-concierge | Hotel services | HIGH |
-
-### 9N. AGTECH DOMAIN (3 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| livestock-tracker | Animal tracking | LOW |
-| crop-map | Crop moisture map | LOW |
-| carbon-credit | Carbon credits | LOW |
-
-### 9O. ENTERPRISE (3 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| hr-onboarding | Employee onboarding | MEDIUM |
-| digital-signage | Signage preview | LOW |
-| asset-tracker | Asset inventory | MEDIUM |
-
-### 9P. SPECTRUM EXPANSION — Non-Profit (7 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| donor-profile | Donor information | LOW |
-| campaign-dashboard | Campaign analytics | LOW |
-| volunteer-roster | Volunteer management | LOW |
-| impact-report | Impact measurement | LOW |
-| aid-distribution-map | Aid logistics | LOW |
-| donation-card | Donation flow | MEDIUM |
-| outcome-tracker | Outcome metrics | LOW |
-
-### 9Q. SPECTRUM EXPANSION — Science (5 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| experiment-designer | Lab experiment design | LOW |
-| lab-data-feed | Lab data streams | LOW |
-| sample-inventory | Sample management | LOW |
-| biohazard-monitor | Biosafety alerts | LOW |
-| research-paper-draft | Paper drafting | LOW |
-
-### 9R. SPECTRUM EXPANSION — Security (4 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| threat-radar | Threat detection | LOW |
-| contract-lifecycle | Contract management | MEDIUM |
-| compliance-checklist | Compliance tracking | MEDIUM |
-| incident-war-room | Incident command | LOW |
-
-### 9S. SOCIAL MEDIA (2 artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| mini-video | TikTok-style video feed | HIGH |
-| game-scoreboard | Gaming leaderboard | MEDIUM |
-
-### 9T. DEEP OPS — Cross-Domain (15+ artifacts)
-
-| Artifact | Description | Priority |
-|---|---|---|
-| community-moderation-queue | Content moderation | MEDIUM |
-| lab-sample-manager | Lab operations | LOW |
-| donor-impact-crm | Non-profit CRM | LOW |
-| fleet-telematics-hub | Fleet data hub | MEDIUM |
-| smart-grid-load-balancer | Energy grid | LOW |
-| gds-booking-terminal | Travel GDS | LOW |
-| recruitment-pipeline | HR recruiting | MEDIUM |
-| soc-incident-response | Security ops | LOW |
-| precision-ag-dashboard | Precision farming | LOW |
+| **BFF Core** (`packages/bff-core`) | Express.js BFF framework with auth, tenant, correlation middleware | NOT CONNECTED |
+| **Kuzzle IoT** | Real-time IoT data platform with WebSocket + MQTT | NOT CONNECTED |
+| **Temporal Cloud** | Workflow orchestration (multi-step processes) | NOT CONNECTED |
+| **Redis** | Caching layer | NOT CONNECTED |
+| **Elasticsearch** | Full-text search (Kuzzle backend) | NOT CONNECTED |
+| **Docker Compose** | Full-stack local development (17+ containers) | N/A |
+| **Traefik** | Reverse proxy with path-based routing | N/A |
+| **Prometheus + Grafana** | Metrics and monitoring | NOT CONNECTED |
+| **Sentry** | Error tracking | NOT CONNECTED |
+| **Webhook System** | HMAC-SHA256 signed webhooks with retry | NOT CONNECTED |
+| **Event Bus** | cityos.{vertical}.{op}.v1 events via Outbox pattern | NOT CONNECTED |
+| **SSE Streams** | Server-Sent Events for real-time workflow updates | NOT CONNECTED |
 
 ---
 
-## 10. ADDITIONAL REFERENCE APP FEATURES (Not artifact-related)
-
-| Feature | Current App | Reference App | Status |
-|---|---|---|---|
-| Copilot Settings (AI temperature, model, privacy) | ❌ | ✅ | GAP |
-| Supabase Auth (email/password, JWT) | ❌ | ✅ | GAP |
-| Server-side thread storage (Supabase) | ❌ | ✅ | GAP |
-| Copilot Gateway (intent detection → backend routing) | ❌ | ✅ | GAP |
-| Ecosystem Relations (cross-domain data flow map) | ❌ | ✅ | GAP |
-| Showcase Config (business model visualization) | ❌ | ✅ | GAP |
-| Showcase Docs (artifact documentation/metadata) | ❌ | ✅ | GAP |
-| Registry Loader (dynamic artifact loading) | ❌ | ✅ | GAP |
-| System Health Dashboard (backend connectivity test) | ❌ | ✅ | GAP |
-| Framer Motion animations | ❌ | ✅ (extensive) | GAP |
-| Toast notifications (Sonner) | ❌ | ✅ | GAP |
-
----
-
-## 11. CURRENT APP EXCLUSIVE FEATURES (Not in Reference)
+## 20. CURRENT APP EXCLUSIVE FEATURES (Not in Reference App)
 
 | Feature | Description |
 |---|---|
-| Expo React Native (mobile-first) | Native iOS/Android + Web, not web-only |
-| Dark Mode (ThemeContext) | Full light/dark theming with toggle |
-| i18n (English + Arabic, RTL) | Bilingual with 60+ keys and RTL layout |
-| Offline Indicator | Connection status component |
-| Error Boundary | Crash recovery UI |
-| AsyncStorage persistence | Client-side data survival across restarts |
-| Contact Profile Modal | View contact details |
-| Active Quests Widget | Gamification mission tracker |
-| Express.js API Server | 11 backend gateway routes |
+| **Expo React Native** | Native iOS/Android + Web (reference is web-only) |
+| **Dark Mode** | Full ThemeContext with light/dark toggle |
+| **i18n (English + Arabic, RTL)** | 60+ translated keys with RTL layout |
+| **Offline Indicator** | Connection status component |
+| **Error Boundary** | Crash recovery UI |
+| **AsyncStorage persistence** | Local data survival across restarts |
+| **Contact Profile Modal** | View contact details |
+| **Active Quests Widget** | Gamification mission tracker |
+| **Express.js API Server** | 11 backend gateway routes |
+| **Voice Input Button** | Native microphone input |
+| **Media Picker Button** | Camera/gallery attachment |
 
 ---
 
-## 12. SUMMARY SCORECARD
+## 21. ADDITIONAL RECOMMENDED CAPABILITIES (Beyond Both Apps)
 
-| Category | Current App | Reference App |
+| Capability | Description | Priority |
 |---|---|---|
-| Artifact Types | 48 | 205 |
-| Scenario Files | 21 | 21 |
-| Discovery Categories | 20 | 20 |
-| UI Panels/Dialogs | 15 | 14 |
-| Backend Services | 1 (Express) | 12 (Payload + Medusa + Fleetbase + ERPNext + Walt.id + Stripe + SendGrid + Temporal + MinIO + Supabase) |
-| Chat Features | 14/14 | 14/14 |
-| Dark Mode | ✅ | ❌ |
-| i18n (Arabic/RTL) | ✅ | ❌ |
-| Mobile Native | ✅ | ❌ (Web only) |
-| Offline Support | ✅ | ❌ |
-| Real Auth System | ❌ | ✅ (Supabase) |
-| Real Backend Integration | ❌ | ✅ (6+ systems) |
+| **Push Notifications** | Expo push notifications for real-time alerts | HIGH |
+| **Biometric Auth** | FaceID/TouchID for secure login | HIGH |
+| **Offline-First Sync** | Queue actions offline, sync when connected | HIGH |
+| **Deep Linking** | Universal links for app-to-app navigation | HIGH |
+| **Geofencing** | Location-based triggers for city services | MEDIUM |
+| **NFC/QR Scanner** | Scan passes, tickets, payments | MEDIUM |
+| **Apple/Google Pay** | Native payment methods | HIGH |
+| **AR Wayfinding** | Augmented reality navigation in malls/airports | LOW |
+| **Haptic Feedback** | Tactile feedback for confirmations | MEDIUM |
+| **Widget Support** | iOS/Android home screen widgets | MEDIUM |
+| **Watch Companion** | Apple Watch / Wear OS quick actions | LOW |
+| **CarPlay/Android Auto** | In-car copilot interface | LOW |
+| **Accessibility** | VoiceOver/TalkBack, dynamic text sizing | HIGH |
+| **App Clips / Instant Apps** | Lightweight entry points without install | MEDIUM |
+| **Social Sharing** | Share discoveries, events, itineraries | MEDIUM |
+| **Multi-language TTS** | Text-to-speech for AI responses | MEDIUM |
+| **Background Location** | Continuous tracking for delivery/ride apps | MEDIUM |
+| **Local Notifications** | Reminders, agenda alerts | HIGH |
+| **Keychain/Secure Store** | Secure credential storage | HIGH |
+| **Expo Updates (OTA)** | Over-the-air updates without app store | HIGH |
 
 ---
 
-## 13. RECOMMENDED ADDITIONS (Prioritized Roadmap)
+## 22. SUMMARY SCORECARD
 
-### Phase 1: HIGH PRIORITY (Core Gaps)
-1. **Copilot Settings Dialog** — AI tuning (temperature, model selection, privacy mode)
-2. **Auth System** — Supabase Auth or Replit Auth for real sign-in/sign-up
-3. **Server-side Thread Storage** — Persist conversations in PostgreSQL
-4. **Copilot Gateway** — Intent detection → backend service routing
-5. **Toast Notifications** — User feedback system (react-native-toast-message)
-6. **15 HIGH priority artifacts** — logistics-map, fleet-maintenance, demand-forecast, telehealth, property-listing, bill-pay, toll-pass, hotel-concierge, mini-video, smart-filters, comparison-grid, kyc-verification, emr-patient-record, tax-summary, fleet-health-matrix
-
-### Phase 2: MEDIUM PRIORITY (Enterprise Features)
-1. **System Health Dashboard** — Backend connectivity monitoring
-2. **Ecosystem Relations** — Cross-domain data flow visualization
-3. **Showcase Mode** — Business model demonstration (for investors/demos)
-4. **40+ MEDIUM priority artifacts** — Driver/fleet management, manufacturing, insurance, education, commerce ops
-5. **Framer Motion / Reanimated animations** — Smooth UI transitions
-
-### Phase 3: EXPANSION (Long-term Vision)
-1. **Real Backend Integrations** — Medusa Commerce, Fleetbase Logistics, ERPNext
-2. **Walt.id DID** — Decentralized identity and verifiable credentials
-3. **Stripe Payments** — Real payment processing
-4. **Temporal Cloud** — Workflow orchestration for complex multi-step processes
-5. **80+ LOW priority artifacts** — AgTech, Non-Profit, Science, Security, specialized logistics
-6. **Showcase Docs** — Full artifact documentation for each component
-
----
-
-## 14. ARTIFACT GAP SUMMARY
-
-| Domain | In Current App | In Reference App | Gap |
+| Dimension | Current App | Reference Chat App | CMS Backend |
 |---|---|---|---|
-| City OS Core | 48 | 48 | 0 |
-| Logistics | 0 | 50+ | 50+ |
-| Commerce (deep) | 0 | 6 | 6 |
-| Fintech (deep) | 0 | 6 | 6 |
-| Health (deep) | 0 | 6 | 6 |
-| GovTech (deep) | 0 | 6 | 6 |
-| Education (deep) | 0 | 3 | 3 |
-| Real Estate (deep) | 0 | 5 | 5 |
-| Insurance | 0 | 3 | 3 |
-| Manufacturing | 0 | 3 | 3 |
-| Automotive | 0 | 3 | 3 |
-| Professional | 0 | 3 | 3 |
-| Utilities | 0 | 3 | 3 |
-| Travel (deep) | 0 | 1 | 1 |
-| AgTech | 0 | 3 | 3 |
-| Enterprise | 0 | 3 | 3 |
-| Spectrum (Non-profit) | 0 | 7 | 7 |
-| Spectrum (Science) | 0 | 5 | 5 |
-| Spectrum (Security) | 0 | 4 | 4 |
-| Social Media | 0 | 2 | 2 |
-| Deep Ops | 0 | 15+ | 15+ |
-| **TOTAL** | **48** | **205** | **157** |
+| **Artifact Types** | 48 | 205 | 920+ blocks planned |
+| **Scenario Files** | 21 | 21 | — |
+| **Discovery Categories** | 20 | 20 | — |
+| **UI Panels/Dialogs** | 17 | 15 | — |
+| **Backend Systems** | 1 (Express) | 1 (Supabase) | 17+ systems |
+| **API Endpoints** | 11 | ~5 | 392 |
+| **BFF Services** | 0 | 0 | 8 |
+| **CMS Collections** | 0 | 0 | 180+ |
+| **Domain Packages** | 0 | 0 | 65+ |
+| **Commerce Modules** | 0 | 0 | 129 (Medusa) |
+| **Chat Features** | 16/16 | 16/16 | — |
+| **Dark Mode** | ✅ | ❌ | ✅ (tokens) |
+| **i18n (Arabic/RTL)** | ✅ | ❌ | ✅ (en/fr/ar) |
+| **Mobile Native** | ✅ | ❌ | ✅ (Expo planned) |
+| **Offline Support** | ✅ | ❌ | — |
+| **Real Auth** | ❌ | ✅ (Supabase) | ✅ (Keycloak) |
+| **Real Backend** | ❌ | ✅ (partial) | ✅ (full stack) |
+| **Multi-tenancy** | ❌ | ❌ | ✅ (5-tier) |
+| **SDUI Protocol** | ❌ | ❌ | ✅ |
+| **Multi-Surface** | 1 surface | 1 surface | 14+ surfaces |
+| **IoT Real-time** | ❌ | ❌ | ✅ (Kuzzle) |
+| **Workflow Orchestration** | ❌ | ❌ | ✅ (Temporal) |
+
+---
+
+## 23. PRIORITIZED ROADMAP
+
+### Phase 1: CRITICAL GAPS (Connect to CMS Backend)
+1. **Keycloak Auth Integration** — Replace AsyncStorage auth with Keycloak OIDC
+2. **BFF Platform Connection** — Connect to bff-platform (port 4006) for auth, tenancy
+3. **Server-side Thread Persistence** — Store conversations in CMS PostgreSQL
+4. **Copilot Gateway** — Connect AI chat to CMS `/api/ai/chat` and `/api/ai/execute`
+5. **Copilot Settings Dialog** — AI tuning (temperature, model, privacy mode)
+6. **Toast Notifications** — User feedback system
+7. **Push Notifications** — Expo push notification setup
+
+### Phase 2: COMMERCE & CITY SERVICES
+1. **BFF Commerce Connection** — Products, cart, checkout, orders via bff-commerce (port 4001)
+2. **Stripe Payments** — Real payment processing via CMS Stripe integration
+3. **15 HIGH priority artifacts** — logistics-map, fleet-health-matrix, telehealth, property-listing, bill-pay, toll-pass, hotel-concierge, mini-video, smart-filters, comparison-grid, kyc-verification, emr-patient-record, tax-summary, demand-forecast
+4. **Meilisearch Integration** — Universal cross-domain search
+5. **Content-Enriched Products** — Product data + CMS editorial content merged
+
+### Phase 3: TRANSPORT & LOGISTICS
+1. **BFF Transport Connection** — Fleet tracking, delivery, ride-hailing via bff-transport (port 4004)
+2. **Fleetbase Integration** — Real-time fleet tracking, driver dispatch
+3. **40+ Logistics Artifacts** — Fleet management, driver hub, supply chain
+4. **Real-time WebSocket** — Kuzzle connection for live tracking
+
+### Phase 4: GOVERNMENT & HEALTH
+1. **BFF Governance Connection** — Permits, proposals, citizen services via bff-governance (port 4002)
+2. **BFF Healthcare Connection** — Appointments, records via bff-healthcare (port 4003)
+3. **Walt.id DID** — Verifiable credentials, digital identity
+4. **ERPNext Connection** — Invoices, inventory, HR
+
+### Phase 5: EVENTS, SOCIAL, IOT
+1. **BFF Events Connection** — Events, sports, tourism via bff-events (port 4005)
+2. **BFF Social Connection** — Social media, engagement via bff-social (port 4008)
+3. **BFF IoT Connection** — IoT sensors, agriculture via bff-iot (port 4007)
+4. **Temporal Workflows** — Multi-step process orchestration
+
+### Phase 6: SDUI & MULTI-SURFACE
+1. **SDUI Protocol Integration** — Render server-driven UI from CMS blocks
+2. **Capability Negotiation** — Adapt UI for phone/tablet/TV/watch/car
+3. **Experience Composer** — Dynamic layout composition
+4. **All remaining 100+ artifacts** — Domain verticals
+5. **Migration to `apps/superapp`** — Move codebase into CMS monorepo
+
+### Phase 7: NATIVE PLATFORM FEATURES
+1. **Biometric Auth** — FaceID/TouchID
+2. **NFC/QR Scanner** — Passes, tickets, payments
+3. **Apple/Google Pay** — Native payment methods
+4. **Geofencing** — Location-based city triggers
+5. **Widgets** — Home screen widgets
+6. **Accessibility** — Full VoiceOver/TalkBack support
+7. **Expo OTA Updates** — Over-the-air deployments
