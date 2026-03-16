@@ -81,6 +81,9 @@ export async function dispatchAction(action: SdAction): Promise<void> {
       break;
 
     case "submit_form":
+      if (config.onFormSubmit) {
+        await config.onFormSubmit(action.formId, action.endpoint, action.method || "POST", {});
+      }
       break;
   }
 }

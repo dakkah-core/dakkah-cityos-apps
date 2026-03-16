@@ -189,16 +189,16 @@ const MUTATING_INTENTS = new Set([
   "iot.smart-home",
 ]);
 
-const MUTATION_ENDPOINT_ALLOWLIST = new Set([
-  "/api/commerce/cart",
-  "/api/commerce/orders",
-  "/api/transport/rides",
-  "/api/healthcare/appointments",
-  "/api/governance/permits",
-  "/api/events/bookings",
-  "/api/iot/devices",
-  "/api/social/posts",
-]);
+const ENDPOINT_ACTION_MAP: Record<string, { service: string; action: string }> = {
+  "/api/commerce/cart": { service: "commerce", action: "addToCart" },
+  "/api/commerce/orders": { service: "commerce", action: "createOrder" },
+  "/api/transport/rides": { service: "transport", action: "requestRide" },
+  "/api/healthcare/appointments": { service: "healthcare", action: "bookAppointment" },
+  "/api/governance/permits": { service: "governance", action: "applyPermit" },
+  "/api/events/bookings": { service: "events", action: "bookTicket" },
+  "/api/iot/devices": { service: "iot", action: "controlDevice" },
+  "/api/social/posts": { service: "social", action: "getFeed" },
+};
 
 router.post("/execute", optionalAuth, async (req, res) => {
   try {
@@ -208,9 +208,11 @@ router.post("/execute", optionalAuth, async (req, res) => {
       return;
     }
 
-    if (intent === "api_mutation") {
+    if (intent === "api_mutation" || intent === "submit_form") {
       const endpoint = params?.endpoint as string;
-      if (!endpoint || !MUTATION_ENDPOINT_ALLOWLIST.has(endpoint.split("?")[0])) {
+      const endpointKey = endpoint?.split("?")[0];
+      const endpointMapping = endpointKey ? ENDPOINT_ACTION_MAP[endpointKey] : undefined;
+      if (!endpoint || !endpointMapping) {
         res.status(403).json({ success: false, error: { code: "FORBIDDEN", message: "Endpoint not in allowlist" } });
         return;
       }
@@ -218,29 +220,19 @@ router.post("/execute", optionalAuth, async (req, res) => {
         res.status(401).json({ success: false, error: { code: "AUTH_REQUIRED", message: "Authentication required for mutations" } });
         return;
       }
-      const mapping = Object.values(INTENT_MAP).find((m) => endpoint.includes(m.service));
-      const bffData = mapping
-        ? await callBff(mapping.service, mapping.action, params?.payload || {})
-        : null;
-      res.json({ success: true, data: { intent: "api_mutation", bffData, threadId: threadId || null } });
-      return;
-    }
-
-    if (intent === "submit_form") {
-      const endpoint = params?.endpoint as string;
-      if (!endpoint || !MUTATION_ENDPOINT_ALLOWLIST.has(endpoint.split("?")[0])) {
-        res.status(403).json({ success: false, error: { code: "FORBIDDEN", message: "Endpoint not in allowlist" } });
-        return;
-      }
-      if (!isAuthenticated(req)) {
-        res.status(401).json({ success: false, error: { code: "AUTH_REQUIRED", message: "Authentication required for form submissions" } });
-        return;
-      }
-      const mapping = Object.values(INTENT_MAP).find((m) => endpoint.includes(m.service));
-      const bffData = mapping
-        ? await callBff(mapping.service, mapping.action, params?.formData || {})
-        : null;
-      res.json({ success: true, data: { intent: "submit_form", formId: params?.formId, bffData, threadId: threadId || null } });
+      const payload = intent === "submit_form" ? (params?.formData || {}) : (params?.payload || {});
+      const bffData = await callBff(endpointMapping.service, endpointMapping.action, payload as Record<string, unknown>);
+      res.json({
+        success: true,
+        data: {
+          intent,
+          service: endpointMapping.service,
+          action: endpointMapping.action,
+          bffData,
+          ...(intent === "submit_form" ? { formId: params?.formId } : {}),
+          threadId: threadId || null,
+        },
+      });
       return;
     }
 
