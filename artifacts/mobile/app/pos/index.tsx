@@ -8,11 +8,17 @@ import { useRouter } from "expo-router";
 import { COLORS } from "@/constants/colors";
 import { usePos } from "@/context/PosContext";
 import { SduiRenderer, configureActionHandler } from "@workspace/sdui-renderer-native";
+import type { SdNode } from "@workspace/sdui-protocol";
 import type { PosProduct } from "@/types/pos";
 import { useAuth } from "@/context/AuthContext";
 
-function useSduiSurface(surface: string) {
-  const [sduiTree, setSduiTree] = useState<Record<string, unknown> | null>(null);
+function isSdNode(data: unknown): data is SdNode {
+  return typeof data === "object" && data !== null && "type" in data &&
+    typeof (data as Record<string, unknown>).type === "string";
+}
+
+function useSduiSurface(surface: string): SdNode | null {
+  const [sduiTree, setSduiTree] = useState<SdNode | null>(null);
   const { getAccessToken } = useAuth();
 
   useEffect(() => {
@@ -26,7 +32,10 @@ function useSduiSurface(surface: string) {
         });
         if (res.ok && !cancelled) {
           const data = await res.json();
-          setSduiTree(data.screen || data);
+          const node = data.screen || data;
+          if (isSdNode(node)) {
+            setSduiTree(node);
+          }
         }
       } catch {}
     })();
@@ -151,7 +160,7 @@ export default function PosTerminalScreen() {
 
   const sduiStatusBar = sduiTree ? (
     <View style={styles.sduiBar}>
-      <SduiRenderer node={sduiTree as any} theme="dark" />
+      <SduiRenderer node={sduiTree} theme="dark" />
     </View>
   ) : null;
 

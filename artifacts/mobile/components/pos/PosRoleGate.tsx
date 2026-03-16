@@ -22,7 +22,7 @@ export function PosRoleGate({ children }: PosRoleGateProps) {
   const [pinError, setPinError] = useState("");
   const [pinUnlocked, setPinUnlocked] = useState(false);
 
-  const hasPosRole = user?.roles?.some((r) => POS_ROLES.includes(r));
+  const hasPosRole = user?.roles?.some((r: string) => POS_ROLES.includes(r));
   const isDev = process.env.NODE_ENV === "development" || process.env.EXPO_PUBLIC_ALLOW_DEV_POS === "true";
 
   const handleSetPin = useCallback(async () => {
@@ -60,7 +60,7 @@ export function PosRoleGate({ children }: PosRoleGateProps) {
     }
   }, []);
 
-  if (pinUnlocked || isDev) {
+  if (isDev) {
     return <>{children}</>;
   }
 
@@ -73,61 +73,6 @@ export function PosRoleGate({ children }: PosRoleGateProps) {
         <Pressable style={styles.signInBtn} onPress={() => signInWithKeycloak()}>
           <Text style={styles.signInBtnText}>Sign in with Keycloak</Text>
         </Pressable>
-        <Pressable style={styles.pinBtn} onPress={handleShowPinEntry}>
-          <Text style={styles.pinBtnText}>Quick PIN Login</Text>
-        </Pressable>
-
-        {showPinEntry && (
-          <View style={styles.pinSection}>
-            <Text style={styles.pinTitle}>Enter PIN</Text>
-            <TextInput
-              style={styles.pinInput}
-              value={pin}
-              onChangeText={setPin}
-              placeholder="Enter 4+ digit PIN"
-              placeholderTextColor="rgba(255,255,255,0.3)"
-              keyboardType="number-pad"
-              secureTextEntry
-              maxLength={8}
-              onSubmitEditing={handlePinLogin}
-            />
-            {pinError ? <Text style={styles.pinError}>{pinError}</Text> : null}
-            <Pressable style={styles.pinSubmitBtn} onPress={handlePinLogin}>
-              <Text style={styles.pinSubmitText}>Unlock</Text>
-            </Pressable>
-          </View>
-        )}
-
-        {showPinSetup && (
-          <View style={styles.pinSection}>
-            <Text style={styles.pinTitle}>Set Up Quick PIN</Text>
-            <TextInput
-              style={styles.pinInput}
-              value={newPin}
-              onChangeText={setNewPin}
-              placeholder="New PIN (4+ digits)"
-              placeholderTextColor="rgba(255,255,255,0.3)"
-              keyboardType="number-pad"
-              secureTextEntry
-              maxLength={8}
-            />
-            <TextInput
-              style={[styles.pinInput, { marginTop: 8 }]}
-              value={confirmPin}
-              onChangeText={setConfirmPin}
-              placeholder="Confirm PIN"
-              placeholderTextColor="rgba(255,255,255,0.3)"
-              keyboardType="number-pad"
-              secureTextEntry
-              maxLength={8}
-            />
-            {pinError ? <Text style={styles.pinError}>{pinError}</Text> : null}
-            <Pressable style={styles.pinSubmitBtn} onPress={handleSetPin}>
-              <Text style={styles.pinSubmitText}>Save PIN</Text>
-            </Pressable>
-          </View>
-        )}
-
         <Pressable style={styles.backBtn} onPress={() => router.replace("/")}>
           <Text style={styles.backBtnText}>Go to Home</Text>
         </Pressable>
@@ -148,7 +93,75 @@ export function PosRoleGate({ children }: PosRoleGateProps) {
     );
   }
 
-  return <>{children}</>;
+  if (pinUnlocked) {
+    return <>{children}</>;
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.icon}>🔑</Text>
+      <Text style={styles.title}>Quick PIN Verification</Text>
+      <Text style={styles.subtitle}>Enter your PIN to unlock the POS terminal</Text>
+
+      {showPinEntry ? (
+        <View style={styles.pinSection}>
+          <Text style={styles.pinTitle}>Enter PIN</Text>
+          <TextInput
+            style={styles.pinInput}
+            value={pin}
+            onChangeText={setPin}
+            placeholder="Enter 4+ digit PIN"
+            placeholderTextColor="rgba(255,255,255,0.3)"
+            keyboardType="number-pad"
+            secureTextEntry
+            maxLength={8}
+            onSubmitEditing={handlePinLogin}
+          />
+          {pinError ? <Text style={styles.pinError}>{pinError}</Text> : null}
+          <Pressable style={styles.pinSubmitBtn} onPress={handlePinLogin}>
+            <Text style={styles.pinSubmitText}>Unlock</Text>
+          </Pressable>
+        </View>
+      ) : showPinSetup ? (
+        <View style={styles.pinSection}>
+          <Text style={styles.pinTitle}>Set Up Quick PIN</Text>
+          <TextInput
+            style={styles.pinInput}
+            value={newPin}
+            onChangeText={setNewPin}
+            placeholder="New PIN (4+ digits)"
+            placeholderTextColor="rgba(255,255,255,0.3)"
+            keyboardType="number-pad"
+            secureTextEntry
+            maxLength={8}
+          />
+          <TextInput
+            style={[styles.pinInput, { marginTop: 8 }]}
+            value={confirmPin}
+            onChangeText={setConfirmPin}
+            placeholder="Confirm PIN"
+            placeholderTextColor="rgba(255,255,255,0.3)"
+            keyboardType="number-pad"
+            secureTextEntry
+            maxLength={8}
+          />
+          {pinError ? <Text style={styles.pinError}>{pinError}</Text> : null}
+          <Pressable style={styles.pinSubmitBtn} onPress={handleSetPin}>
+            <Text style={styles.pinSubmitText}>Save PIN</Text>
+          </Pressable>
+        </View>
+      ) : (
+        <View style={styles.pinActions}>
+          <Pressable style={styles.pinBtn} onPress={handleShowPinEntry}>
+            <Text style={styles.pinBtnText}>Enter PIN</Text>
+          </Pressable>
+          <Pressable style={styles.skipBtn} onPress={() => setPinUnlocked(true)}>
+            <Text style={styles.skipBtnText}>Skip (Continue without PIN)</Text>
+          </Pressable>
+        </View>
+      )}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -162,7 +175,10 @@ const styles = StyleSheet.create({
   pinBtnText: { color: "#0d9488", fontWeight: "700", fontSize: 15 },
   backBtn: { backgroundColor: "rgba(255,255,255,0.15)", paddingHorizontal: 24, paddingVertical: 14, borderRadius: 12, width: 280, alignItems: "center", marginTop: 8 },
   backBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
-  pinSection: { width: 280, marginTop: 16, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
+  skipBtn: { backgroundColor: "rgba(255,255,255,0.08)", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 12, width: 280, alignItems: "center" },
+  skipBtnText: { color: "rgba(255,255,255,0.4)", fontSize: 13 },
+  pinActions: { gap: 12, alignItems: "center" },
+  pinSection: { width: 280, marginTop: 8, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
   pinTitle: { fontSize: 14, fontWeight: "700", color: "#fff", marginBottom: 12, textAlign: "center" },
   pinInput: { backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 10, paddingHorizontal: 16, paddingVertical: 12, fontSize: 20, color: "#fff", textAlign: "center", letterSpacing: 6, borderWidth: 1, borderColor: "rgba(255,255,255,0.2)" },
   pinError: { fontSize: 12, color: "#e11d48", textAlign: "center", marginTop: 6 },
