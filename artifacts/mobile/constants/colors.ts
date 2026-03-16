@@ -1,29 +1,3 @@
-export const COLORS = {
-  primary: "#0A9396",
-  primaryDark: "#087F82",
-  primaryLight: "#0AB3B6",
-  primaryTint: "#E6F6F6",
-  darkNavy: "#0D1B2A",
-  surface: "#F5F5F4",
-  surfaceWhite: "#FFFFFF",
-  card: "#FFFFFF",
-  border: "#E7E5E4",
-  borderLight: "#F5F5F4",
-  text: "#1C1917",
-  textSecondary: "#78716C",
-  textMuted: "#A8A29E",
-  textInverse: "#FAFAF9",
-  success: "#10B981",
-  warning: "#F59E0B",
-  danger: "#EF4444",
-  info: "#3B82F6",
-  suggest: "#8B5CF6",
-  propose: "#F59E0B",
-  execute: "#10B981",
-  userBubble: "#0D1B2A",
-  assistantBubble: "#FFFFFF",
-  chipBg: "#F5F5F4",
-  chipBorder: "#E7E5E4",
-  overlay: "rgba(0,0,0,0.5)",
-  online: "#22C55E",
-};
+import { getSemanticColors } from "@workspace/design-tokens";
+
+export const COLORS = getSemanticColors("light");

@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "jsx": "react-jsx",
+    "lib": ["es2022", "dom"],
+    "types": ["@types/react"],
+    "skipLibCheck": true,
+    "noImplicitAny": false
+  },
+  "include": ["src"]
+}

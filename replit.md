@@ -36,14 +36,13 @@ artifacts-monorepo/
 │   ├── dev-portal/         # Dev Portal - React Vite (PLANNED)
 │   ├── kiosk-app/          # Kiosk Runtime - React Vite (PLANNED)
 │   └── tv-app/             # TV App simulator - React Vite (PLANNED)
-├── packages/               # Shared packages (PLANNED)
-│   ├── design-tokens/      # CMS design token bridge
-│   ├── sdui-protocol/      # SDUI Zod schemas + types
-│   ├── sdui-renderer-native/ # React Native SDUI renderer
-│   ├── sdui-renderer-web/  # React DOM SDUI renderer
-│   ├── auth/               # Keycloak PKCE auth SDK
-│   └── api-client/         # BFF API client with tenant/surface headers
-├── lib/                    # Existing shared libraries
+├── lib/                    # Shared libraries
+│   ├── design-tokens/      # CMS design token bridge (11 token categories + native exports) ✅
+│   ├── sdui-protocol/      # SDUI Zod schemas + types (8 nodes, 8 actions, capabilities) ✅
+│   ├── sdui-renderer-native/ # React Native SDUI renderer (recursive, 8 node types) ✅
+│   ├── sdui-renderer-web/  # React DOM SDUI renderer (Tailwind CSS, 8 node types) ✅
+│   ├── auth/               # Keycloak PKCE auth SDK (AuthProvider, token refresh) ✅
+│   ├── api-client/         # BFF API client (8 ports, tenant/surface headers) ✅
 │   ├── api-spec/           # OpenAPI spec + Orval codegen config
 │   ├── api-client-react/   # Generated React Query hooks
 │   ├── api-zod/            # Generated Zod schemas from OpenAPI
@@ -181,8 +180,8 @@ Express 5 API server with Gateway architecture.
 - Profile updates (name, email, language, tier progression)
 
 #### Theme System
-- Light palette: teal `#0A9396`, dark navy `#0D1B2A`, stone neutrals
-- Dark palette: dark backgrounds `#0F1923`/`#1B2838`, teal `#0AB3B6` accent
+- Now powered by `@workspace/design-tokens` shared package via `getSemanticColors(mode)`
+- CMS palette: primary blue `#3182ce`, navy `#0a1628`, teal `#0d9488`, amber `#d97706`, rose `#e11d48`
 - ThemeProvider in `context/ThemeContext.tsx`, AsyncStorage persisted
 - Toggle via FullSettingsDialog (wired through `useTheme()` hook)
 
@@ -219,6 +218,30 @@ Generated Zod schemas from OpenAPI spec.
 ### `lib/api-client-react` (`@workspace/api-client-react`)
 
 Generated React Query hooks and fetch client.
+
+### `lib/design-tokens` (`@workspace/design-tokens`)
+
+CMS design token bridge — 11 token categories: colors (primary navy/blue, extended teal/purple/amber/rose, semantic, neutral, surface, text, border), spacing (xs-4xl), typography (Inter, xs-5xl, weights 400-800), borders, breakpoints (xs-2xl), elevation (RN shadows), motion (durations, easings), CSS shadows, layout (content/sidebar/header), semantic color resolver, z-index. React Native-specific exports at `@workspace/design-tokens/native`.
+
+### `lib/sdui-protocol` (`@workspace/sdui-protocol`)
+
+SDUI protocol schemas — Zod schemas + TypeScript types for: 8 node types (text, button, image, stack, card, carousel, grid, map), 8 action types (navigate, api_mutation, open_url, copy_text, share, trigger_workflow, deep_link, request_hardware_access), modifiers, capabilities (9 OS, 6 screen classes, 6 input methods), payloads.
+
+### `lib/sdui-renderer-native` (`@workspace/sdui-renderer-native`)
+
+React Native SDUI renderer — recursive renderer mapping 8 SDUI node types to RN primitives (Text, TouchableOpacity, Image, View, FlatList). Includes ActionHandler for dispatching SdActions and ModifierStyles mapper. Map node renders placeholder (real MapView integration in app layer).
+
+### `lib/sdui-renderer-web` (`@workspace/sdui-renderer-web`)
+
+React DOM SDUI renderer — recursive renderer mapping 8 SDUI node types to HTML with Tailwind CSS classes. Includes web ActionHandler (window.open, clipboard, Web Share API) and Tailwind modifier mapper.
+
+### `lib/auth` (`@workspace/auth`)
+
+Keycloak PKCE auth SDK — AuthProvider + useAuth() hook, PKCE code verifier/challenge generation, JWT decode for user extraction, token auto-refresh scheduling, storage abstraction (webStorage for localStorage, createNativeStorage for expo-secure-store). Supports login/logout flows, token exchange, and refresh.
+
+### `lib/api-client` (`@workspace/api-client`)
+
+CityOS API client — CityOSClient with auth header injection (Keycloak JWT), x-tenant-id, x-cityos-surface, x-correlation-id headers. SduiClient for fetching SDUI screens and dispatching actions. BffClient + createBffClients() for typed access to all 8 BFF ports (commerce:4001, governance:4002, healthcare:4003, transport:4004, events:4005, platform:4006, iot:4007, social:4008).
 
 ### `scripts` (`@workspace/scripts`)
 

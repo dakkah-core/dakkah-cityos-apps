@@ -11,6 +11,24 @@
     },
     {
       "path": "./lib/api-zod"
+    },
+    {
+      "path": "./lib/design-tokens"
+    },
+    {
+      "path": "./lib/sdui-protocol"
+    },
+    {
+      "path": "./lib/sdui-renderer-native"
+    },
+    {
+      "path": "./lib/sdui-renderer-web"
+    },
+    {
+      "path": "./lib/auth"
+    },
+    {
+      "path": "./lib/api-client"
     }
   ]
 }

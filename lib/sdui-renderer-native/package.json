@@ -1,0 +1,20 @@
+{
+  "name": "@workspace/sdui-renderer-native",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@workspace/design-tokens": "workspace:*",
+    "@workspace/sdui-protocol": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-native": ">=0.74"
+  }
+}
