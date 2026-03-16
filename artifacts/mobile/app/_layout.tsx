@@ -5,7 +5,6 @@ import {
   Inter_700Bold,
   useFonts,
 } from "@expo-google-fonts/inter";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
@@ -18,25 +17,10 @@ import { ChatProvider } from "@/context/ChatContext";
 
 SplashScreen.preventAutoHideAsync();
 
-const queryClient = new QueryClient();
-
 function RootLayoutNav() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
-      <Stack.Screen
-        name="chat/[id]"
-        options={{
-          animation: "slide_from_right",
-        }}
-      />
-      <Stack.Screen
-        name="new-chat"
-        options={{
-          presentation: "modal",
-          animation: "slide_from_bottom",
-        }}
-      />
     </Stack>
   );
 }
@@ -60,15 +44,13 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ErrorBoundary>
-        <QueryClientProvider client={queryClient}>
-          <GestureHandlerRootView>
-            <KeyboardProvider>
-              <ChatProvider>
-                <RootLayoutNav />
-              </ChatProvider>
-            </KeyboardProvider>
-          </GestureHandlerRootView>
-        </QueryClientProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <KeyboardProvider>
+            <ChatProvider>
+              <RootLayoutNav />
+            </ChatProvider>
+          </KeyboardProvider>
+        </GestureHandlerRootView>
       </ErrorBoundary>
     </SafeAreaProvider>
   );

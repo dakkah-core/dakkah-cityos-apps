@@ -1,226 +1,176 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import type { Conversation, Message } from "@/types/chat";
-import {
-  loadConversations,
-  saveConversations,
-  loadMessages,
-  saveMessages,
-} from "@/lib/storage";
-import {
-  seedConversations,
-  seedMessages,
-  currentUserId,
-  contacts,
-} from "@/lib/seed-data";
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import type { Message, ChatThread } from "@/types/chat";
 import { generateId } from "@/lib/id";
+import { processUserMessage } from "@/lib/copilot-brain";
 
-interface ChatContextValue {
-  conversations: Conversation[];
-  isLoading: boolean;
-  getMessages: (conversationId: string) => Promise<Message[]>;
-  sendMessage: (conversationId: string, text: string) => Promise<void>;
-  markAsRead: (conversationId: string) => void;
-  deleteConversation: (conversationId: string) => void;
-  createConversation: (contactId: string) => Conversation;
-  pinConversation: (conversationId: string) => void;
+const THREADS_KEY = "dakkah_threads";
+const MESSAGES_KEY = "dakkah_copilot_msgs";
+
+const WELCOME_MESSAGE: Message = {
+  id: "welcome",
+  role: "assistant",
+  content: "Hi! I'm your Dakkah Copilot \u2014 your AI concierge for the entire city. I can help you discover experiences, plan trips, join events, manage bookings, and access every capability through conversation.\n\nWhat would you like to do?",
+  timestamp: Date.now(),
+  mode: "suggest",
+  artifacts: [
+    {
+      type: "selection-chips",
+      data: {
+        question: "Popular requests:",
+        options: ["Show me quiet places", "Plan a 3-day trip", "What's happening tonight?", "How do I earn XP?"],
+      },
+    },
+  ],
+};
+
+interface CopilotContextValue {
+  messages: Message[];
+  threads: ChatThread[];
+  isProcessing: boolean;
+  currentThreadId: string | null;
+  sendMessage: (text: string) => Promise<void>;
+  createNewChat: () => void;
+  loadThread: (id: string) => void;
 }
 
-const ChatContext = createContext<ChatContextValue | null>(null);
+const CopilotContext = createContext<CopilotContextValue | null>(null);
 
 export function ChatProvider({ children }: { children: React.ReactNode }) {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const initializedRef = useRef(false);
+  const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
+  const [threads, setThreads] = useState<ChatThread[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [currentThreadId, setCurrentThreadId] = useState<string | null>(null);
+  const initRef = useRef(false);
+  const requestTokenRef = useRef(0);
+  const threadIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (initializedRef.current) return;
-    initializedRef.current = true;
+    threadIdRef.current = currentThreadId;
+  }, [currentThreadId]);
 
-    (async () => {
-      let convos = await loadConversations();
-      if (convos.length === 0) {
-        convos = seedConversations;
-        await saveConversations(convos);
-        for (const [convId, msgs] of Object.entries(seedMessages)) {
-          await saveMessages(convId, msgs);
+  useEffect(() => {
+    if (initRef.current) return;
+    initRef.current = true;
+    loadThreadsList();
+  }, []);
+
+  const loadThreadsList = async () => {
+    try {
+      const data = await AsyncStorage.getItem(THREADS_KEY);
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) setThreads(parsed);
+      }
+    } catch {
+    }
+  };
+
+  const saveThread = async (threadId: string, msgs: Message[]) => {
+    try {
+      await AsyncStorage.setItem(`${MESSAGES_KEY}_${threadId}`, JSON.stringify(msgs));
+
+      const userMsg = msgs.find((m) => m.role === "user");
+      const title = userMsg?.content.slice(0, 40) || "New Conversation";
+      const lastMsg = msgs[msgs.length - 1];
+
+      setThreads((prev) => {
+        const existing = prev.find((t) => t.id === threadId);
+        let updated: ChatThread[];
+        if (existing) {
+          updated = prev.map((t) => (t.id === threadId ? { ...t, lastMessage: lastMsg.content.slice(0, 60), timestamp: lastMsg.timestamp } : t));
+        } else {
+          updated = [{ id: threadId, title, lastMessage: lastMsg.content.slice(0, 60), timestamp: lastMsg.timestamp }, ...prev];
+        }
+        AsyncStorage.setItem(THREADS_KEY, JSON.stringify(updated)).catch(() => {});
+        return updated;
+      });
+    } catch {
+    }
+  };
+
+  const sendMessage = useCallback(async (text: string) => {
+    if (!text.trim() || isProcessing) return;
+
+    const token = ++requestTokenRef.current;
+    const threadId = currentThreadId || generateId("thread");
+    if (!currentThreadId) setCurrentThreadId(threadId);
+
+    const userMsg: Message = {
+      id: generateId("msg"),
+      role: "user",
+      content: text,
+      timestamp: Date.now(),
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
+    setIsProcessing(true);
+
+    try {
+      await new Promise((r) => setTimeout(r, 400 + Math.random() * 600));
+
+      if (requestTokenRef.current !== token) return;
+
+      const response = processUserMessage(text);
+      const assistantMsg: Message = {
+        id: generateId("msg"),
+        role: "assistant",
+        content: response.content,
+        timestamp: Date.now(),
+        artifacts: response.artifacts,
+        mode: response.mode,
+      };
+
+      if (requestTokenRef.current !== token) return;
+
+      setMessages((prev) => {
+        const finalMsgs = [...prev, assistantMsg];
+        if (threadIdRef.current === threadId || threadIdRef.current === null) {
+          saveThread(threadId, finalMsgs);
+        }
+        return finalMsgs;
+      });
+    } finally {
+      if (requestTokenRef.current === token) {
+        setIsProcessing(false);
+      }
+    }
+  }, [isProcessing, currentThreadId]);
+
+  const createNewChat = useCallback(() => {
+    requestTokenRef.current++;
+    setMessages([WELCOME_MESSAGE]);
+    setCurrentThreadId(null);
+    setIsProcessing(false);
+  }, []);
+
+  const loadThread = useCallback(async (id: string) => {
+    try {
+      requestTokenRef.current++;
+      setIsProcessing(false);
+      const data = await AsyncStorage.getItem(`${MESSAGES_KEY}_${id}`);
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) {
+          setMessages(parsed);
+          setCurrentThreadId(id);
         }
       }
-      setConversations(convos);
-      setIsLoading(false);
-    })();
-  }, []);
-
-  const persistConversations = useCallback(
-    async (updated: Conversation[]) => {
-      setConversations(updated);
-      await saveConversations(updated);
-    },
-    [],
-  );
-
-  const getMessages = useCallback(async (conversationId: string) => {
-    return loadMessages(conversationId);
-  }, []);
-
-  const sendMessage = useCallback(
-    async (conversationId: string, text: string) => {
-      const msg: Message = {
-        id: generateId("msg"),
-        conversationId,
-        senderId: currentUserId,
-        text,
-        timestamp: Date.now(),
-        status: "sent",
-      };
-
-      const msgs = await loadMessages(conversationId);
-      msgs.push(msg);
-      await saveMessages(conversationId, msgs);
-
-      setConversations((prev) => {
-        const updated = prev.map((c) =>
-          c.id === conversationId
-            ? { ...c, lastMessage: msg, unreadCount: 0 }
-            : c,
-        );
-        saveConversations(updated);
-        return updated;
-      });
-
-      setTimeout(async () => {
-        const conv = conversations.find((c) => c.id === conversationId);
-        if (!conv) return;
-
-        const otherParticipant = conv.participants.find(
-          (p) => p !== currentUserId,
-        );
-        if (!otherParticipant) return;
-
-        const contact = contacts.find((c) => c.id === otherParticipant);
-        const replies = [
-          "Got it, I'll look into this right away.",
-          "Thanks for the update! I'll follow up shortly.",
-          "That's a great point. Let me check the latest data.",
-          "I agree. Let's schedule a meeting to discuss further.",
-          "Perfect, I've noted this. Will send my analysis soon.",
-          "Understood. I'll coordinate with the team on this.",
-          "Good to know. I'll prepare a report by end of day.",
-          "Interesting insight! Let me run some numbers.",
-        ];
-
-        const replyMsg: Message = {
-          id: generateId("msg"),
-          conversationId,
-          senderId: otherParticipant,
-          text: replies[Math.floor(Math.random() * replies.length)],
-          timestamp: Date.now(),
-          status: "delivered",
-        };
-
-        const currentMsgs = await loadMessages(conversationId);
-        currentMsgs.push(replyMsg);
-        await saveMessages(conversationId, currentMsgs);
-
-        setConversations((prev) => {
-          const updated = prev.map((c) =>
-            c.id === conversationId ? { ...c, lastMessage: replyMsg } : c,
-          );
-          saveConversations(updated);
-          return updated;
-        });
-      }, 1500 + Math.random() * 2000);
-    },
-    [conversations],
-  );
-
-  const markAsRead = useCallback((conversationId: string) => {
-    setConversations((prev) => {
-      const updated = prev.map((c) =>
-        c.id === conversationId ? { ...c, unreadCount: 0 } : c,
-      );
-      saveConversations(updated);
-      return updated;
-    });
-  }, []);
-
-  const deleteConversation = useCallback((conversationId: string) => {
-    setConversations((prev) => {
-      const updated = prev.filter((c) => c.id !== conversationId);
-      saveConversations(updated);
-      return updated;
-    });
-  }, []);
-
-  const createConversation = useCallback(
-    (contactId: string) => {
-      const contact = contacts.find((c) => c.id === contactId);
-      const existing = conversations.find(
-        (c) =>
-          !c.isGroup &&
-          c.participants.includes(contactId) &&
-          c.participants.includes(currentUserId),
-      );
-      if (existing) return existing;
-
-      const newConv: Conversation = {
-        id: generateId("conv"),
-        name: contact?.name ?? "Unknown",
-        isGroup: false,
-        participants: [currentUserId, contactId],
-        unreadCount: 0,
-        isPinned: false,
-        isOnline: contact?.isOnline ?? false,
-        subtitle: contact?.role,
-      };
-
-      setConversations((prev) => {
-        const updated = [newConv, ...prev];
-        saveConversations(updated);
-        return updated;
-      });
-
-      return newConv;
-    },
-    [conversations],
-  );
-
-  const pinConversation = useCallback((conversationId: string) => {
-    setConversations((prev) => {
-      const updated = prev.map((c) =>
-        c.id === conversationId ? { ...c, isPinned: !c.isPinned } : c,
-      );
-      saveConversations(updated);
-      return updated;
-    });
+    } catch {
+      setMessages([WELCOME_MESSAGE]);
+      setCurrentThreadId(null);
+    }
   }, []);
 
   return (
-    <ChatContext.Provider
-      value={{
-        conversations,
-        isLoading,
-        getMessages,
-        sendMessage,
-        markAsRead,
-        deleteConversation,
-        createConversation,
-        pinConversation,
-      }}
-    >
+    <CopilotContext.Provider value={{ messages, threads, isProcessing, currentThreadId, sendMessage, createNewChat, loadThread }}>
       {children}
-    </ChatContext.Provider>
+    </CopilotContext.Provider>
   );
 }
 
-export function useChat() {
-  const ctx = useContext(ChatContext);
-  if (!ctx) throw new Error("useChat must be used within ChatProvider");
+export function useCopilot() {
+  const ctx = useContext(CopilotContext);
+  if (!ctx) throw new Error("useCopilot must be used within ChatProvider");
   return ctx;
 }

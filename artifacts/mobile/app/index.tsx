@@ -1,243 +1,146 @@
-import React, { useCallback, useRef } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Platform,
-  ActivityIndicator,
-  Animated,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import React, { useCallback, useRef, useState, useEffect } from "react";
+import { View, Text, FlatList, TextInput, StyleSheet, Pressable, KeyboardAvoidingView, Platform, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import * as Haptics from "expo-haptics";
+import { COLORS } from "@/constants/colors";
+import { useCopilot } from "@/context/ChatContext";
+import { CopilotMessage } from "@/components/CopilotMessage";
+import { DiscoverySheet } from "@/components/DiscoverySheet";
+import { ThreadsDrawer } from "@/components/ThreadsDrawer";
+import type { Message } from "@/types/chat";
 
-import Colors from "@/constants/colors";
-import { useChat } from "@/context/ChatContext";
-import ConversationItem from "@/components/ConversationItem";
-import type { Conversation } from "@/types/chat";
-
-export default function ConversationsScreen() {
+export default function CopilotScreen() {
   const insets = useSafeAreaInsets();
-  const { conversations, isLoading, deleteConversation, pinConversation } =
-    useChat();
+  const { messages, threads, isProcessing, sendMessage, createNewChat, loadThread } = useCopilot();
+  const [input, setInput] = useState("");
+  const [discoveryOpen, setDiscoveryOpen] = useState(false);
+  const [threadsOpen, setThreadsOpen] = useState(false);
+  const flatListRef = useRef<FlatList>(null);
 
-  const webTopInset = Platform.OS === "web" ? 67 : 0;
-  const webBottomInset = Platform.OS === "web" ? 34 : 0;
+  const prevMsgCountRef = useRef(messages.length);
+  useEffect(() => {
+    if (messages.length > prevMsgCountRef.current) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    }
+    prevMsgCountRef.current = messages.length;
+  }, [messages.length]);
 
-  const sorted = [...conversations].sort((a, b) => {
-    if (a.isPinned && !b.isPinned) return -1;
-    if (!a.isPinned && b.isPinned) return 1;
-    const aTime = a.lastMessage?.timestamp ?? 0;
-    const bTime = b.lastMessage?.timestamp ?? 0;
-    return bTime - aTime;
-  });
+  const handleSend = useCallback(async () => {
+    if (!input.trim() || isProcessing) return;
+    const text = input;
+    setInput("");
+    await sendMessage(text);
+  }, [input, isProcessing, sendMessage]);
 
-  const handleConversationPress = useCallback((conv: Conversation) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.push({ pathname: "/chat/[id]", params: { id: conv.id } });
-  }, []);
+  const handleChipAction = useCallback(async (action: string) => {
+    await sendMessage(action);
+  }, [sendMessage]);
 
-  const handleNewChat = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    router.push("/new-chat");
-  }, []);
+  const handleDiscoverySelect = useCallback(async (prompt: string) => {
+    await sendMessage(prompt);
+  }, [sendMessage]);
 
-  const renderItem = useCallback(
-    ({ item }: { item: Conversation }) => (
-      <ConversationItem
-        conversation={item}
-        onPress={() => handleConversationPress(item)}
-      />
-    ),
-    [handleConversationPress],
-  );
+  const renderMessage = useCallback(({ item }: { item: Message }) => (
+    <CopilotMessage message={item} onAction={handleChipAction} />
+  ), [handleChipAction]);
 
-  const keyExtractor = useCallback((item: Conversation) => item.id, []);
-
-  const renderSeparator = useCallback(
-    () => (
-      <View style={styles.separatorWrapper}>
-        <View style={styles.separator} />
-      </View>
-    ),
-    [],
-  );
-
-  if (isLoading) {
-    return (
-      <View style={[styles.loadingContainer, { paddingTop: insets.top + webTopInset }]}>
-        <ActivityIndicator size="large" color={Colors.light.tint} />
-      </View>
-    );
-  }
+  const keyExtractor = useCallback((item: Message) => item.id, []);
 
   return (
     <View style={styles.container}>
-      <View
-        style={[
-          styles.header,
-          { paddingTop: insets.top + webTopInset + 8 },
-        ]}
-      >
-        <View style={styles.headerContent}>
-          <View>
-            <Text style={styles.headerTitle}>Messages</Text>
-            <Text style={styles.headerSubtitle}>Dakkah CityOS</Text>
-          </View>
-          <View style={styles.headerActions}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.iconButton,
-                pressed && styles.iconButtonPressed,
-              ]}
-              onPress={handleNewChat}
-            >
-              <Ionicons
-                name="create-outline"
-                size={24}
-                color={Colors.light.tint}
-              />
-            </Pressable>
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+        <Pressable style={styles.menuBtn} onPress={() => setThreadsOpen(true)}>
+          <Text style={styles.menuIcon}>☰</Text>
+        </Pressable>
+        <View style={styles.headerCenter}>
+          <View style={styles.logoRow}>
+            <View style={styles.logo}>
+              <Text style={styles.logoText}>✦</Text>
+            </View>
+            <View>
+              <Text style={styles.headerTitle}>Dakkah</Text>
+              <Text style={styles.headerSub}>City Experience OS</Text>
+            </View>
           </View>
         </View>
+        <Pressable style={styles.discoverBtn} onPress={() => setDiscoveryOpen(true)}>
+          <Text style={styles.discoverIcon}>◉</Text>
+        </Pressable>
       </View>
 
-      <FlatList
-        data={sorted}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        ItemSeparatorComponent={renderSeparator}
-        contentContainerStyle={{
-          paddingBottom: insets.bottom + webBottomInset + 80,
-        }}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Ionicons
-              name="chatbubbles-outline"
-              size={64}
-              color={Colors.light.textMuted}
-            />
-            <Text style={styles.emptyTitle}>No conversations yet</Text>
-            <Text style={styles.emptyText}>
-              Start a new conversation to connect with your team
-            </Text>
-          </View>
-        }
-      />
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={0}>
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          renderItem={renderMessage}
+          keyExtractor={keyExtractor}
+          contentContainerStyle={styles.chatContent}
+          showsVerticalScrollIndicator={false}
+          
+        />
 
-      <Pressable
-        style={({ pressed }) => [
-          styles.fab,
-          {
-            bottom: insets.bottom + webBottomInset + 20,
-          },
-          pressed && styles.fabPressed,
-        ]}
-        onPress={handleNewChat}
-      >
-        <Ionicons name="chatbubble-ellipses" size={26} color="#FFFFFF" />
-      </Pressable>
+        {isProcessing && (
+          <View style={styles.typingRow}>
+            <View style={styles.typingDot} />
+            <ActivityIndicator size="small" color={COLORS.primary} />
+            <Text style={styles.typingText}>Copilot is thinking...</Text>
+          </View>
+        )}
+
+        <View style={[styles.inputBar, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+          <Pressable style={styles.compassBtn} onPress={() => setDiscoveryOpen(true)}>
+            <Text style={styles.compassIcon}>◎</Text>
+          </Pressable>
+          <TextInput
+            style={styles.input}
+            placeholder="Ask Dakkah anything..."
+            placeholderTextColor={COLORS.textMuted}
+            value={input}
+            onChangeText={setInput}
+            onSubmitEditing={handleSend}
+            returnKeyType="send"
+            multiline={false}
+          />
+          <Pressable
+            style={[styles.sendBtn, (!input.trim() || isProcessing) && styles.sendBtnDisabled]}
+            onPress={handleSend}
+            disabled={!input.trim() || isProcessing}
+          >
+            <Text style={styles.sendIcon}>↑</Text>
+          </Pressable>
+        </View>
+      </KeyboardAvoidingView>
+
+      <DiscoverySheet visible={discoveryOpen} onClose={() => setDiscoveryOpen(false)} onSelect={handleDiscoverySelect} />
+      <ThreadsDrawer visible={threadsOpen} onClose={() => setThreadsOpen(false)} threads={threads} onNewChat={createNewChat} onLoadThread={loadThread} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.light.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: Colors.light.background,
-  },
-  header: {
-    backgroundColor: Colors.light.backgroundSecondary,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.light.border,
-    paddingBottom: 12,
-    paddingHorizontal: 20,
-  },
-  headerContent: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontFamily: "Inter_700Bold",
-    color: Colors.light.text,
-  },
-  headerSubtitle: {
-    fontSize: 13,
-    fontFamily: "Inter_500Medium",
-    color: Colors.light.tint,
-    marginTop: 2,
-  },
-  headerActions: {
-    flexDirection: "row",
-    gap: 4,
-  },
-  iconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: Colors.light.tintLight,
-  },
-  iconButtonPressed: {
-    opacity: 0.7,
-  },
-  separatorWrapper: {
-    paddingLeft: 80,
-  },
-  separator: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.light.border,
-  },
-  emptyContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 120,
-    paddingHorizontal: 40,
-    gap: 12,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontFamily: "Inter_600SemiBold",
-    color: Colors.light.text,
-  },
-  emptyText: {
-    fontSize: 15,
-    fontFamily: "Inter_400Regular",
-    color: Colors.light.textSecondary,
-    textAlign: "center",
-    lineHeight: 22,
-  },
-  fab: {
-    position: "absolute",
-    right: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: Colors.light.tint,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: Colors.light.tint,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  fabPressed: {
-    transform: [{ scale: 0.95 }],
-    opacity: 0.9,
-  },
+  container: { flex: 1, backgroundColor: COLORS.surface },
+  flex: { flex: 1 },
+  header: { backgroundColor: COLORS.surfaceWhite, borderBottomWidth: 1, borderBottomColor: COLORS.border, paddingBottom: 12, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  menuBtn: { width: 40, height: 40, borderRadius: 12, backgroundColor: COLORS.darkNavy, alignItems: "center", justifyContent: "center" },
+  menuIcon: { color: "#fff", fontSize: 18, fontWeight: "600" },
+  headerCenter: { flex: 1, marginHorizontal: 12 },
+  logoRow: { flexDirection: "row", alignItems: "center", gap: 10 },
+  logo: { width: 36, height: 36, borderRadius: 10, backgroundColor: COLORS.darkNavy, alignItems: "center", justifyContent: "center" },
+  logoText: { color: COLORS.primary, fontSize: 16, fontWeight: "700" },
+  headerTitle: { fontSize: 18, fontWeight: "800", color: COLORS.text },
+  headerSub: { fontSize: 11, color: COLORS.textSecondary, fontWeight: "500" },
+  discoverBtn: { width: 40, height: 40, borderRadius: 12, backgroundColor: COLORS.primaryTint, alignItems: "center", justifyContent: "center" },
+  discoverIcon: { color: COLORS.primary, fontSize: 20 },
+  chatContent: { paddingTop: 16, paddingBottom: 8 },
+  typingRow: { flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 20, paddingVertical: 8 },
+  typingDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.primary },
+  typingText: { fontSize: 12, color: COLORS.textMuted, fontStyle: "italic" },
+  inputBar: { flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 12, paddingTop: 10, backgroundColor: COLORS.surfaceWhite, borderTopWidth: 1, borderTopColor: COLORS.border },
+  compassBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: COLORS.chipBg, alignItems: "center", justifyContent: "center" },
+  compassIcon: { fontSize: 18, color: COLORS.textSecondary },
+  input: { flex: 1, backgroundColor: COLORS.surface, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, fontSize: 14, color: COLORS.text, maxHeight: 100, borderWidth: 1, borderColor: COLORS.border },
+  sendBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: COLORS.darkNavy, alignItems: "center", justifyContent: "center" },
+  sendBtnDisabled: { opacity: 0.3 },
+  sendIcon: { color: "#fff", fontSize: 18, fontWeight: "700" },
 });

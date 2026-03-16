@@ -21,7 +21,8 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 ```text
 artifacts-monorepo/
 ├── artifacts/              # Deployable applications
-│   └── api-server/         # Express API server
+│   ├── api-server/         # Express API server
+│   └── mobile/             # Dakkah CityOS - Expo React Native mobile app
 ├── lib/                    # Shared libraries
 │   ├── api-spec/           # OpenAPI spec + Orval codegen config
 │   ├── api-client-react/   # Generated React Query hooks
@@ -61,6 +62,54 @@ Express 5 API server. Routes live in `src/routes/` and use `@workspace/api-zod` 
 - `pnpm --filter @workspace/api-server run dev` — run the dev server
 - `pnpm --filter @workspace/api-server run build` — production esbuild bundle (`dist/index.cjs`)
 - Build bundles an allowlist of deps (express, cors, pg, drizzle-orm, zod, etc.) and externalizes the rest
+
+### `artifacts/mobile` (`@workspace/mobile`) — Dakkah CityOS
+
+**Conversational City Experience OS** — Expo React Native mobile app where all capabilities are accessed through an AI copilot. No traditional navigation; everything is driven by natural language.
+
+#### Architecture
+- **Single copilot screen** (`app/index.tsx`) — no tab bars, no dashboards, no forms
+- **Copilot brain** (`lib/copilot-brain.ts`) — pattern-matches user intents and returns responses with dynamic UI artifacts
+- **Copilot context** (`context/ChatContext.tsx`) — manages messages, threads, processing state with request lifecycle protection
+- **Artifact renderer** (`components/artifacts/ArtifactRenderer.tsx`) — maps artifact types to React Native components
+
+#### Artifact Types (14 implemented)
+- `poi-carousel` — scrollable place cards with images, ratings, vibes
+- `event-carousel` — event cards with dates, locations, attendees
+- `ambassador-carousel` — trust layer profiles with fit scores
+- `itinerary-timeline` — multi-day trip plans with day tabs
+- `confirmation-card` — booking/approval flows (Propose mode)
+- `comparison-table` — side-by-side evaluations
+- `progress-card` — gamification: XP, levels, badges, missions
+- `zone-heatmap` — Zone Experience Scores with factor breakdowns
+- `selection-chips` — quick action buttons inline in messages
+- `ticket-pass` — digital event tickets with QR placeholder
+- `order-tracker` — delivery status stepper
+- `analytics-snapshot` — metric cards with trends
+- `product-carousel` — product cards with prices and tags
+- `service-menu` — bookable service listings
+
+#### Interaction Modes
+- **Suggest** — recommendations, insights (purple badge)
+- **Propose** — structured actions requiring confirmation (amber badge)
+- **Execute** — instant results (green badge)
+
+#### Discovery
+- **Action Discovery Sheet** (`components/DiscoverySheet.tsx`) — 14 categories (Food, Nightlife, Culture, Wellness, Shopping, etc.) with 60+ quick-action prompts
+- **Thread Management** (`components/ThreadsDrawer.tsx`) — conversation history with AsyncStorage persistence
+
+#### Theme
+- Primary: teal `#0A9396`
+- Dark navy: `#0D1B2A` (user bubbles, headers)
+- Stone/neutral palette for surfaces
+
+#### Key Dependencies
+- Expo 54, React Native 0.81
+- expo-router (file-based routing)
+- react-native-keyboard-controller
+- react-native-safe-area-context
+- @react-native-async-storage/async-storage
+- Inter font family
 
 ### `lib/db` (`@workspace/db`)
 
