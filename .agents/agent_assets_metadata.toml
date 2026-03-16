@@ -6,3 +6,9 @@ id = "D7v0WMvNgKswccoh4wRGu"
 uri = "file://FEATURE_MATRIX.md"
 type = "text"
 title = "Dakkah CityOS — Universal Super App Feature Matrix (Expanded)"
+
+[[outputs]]
+id = "HOWf8MrxwnkbVQ4iSrWlF"
+uri = "file://IMPLEMENTATION_PLAN.md"
+type = "text"
+title = "Dakkah CityOS — Detailed Implementation Plan (14 Apps)"

@@ -20,21 +20,50 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 
 ```text
 artifacts-monorepo/
-├── artifacts/              # Deployable applications
+├── artifacts/              # Deployable applications (18 app families planned)
 │   ├── api-server/         # Express API server with Gateway & 11 domain services
-│   └── mobile/             # Dakkah CityOS - Expo React Native mobile app
-├── lib/                    # Shared libraries
+│   ├── mobile/             # Super App - Expo React Native (IN DEVELOPMENT)
+│   ├── driver-app/         # Driver App - Expo React Native (PLANNED)
+│   ├── merchant-app/       # Merchant App - Expo React Native (PLANNED)
+│   ├── pos-app/            # POS/Counter - Expo React Native (PLANNED)
+│   ├── car-app/            # Car App simulator - Expo/Vite (PLANNED)
+│   ├── web-platform/       # Consumer Web - React Vite (PLANNED)
+│   ├── pwa-app/            # PWA Desktop - React Vite + SW (PLANNED)
+│   ├── ai-assistant/       # AI Assistant Widget - React Vite (PLANNED)
+│   ├── city-dashboard/     # City Dashboard - React Vite (PLANNED)
+│   ├── business-dashboard/ # Business Dashboard - React Vite (PLANNED)
+│   ├── smart-city-portal/  # Smart City Portal - React Vite (PLANNED)
+│   ├── dev-portal/         # Dev Portal - React Vite (PLANNED)
+│   ├── kiosk-app/          # Kiosk Runtime - React Vite (PLANNED)
+│   └── tv-app/             # TV App simulator - React Vite (PLANNED)
+├── packages/               # Shared packages (PLANNED)
+│   ├── design-tokens/      # CMS design token bridge
+│   ├── sdui-protocol/      # SDUI Zod schemas + types
+│   ├── sdui-renderer-native/ # React Native SDUI renderer
+│   ├── sdui-renderer-web/  # React DOM SDUI renderer
+│   ├── auth/               # Keycloak PKCE auth SDK
+│   └── api-client/         # BFF API client with tenant/surface headers
+├── lib/                    # Existing shared libraries
 │   ├── api-spec/           # OpenAPI spec + Orval codegen config
 │   ├── api-client-react/   # Generated React Query hooks
 │   ├── api-zod/            # Generated Zod schemas from OpenAPI
 │   └── db/                 # Drizzle ORM schema + DB connection
 ├── scripts/                # Utility scripts (single workspace package)
 │   └── src/                # Individual .ts scripts
+├── FEATURE_MATRIX.md       # Complete capability inventory (18 apps, 392 APIs, 920+ blocks)
+├── IMPLEMENTATION_PLAN.md  # Detailed build plan (25 tasks across 6 phases)
 ├── pnpm-workspace.yaml
 ├── tsconfig.base.json
 ├── tsconfig.json
 └── package.json
 ```
+
+## CMS Backend Target
+- **Repo**: `https://github.com/dakkah-core/dakkah-cityos-cms.git`
+- **GitHub**: `dakkah-core/dakkah-cityos-apps` (this project)
+- **Migration**: All apps will eventually move to `apps/` in CMS monorepo
+- **Key Systems**: Payload CMS (5000), Medusa (9000), Keycloak (8080), 8 BFF services (4001-4008)
+- **SDUI Endpoint**: `GET /api/sdui/{screenId}?surface={target}&tenant={tenantId}`
 
 ## TypeScript & Composite Projects
 
