@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
+import * as Notifications from "expo-notifications";
 import { useAuth } from "./AuthContext";
 import type { DriverJob, DriverStatus, DriverEarnings, OfflineAction, InspectionCheck, InspectionResult, SOSReport } from "@/types/driver";
 import {
@@ -157,6 +158,8 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, [offlineQueue.length, trySyncQueue]);
 
+  const refreshJobsRef = useRef<(() => Promise<void>) | undefined>(undefined);
+
   const setStatus = useCallback(async (newStatus: DriverStatus) => {
     const token = await getAccessToken();
     const result = await apiSetStatus(newStatus, token || undefined);
@@ -179,6 +182,41 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
     setJobs(jobsData);
     await AsyncStorage.setItem(CACHED_JOBS_KEY, JSON.stringify(jobsData)).catch(() => {});
   }, [getAccessToken]);
+
+  refreshJobsRef.current = refreshJobs;
+
+  useEffect(() => {
+    const subscription = Notifications.addNotificationReceivedListener((notification: Notifications.Notification) => {
+      const data = notification.request.content.data as Record<string, unknown> | undefined;
+      if (!data) return;
+
+      const category = data.category as string | undefined;
+      if (category === "delivery" || category === "transport") {
+        const action = data.action as string | undefined;
+
+        if (action === "new_job" && data.job) {
+          const newJob = data.job as DriverJob;
+          setJobs((prev) => {
+            if (prev.some((j) => j.id === newJob.id)) return prev;
+            return [...prev, newJob];
+          });
+        } else if (action === "job_cancelled" && data.jobId) {
+          setJobs((prev) => prev.map((j) =>
+            j.id === data.jobId ? { ...j, status: "cancelled" as const } : j
+          ));
+        } else if (action === "job_updated" && data.job) {
+          const updatedJob = data.job as DriverJob;
+          setJobs((prev) => prev.map((j) =>
+            j.id === updatedJob.id ? updatedJob : j
+          ));
+        } else {
+          refreshJobsRef.current?.();
+        }
+      }
+    });
+
+    return () => subscription.remove();
+  }, []);
 
   const acceptJobFn = useCallback(async (jobId: string) => {
     const token = await getAccessToken();

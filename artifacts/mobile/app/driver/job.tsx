@@ -6,6 +6,7 @@ import { COLORS } from "@/constants/colors";
 import { useDriver } from "@/context/DriverContext";
 import { DeliveryMap } from "@/components/driver/DeliveryMap";
 import { ProofOfDelivery } from "@/components/driver/ProofOfDelivery";
+import { BarcodeScanner } from "@/components/driver/BarcodeScanner";
 import type { DriverJob } from "@/types/driver";
 
 type DeliveryStep = "details" | "navigate_pickup" | "pickup_verify" | "navigate_deliver" | "arrived" | "proof_of_delivery" | "completed";
@@ -31,6 +32,7 @@ export default function JobScreen() {
   const [step, setStep] = useState<DeliveryStep>("details");
   const [scannedBarcodes, setScannedBarcodes] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [scannerVisible, setScannerVisible] = useState(false);
 
   useEffect(() => {
     if (job) setStep(getStepForJob(job));
@@ -149,25 +151,40 @@ export default function JobScreen() {
         )}
 
         <View style={styles.itemsCard}>
-          <Text style={styles.itemsTitle}>Items to Deliver</Text>
+          <View style={styles.itemsHeader}>
+            <Text style={styles.itemsTitle}>Items to Deliver</Text>
+            {step === "navigate_pickup" && (
+              <Pressable style={styles.openScannerBtn} onPress={() => setScannerVisible(true)}>
+                <Text style={styles.openScannerBtnText}>📱 Scan All</Text>
+              </Pressable>
+            )}
+          </View>
           {job.items.map((item, i) => (
             <View key={i} style={styles.itemRow}>
+              <View style={[styles.itemStatusDot, scannedBarcodes.includes(item.barcode) && styles.itemStatusDotScanned]}>
+                <Text style={styles.itemStatusDotText}>{scannedBarcodes.includes(item.barcode) ? "✓" : (i + 1).toString()}</Text>
+              </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.itemName}>{item.name}</Text>
                 <Text style={styles.itemBarcode}>Barcode: {item.barcode}</Text>
               </View>
               <Text style={styles.itemQty}>x{item.quantity}</Text>
-              {step === "navigate_pickup" && (
-                <Pressable
-                  style={[styles.scanBtn, scannedBarcodes.includes(item.barcode) && styles.scanBtnDone]}
-                  onPress={() => handleScanBarcode(item.barcode)}
-                >
-                  <Text style={styles.scanBtnText}>{scannedBarcodes.includes(item.barcode) ? "✓" : "Scan"}</Text>
-                </Pressable>
-              )}
             </View>
           ))}
+          {step === "navigate_pickup" && scannedBarcodes.length > 0 && (
+            <Text style={styles.scanProgress}>{scannedBarcodes.length}/{job.items.length} verified</Text>
+          )}
         </View>
+
+        {job && (
+          <BarcodeScanner
+            visible={scannerVisible}
+            expectedBarcodes={job.items.map((item) => item.barcode)}
+            scannedBarcodes={scannedBarcodes}
+            onScan={handleScanBarcode}
+            onClose={() => setScannerVisible(false)}
+          />
+        )}
 
         {step === "proof_of_delivery" && (
           <ProofOfDelivery onSubmit={handleComplete} isSubmitting={isSubmitting} />
@@ -255,14 +272,18 @@ const styles = StyleSheet.create({
   notesLabel: { fontSize: 12, fontWeight: "600", color: "#92400e", marginBottom: 4 },
   notesText: { fontSize: 13, color: "#78350f" },
   itemsCard: { marginHorizontal: 16, backgroundColor: COLORS.surfaceWhite, borderRadius: 14, padding: 16, borderWidth: 1, borderColor: COLORS.border },
-  itemsTitle: { fontSize: 14, fontWeight: "700", color: COLORS.text, marginBottom: 12 },
+  itemsTitle: { fontSize: 14, fontWeight: "700", color: COLORS.text },
   itemRow: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   itemName: { fontSize: 14, fontWeight: "600", color: COLORS.text },
   itemBarcode: { fontSize: 11, color: COLORS.textSecondary, marginTop: 2 },
   itemQty: { fontSize: 14, fontWeight: "600", color: COLORS.textSecondary },
-  scanBtn: { paddingHorizontal: 12, paddingVertical: 6, backgroundColor: "#3182ce", borderRadius: 6 },
-  scanBtnDone: { backgroundColor: "#0d9488" },
-  scanBtnText: { color: "#fff", fontSize: 12, fontWeight: "600" },
+  itemsHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
+  openScannerBtn: { paddingHorizontal: 12, paddingVertical: 6, backgroundColor: "#3182ce", borderRadius: 8 },
+  openScannerBtnText: { color: "#fff", fontSize: 12, fontWeight: "600" },
+  itemStatusDot: { width: 24, height: 24, borderRadius: 12, backgroundColor: COLORS.border, alignItems: "center", justifyContent: "center" },
+  itemStatusDotScanned: { backgroundColor: "#059669" },
+  itemStatusDotText: { color: "#fff", fontSize: 11, fontWeight: "700" },
+  scanProgress: { fontSize: 12, fontWeight: "600", color: "#059669", textAlign: "center", marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: COLORS.border },
   completedCard: { margin: 16, padding: 32, backgroundColor: "#ecfdf5", borderRadius: 16, alignItems: "center", borderWidth: 1, borderColor: "#34d399" },
   completedIcon: { fontSize: 40, marginBottom: 8 },
   completedTitle: { fontSize: 20, fontWeight: "800", color: "#065f46" },
