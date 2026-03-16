@@ -63,6 +63,19 @@ The project uses a pnpm monorepo with `artifacts/` for deployable applications a
 - **Commerce Merchant API (`/api/commerce/merchant/`)**: Handles merchant profiles, orders, products, inventory, bookings, tables, sales analytics, and campaigns.
 - **POS Commerce API (`/api/commerce/pos/`)**: Manages POS products, checkout processes, kitchen orders, shifts, returns, and reports.
 
+### Consumer Web Platform & PWA (`artifacts/web-platform`)
+- **AI Copilot Web Interface**: Full conversational AI copilot for web/desktop, matching the mobile app's AI-first paradigm. No traditional navigation — single chat interface for all city services.
+- **PWA Support**: Service worker (`public/sw.js`) with cache-first for static assets, network-first for SDUI, offline fallback shell. PWA manifest (`public/manifest.json`) for standalone installation. Install prompt banner, update detection, offline indicator.
+- **IndexedDB Offline Store**: `offline-store.ts` with stores for messages, SDUI cache, and mutation queue (background sync).
+- **Chat Features**: Welcome message with suggestion chips, demo responses for weather/rides/restaurants/events, typing indicator, message timestamps, reply-to support, attachments UI.
+- **Artifact Renderer**: Renders selection chips, weather cards, ride status, POI carousels, event carousels, SDUI nodes (via `@workspace/sdui-renderer-web`), and generic JSON fallback.
+- **Discovery Sidebar**: 8 service categories (Transport, Healthcare, Commerce, Government, Events, Education, Smart City, Community) with expandable prompt lists and search.
+- **Auth**: Keycloak PKCE via `@workspace/auth` + guest demo mode (dev/demo only). Auth callback page with state/verifier validation.
+- **SEO Pages**: About, Contact, Privacy, Terms — all with back-to-copilot navigation.
+- **Layout**: Responsive with threads sidebar (left, collapsible), header with Dakkah branding, and discovery sidebar (right, slide-out).
+- **Port**: 5000, path `/web-platform/`. Vite proxy: `${basePath}api` → `http://localhost:8080`.
+- **Router**: wouter with `BASE_URL` base path. React Query for data fetching.
+
 ### Web Dashboards & Portals (Phase 3)
 - **City Dashboard (`artifacts/city-dashboard`)**: Municipal operations center for city administrators. Dark mode command center with real-time city stats (incidents, traffic, air quality, energy), service request tracking, infrastructure health monitoring, and AI copilot chat panel. Port 20359, path `/city-dashboard/`.
 - **Business Dashboard (`artifacts/business-dashboard`)**: Multi-location business management portal for merchants. Clean professional theme with revenue/order tracking, inventory alerts, staff scheduling, marketing campaigns, customer insights, and AI copilot. Port 26079, path `/business-dashboard/`.

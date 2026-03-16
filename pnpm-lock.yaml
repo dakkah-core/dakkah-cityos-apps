@@ -1397,6 +1397,88 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
 
+  artifacts/web-platform:
+    dependencies:
+      '@workspace/auth':
+        specifier: workspace:*
+        version: link:../../lib/auth
+      '@workspace/design-tokens':
+        specifier: workspace:*
+        version: link:../../lib/design-tokens
+      '@workspace/sdui-protocol':
+        specifier: workspace:*
+        version: link:../../lib/sdui-protocol
+      '@workspace/sdui-renderer-web':
+        specifier: workspace:*
+        version: link:../../lib/sdui-renderer-web
+    devDependencies:
+      '@replit/vite-plugin-cartographer':
+        specifier: 'catalog:'
+        version: 0.5.0
+      '@replit/vite-plugin-dev-banner':
+        specifier: 'catalog:'
+        version: 0.1.2
+      '@replit/vite-plugin-runtime-error-modal':
+        specifier: 'catalog:'
+        version: 0.0.6
+      '@tailwindcss/vite':
+        specifier: 'catalog:'
+        version: 4.2.1(vite@7.3.1(@types/node@25.3.5)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
+      '@tanstack/react-query':
+        specifier: 'catalog:'
+        version: 5.90.21(react@19.1.0)
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.3.5
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.2.3(@types/react@19.2.14)
+      '@vitejs/plugin-react':
+        specifier: 'catalog:'
+        version: 5.1.4(vite@7.3.1(@types/node@25.3.5)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
+      class-variance-authority:
+        specifier: 'catalog:'
+        version: 0.7.1
+      clsx:
+        specifier: 'catalog:'
+        version: 2.1.1
+      framer-motion:
+        specifier: 'catalog:'
+        version: 12.35.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      idb-keyval:
+        specifier: ^6.2.1
+        version: 6.2.2
+      lucide-react:
+        specifier: 'catalog:'
+        version: 0.545.0(react@19.1.0)
+      react:
+        specifier: 'catalog:'
+        version: 19.1.0
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.1.0(react@19.1.0)
+      tailwind-merge:
+        specifier: 'catalog:'
+        version: 3.5.0
+      tailwindcss:
+        specifier: 'catalog:'
+        version: 4.2.1
+      tw-animate-css:
+        specifier: ^1.4.0
+        version: 1.4.0
+      vite:
+        specifier: 'catalog:'
+        version: 7.3.1(@types/node@25.3.5)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      wouter:
+        specifier: ^3.3.5
+        version: 3.9.0(react@19.1.0)
+      zod:
+        specifier: 'catalog:'
+        version: 3.25.76
+
   lib/api-client:
     dependencies:
       '@workspace/auth':
@@ -3022,8 +3104,6 @@ packages:
   '@react-native/codegen@0.81.5':
     resolution: {integrity: sha512-a2TDA03Up8lpSa9sh5VRGCQDXgCTOyDOFH+aqyinxp1HChG8uk89/G+nkJ9FPd0rqgi25eCTR16TWdS3b+fA6g==}
     engines: {node: '>= 20.19.4'}
-    peerDependencies:
-      '@babel/core': '*'
 
   '@react-native/community-cli-plugin@0.81.5':
     resolution: {integrity: sha512-yWRlmEOtcyvSZ4+OvqPabt+NS36vg0K/WADTQLhrYrm9qdZSuXmq8PmdJWz/68wAqKQ+4KTILiq2kjRQwnyhQw==}
@@ -4799,6 +4879,9 @@ packages:
   iconv-lite@0.7.2:
     resolution: {integrity: sha512-im9DjEDQ55s9fL4EYzOAv0yMqmMBSZp6G0VvFyTMPKWxiSBHUj9NW/qqLmXUwXrrM7AvqSlTCfvqRb0cM8yYqw==}
     engines: {node: '>=0.10.0'}
+
+  idb-keyval@6.2.2:
+    resolution: {integrity: sha512-yjD9nARJ/jb1g+CvD0tlhUHOrJ9Sy0P8T9MF3YaLlHnSRpwPfpTX0XIvpmw3gAJUmEu3FiICLBDPXVwyEvrleg==}
 
   ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
@@ -9085,12 +9168,11 @@ snapshots:
 
   '@react-native/assets-registry@0.81.5': {}
 
-  '@react-native/babel-plugin-codegen@0.81.5(@babel/core@7.29.0)':
+  '@react-native/babel-plugin-codegen@0.81.5':
     dependencies:
       '@babel/traverse': 7.29.0
-      '@react-native/codegen': 0.81.5(@babel/core@7.29.0)
+      '@react-native/codegen': 0.81.5
     transitivePeerDependencies:
-      - '@babel/core'
       - supports-color
 
   '@react-native/babel-preset@0.81.5(@babel/core@7.29.0)':
@@ -9136,14 +9218,14 @@ snapshots:
       '@babel/plugin-transform-typescript': 7.28.6(@babel/core@7.29.0)
       '@babel/plugin-transform-unicode-regex': 7.27.1(@babel/core@7.29.0)
       '@babel/template': 7.28.6
-      '@react-native/babel-plugin-codegen': 0.81.5(@babel/core@7.29.0)
+      '@react-native/babel-plugin-codegen': 0.81.5
       babel-plugin-syntax-hermes-parser: 0.29.1
       babel-plugin-transform-flow-enums: 0.0.2(@babel/core@7.29.0)
       react-refresh: 0.14.2
     transitivePeerDependencies:
       - supports-color
 
-  '@react-native/codegen@0.81.5(@babel/core@7.29.0)':
+  '@react-native/codegen@0.81.5':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/parser': 7.29.0
@@ -9152,6 +9234,8 @@ snapshots:
       invariant: 2.2.4
       nullthrows: 1.1.1
       yargs: 17.7.2
+    transitivePeerDependencies:
+      - supports-color
 
   '@react-native/community-cli-plugin@0.81.5':
     dependencies:
@@ -9457,7 +9541,7 @@ snapshots:
 
   '@types/cors@2.8.19':
     dependencies:
-      '@types/node': 25.3.5
+      '@types/node': 22.19.15
 
   '@types/d3-array@3.2.2': {}
 
@@ -11044,6 +11128,8 @@ snapshots:
     dependencies:
       safer-buffer: 2.1.2
 
+  idb-keyval@6.2.2: {}
+
   ieee754@1.2.1: {}
 
   ignore@5.3.2: {}
@@ -12588,7 +12674,7 @@ snapshots:
     dependencies:
       '@jest/create-cache-key-function': 29.7.0
       '@react-native/assets-registry': 0.81.5
-      '@react-native/codegen': 0.81.5(@babel/core@7.29.0)
+      '@react-native/codegen': 0.81.5
       '@react-native/community-cli-plugin': 0.81.5
       '@react-native/gradle-plugin': 0.81.5
       '@react-native/js-polyfills': 0.81.5
@@ -12635,7 +12721,7 @@ snapshots:
     dependencies:
       '@jest/create-cache-key-function': 29.7.0
       '@react-native/assets-registry': 0.81.5
-      '@react-native/codegen': 0.81.5(@babel/core@7.29.0)
+      '@react-native/codegen': 0.81.5
       '@react-native/community-cli-plugin': 0.81.5
       '@react-native/gradle-plugin': 0.81.5
       '@react-native/js-polyfills': 0.81.5
