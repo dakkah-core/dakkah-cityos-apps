@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { StatusToggle } from "@/components/driver/StatusToggle";
 import { JobCard } from "@/components/driver/JobCard";
 import { SOSButton } from "@/components/driver/SOSButton";
+import { DynamicScreen } from "@/components/artifacts/DynamicScreen";
 import type { DriverJob } from "@/types/driver";
 
 export default function DriverHomeScreen() {
@@ -76,6 +77,17 @@ export default function DriverHomeScreen() {
         style={styles.content}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />}
       >
+        <View style={styles.sduiContainer}>
+            <DynamicScreen
+              screenId="driver_home"
+              surface="mobile"
+              onAction={(action) => {
+                if (action === "view_earnings") router.push("/driver/earnings");
+                else if (action === "start_inspection") router.push("/driver/inspection");
+              }}
+            />
+        </View>
+
         <View style={styles.statsRow}>
           <View style={styles.statCard}>
             <Text style={styles.statValue}>{completedToday}</Text>
@@ -147,6 +159,7 @@ const styles = StyleSheet.create({
   offlineBanner: { backgroundColor: "#d97706", paddingVertical: 6, paddingHorizontal: 16 },
   offlineBannerText: { color: "#fff", fontSize: 12, fontWeight: "600", textAlign: "center" },
   content: { flex: 1 },
+  sduiContainer: { marginHorizontal: 16, marginTop: 12, borderRadius: 12, overflow: "hidden" },
   statsRow: { flexDirection: "row", gap: 10, paddingHorizontal: 16, paddingTop: 16 },
   statCard: { flex: 1, backgroundColor: COLORS.surfaceWhite, borderRadius: 12, padding: 14, alignItems: "center", borderWidth: 1, borderColor: COLORS.border },
   statValue: { fontSize: 24, fontWeight: "800", color: COLORS.text },

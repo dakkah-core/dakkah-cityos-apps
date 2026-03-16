@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, Pressable, ScrollView, TextInput, Alert, Linking, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, Pressable, ScrollView, Alert, Linking, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { COLORS } from "@/constants/colors";
 import { useDriver } from "@/context/DriverContext";
+import { DeliveryMap } from "@/components/driver/DeliveryMap";
+import { ProofOfDelivery } from "@/components/driver/ProofOfDelivery";
 import type { DriverJob } from "@/types/driver";
 
 type DeliveryStep = "details" | "navigate_pickup" | "pickup_verify" | "navigate_deliver" | "arrived" | "proof_of_delivery" | "completed";
@@ -28,7 +30,6 @@ export default function JobScreen() {
   const job = jobs.find((j) => j.id === jobId);
   const [step, setStep] = useState<DeliveryStep>("details");
   const [scannedBarcodes, setScannedBarcodes] = useState<string[]>([]);
-  const [recipientName, setRecipientName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -75,13 +76,10 @@ export default function JobScreen() {
     setIsSubmitting(false);
   };
 
-  const handleComplete = async () => {
+  const handleComplete = async (proof: { proofType: "signature" | "photo" | "both"; signatureData?: string; photoUri?: string; recipientName?: string }) => {
     if (!jobId) return;
     setIsSubmitting(true);
-    await completeJob(jobId, {
-      proofType: "signature",
-      recipientName: recipientName || undefined,
-    });
+    await completeJob(jobId, proof);
     setIsSubmitting(false);
   };
 
@@ -121,35 +119,12 @@ export default function JobScreen() {
       </View>
 
       <ScrollView style={styles.content}>
-        <View style={styles.locationCard}>
-          <View style={styles.locationRow}>
-            <View style={styles.locationDot}>
-              <Text style={styles.locationDotText}>P</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.locationName}>{job.pickup.name}</Text>
-              <Text style={styles.locationAddress}>{job.pickup.address}</Text>
-            </View>
-            <Pressable style={styles.navBtn} onPress={() => openMaps(job.pickup.lat, job.pickup.lng, job.pickup.name)}>
-              <Text style={styles.navBtnText}>📍</Text>
-            </Pressable>
-          </View>
-
-          <View style={styles.routeLine} />
-
-          <View style={styles.locationRow}>
-            <View style={[styles.locationDot, styles.locationDotDrop]}>
-              <Text style={styles.locationDotText}>D</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.locationName}>{job.customer.name}</Text>
-              <Text style={styles.locationAddress}>{job.customer.address}</Text>
-            </View>
-            <Pressable style={styles.navBtn} onPress={() => openMaps(job.customer.lat, job.customer.lng, job.customer.name)}>
-              <Text style={styles.navBtnText}>📍</Text>
-            </Pressable>
-          </View>
-        </View>
+        <DeliveryMap
+          pickup={{ name: job.pickup.name, address: job.pickup.address, lat: job.pickup.lat, lng: job.pickup.lng }}
+          dropoff={{ name: job.customer.name, address: job.customer.address, lat: job.customer.lat, lng: job.customer.lng }}
+          eta={job.estimatedDuration}
+          distance={job.estimatedDistance}
+        />
 
         <View style={styles.infoRow}>
           <View style={styles.infoChip}>
@@ -195,17 +170,7 @@ export default function JobScreen() {
         </View>
 
         {step === "proof_of_delivery" && (
-          <View style={styles.proofCard}>
-            <Text style={styles.proofTitle}>Proof of Delivery</Text>
-            <TextInput
-              style={styles.proofInput}
-              placeholder="Recipient name (optional)"
-              placeholderTextColor={COLORS.textMuted}
-              value={recipientName}
-              onChangeText={setRecipientName}
-            />
-            <Text style={styles.proofHint}>Tap "Complete Delivery" to confirm handover</Text>
-          </View>
+          <ProofOfDelivery onSubmit={handleComplete} isSubmitting={isSubmitting} />
         )}
 
         {step === "completed" && (
@@ -250,9 +215,9 @@ export default function JobScreen() {
             </Pressable>
           </View>
         ) : step === "proof_of_delivery" ? (
-          <Pressable style={[styles.actionBtn, styles.completeBtn, { flex: 1 }]} onPress={handleComplete}>
-            <Text style={styles.completeBtnText}>Complete Delivery</Text>
-          </Pressable>
+          <View style={styles.podHint}>
+            <Text style={styles.podHintText}>📋 Complete the proof of delivery form above</Text>
+          </View>
         ) : step === "completed" ? (
           <Pressable style={[styles.actionBtn, styles.acceptBtn, { flex: 1 }]} onPress={() => router.back()}>
             <Text style={styles.acceptBtnText}>Back to Dashboard</Text>
@@ -280,16 +245,8 @@ const styles = StyleSheet.create({
   progressDot: { flex: 1, height: 4, borderRadius: 2, backgroundColor: COLORS.border },
   progressDotActive: { backgroundColor: "#0d9488" },
   content: { flex: 1 },
-  locationCard: { margin: 16, backgroundColor: COLORS.surfaceWhite, borderRadius: 14, padding: 16, borderWidth: 1, borderColor: COLORS.border },
-  locationRow: { flexDirection: "row", alignItems: "center", gap: 12 },
-  locationDot: { width: 32, height: 32, borderRadius: 16, backgroundColor: "#3182ce", alignItems: "center", justifyContent: "center" },
-  locationDotDrop: { backgroundColor: "#e11d48" },
-  locationDotText: { color: "#fff", fontSize: 14, fontWeight: "700" },
-  routeLine: { width: 2, height: 24, backgroundColor: COLORS.border, marginLeft: 15, marginVertical: 4 },
-  locationName: { fontSize: 14, fontWeight: "600", color: COLORS.text },
-  locationAddress: { fontSize: 12, color: COLORS.textSecondary, marginTop: 2 },
-  navBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: COLORS.surface, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: COLORS.border },
-  navBtnText: { fontSize: 16 },
+  podHint: { alignItems: "center", paddingVertical: 12 },
+  podHintText: { fontSize: 13, color: COLORS.textSecondary, fontWeight: "500" },
   infoRow: { flexDirection: "row", gap: 10, paddingHorizontal: 16 },
   infoChip: { flex: 1, backgroundColor: COLORS.surfaceWhite, borderRadius: 10, padding: 12, alignItems: "center", borderWidth: 1, borderColor: COLORS.border },
   infoLabel: { fontSize: 10, color: COLORS.textSecondary, fontWeight: "500" },
@@ -306,10 +263,6 @@ const styles = StyleSheet.create({
   scanBtn: { paddingHorizontal: 12, paddingVertical: 6, backgroundColor: "#3182ce", borderRadius: 6 },
   scanBtnDone: { backgroundColor: "#0d9488" },
   scanBtnText: { color: "#fff", fontSize: 12, fontWeight: "600" },
-  proofCard: { margin: 16, backgroundColor: COLORS.surfaceWhite, borderRadius: 14, padding: 16, borderWidth: 1, borderColor: COLORS.border },
-  proofTitle: { fontSize: 14, fontWeight: "700", color: COLORS.text, marginBottom: 12 },
-  proofInput: { backgroundColor: COLORS.surface, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14, color: COLORS.text, borderWidth: 1, borderColor: COLORS.border, marginBottom: 8 },
-  proofHint: { fontSize: 12, color: COLORS.textSecondary, fontStyle: "italic" },
   completedCard: { margin: 16, padding: 32, backgroundColor: "#ecfdf5", borderRadius: 16, alignItems: "center", borderWidth: 1, borderColor: "#34d399" },
   completedIcon: { fontSize: 40, marginBottom: 8 },
   completedTitle: { fontSize: 20, fontWeight: "800", color: "#065f46" },
@@ -323,6 +276,4 @@ const styles = StyleSheet.create({
   rejectBtnText: { color: "#e11d48", fontSize: 15, fontWeight: "600" },
   navActionBtn: { flex: 0.5, backgroundColor: "#3182ce" },
   navActionBtnText: { color: "#fff", fontSize: 14, fontWeight: "600" },
-  completeBtn: { backgroundColor: "#0d9488" },
-  completeBtnText: { color: "#fff", fontSize: 16, fontWeight: "700" },
 });

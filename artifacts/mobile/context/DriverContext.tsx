@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import NetInfo from "@react-native-community/netinfo";
 import { useAuth } from "./AuthContext";
 import type { DriverJob, DriverStatus, DriverEarnings, OfflineAction, InspectionCheck, InspectionResult, SOSReport } from "@/types/driver";
 import {
@@ -144,6 +145,17 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isOnline) trySyncQueue();
   }, [isOnline, trySyncQueue]);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      const connected = state.isConnected ?? false;
+      setIsOnline(connected);
+      if (connected && offlineQueue.length > 0) {
+        trySyncQueue();
+      }
+    });
+    return () => unsubscribe();
+  }, [offlineQueue.length, trySyncQueue]);
 
   const setStatus = useCallback(async (newStatus: DriverStatus) => {
     const token = await getAccessToken();

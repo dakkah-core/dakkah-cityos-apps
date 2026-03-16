@@ -1,5 +1,5 @@
 import { Router, type Request } from "express";
-import { optionalAuth, requireAuth, type AuthenticatedRequest } from "../middleware/auth";
+import { requireAuth, type AuthenticatedRequest } from "../middleware/auth";
 
 const router = Router();
 
@@ -69,8 +69,8 @@ function generateMockJobs(): DriverJob[] {
   ];
 }
 
-router.get("/transport/driver/status", optionalAuth, (req, res) => {
-  const driverId = (req as AuthenticatedRequest).userId || "driver_demo";
+router.get("/transport/driver/status", requireAuth, (req, res) => {
+  const driverId = (req as AuthenticatedRequest).userId!;
   const status = driverStatuses.get(driverId) || "offline";
   const jobs = activeJobs.get(driverId) || [];
   const position = driverPositions.get(driverId);
@@ -112,8 +112,8 @@ router.post("/transport/driver/status", requireAuth, (req, res) => {
   });
 });
 
-router.get("/transport/driver/jobs", optionalAuth, (req, res) => {
-  const driverId = (req as AuthenticatedRequest).userId || "driver_demo";
+router.get("/transport/driver/jobs", requireAuth, (req, res) => {
+  const driverId = (req as AuthenticatedRequest).userId!;
   let jobs = activeJobs.get(driverId);
 
   if (!jobs || jobs.length === 0) {
@@ -127,8 +127,8 @@ router.get("/transport/driver/jobs", optionalAuth, (req, res) => {
   res.json({ success: true, data: { jobs: filtered, total: filtered.length } });
 });
 
-router.get("/transport/driver/jobs/:jobId", optionalAuth, (req, res) => {
-  const driverId = (req as AuthenticatedRequest).userId || "driver_demo";
+router.get("/transport/driver/jobs/:jobId", requireAuth, (req, res) => {
+  const driverId = (req as AuthenticatedRequest).userId!;
   const jobs = activeJobs.get(driverId) || [];
   const job = jobs.find((j) => j.id === req.params.jobId);
 
@@ -256,8 +256,8 @@ router.post("/transport/driver/position", requireAuth, (req, res) => {
   res.json({ success: true, data: { received: true } });
 });
 
-router.get("/transport/driver/earnings", optionalAuth, (req, res) => {
-  const driverId = (req as AuthenticatedRequest).userId || "driver_demo";
+router.get("/transport/driver/earnings", requireAuth, (req, res) => {
+  const driverId = (req as AuthenticatedRequest).userId!;
   const period = (req.query.period as string) || "today";
 
   const earnings = {
