@@ -27,30 +27,31 @@ export function DakkahAssistant({
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
 
+    const executeViaBackend = async (intent: string, params: Record<string, unknown>) => {
+      const res = await fetch(`${apiEndpoint}/ai/execute`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ intent, params }),
+      });
+      if (res.ok) return await res.json();
+      return { success: false };
+    };
+
     configureActionHandler({
       onNavigate: (screen, params) => {
         onActionRef.current?.({ type: "navigate", screen, params });
       },
       onMutation: async (endpoint, method, payload) => {
-        const res = await fetch(`${apiEndpoint}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`, {
-          method,
-          headers,
-          body: payload ? JSON.stringify(payload) : undefined,
-        });
-        const result = await res.json();
+        const result = await executeViaBackend("api_mutation", { endpoint, method, payload });
         onActionRef.current?.({ type: "api_mutation", endpoint, method, payload, result });
         return result;
       },
-      onIntent: (intent, data) => {
-        onActionRef.current?.({ type: "intent", intent, data });
+      onIntent: async (intent, data) => {
+        const result = await executeViaBackend(intent, data || {});
+        onActionRef.current?.({ type: "intent", intent, data, result });
       },
       onFormSubmit: async (formId, endpoint, method, formData) => {
-        const res = await fetch(`${apiEndpoint}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`, {
-          method,
-          headers,
-          body: JSON.stringify(formData),
-        });
-        const result = await res.json();
+        const result = await executeViaBackend("submit_form", { formId, endpoint, method, formData });
         onActionRef.current?.({ type: "submit_form", formId, endpoint, formData, result });
         return result;
       },

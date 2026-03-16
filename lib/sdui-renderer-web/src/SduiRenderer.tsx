@@ -14,7 +14,7 @@ import type {
 } from "@workspace/sdui-protocol";
 import { getSemanticColors } from "@workspace/design-tokens";
 import { modifiersToClassName, modifiersToStyle } from "./ModifierStyles";
-import { dispatchAction } from "./ActionHandler";
+import { dispatchAction, dispatchFormSubmit } from "./ActionHandler";
 
 interface SduiRendererProps {
   node: SdNode;
@@ -391,17 +391,21 @@ function SdFormRenderer({ node, theme }: { node: SdFormNode; theme: "light" | "d
     try {
       const action = node.submitAction;
       if (action.type === "submit_form") {
-        const payload = { ...formData };
-        await dispatchAction({ ...action, type: "api_mutation" as const, method: action.method || "POST", payload });
+        await dispatchFormSubmit(action.formId, action.endpoint, action.method || "POST", formData);
       } else if (action.type === "api_mutation") {
-        await dispatchAction({ ...action, payload: { ...action.payload, ...formData } });
+        await dispatchFormSubmit(
+          node.id || "form",
+          action.endpoint,
+          action.method,
+          { ...action.payload, ...formData },
+        );
       } else {
         await dispatchAction(action);
       }
     } finally {
       setIsSubmitting(false);
     }
-  }, [formData, node.submitAction]);
+  }, [formData, node.submitAction, node.id]);
 
   return (
     <form

@@ -234,7 +234,7 @@ function generateSduiPayload(intent: string, bffData: unknown, params?: Record<s
                 subtitle: `SAR ${p.price}`,
                 image: p.image,
                 badge: p.inStock ? undefined : "Out of Stock",
-                onPress: { type: "navigate", target: `product/${p.id}` },
+                onPress: { type: "navigate", screen: `product/${p.id}` },
               }))
             : [],
         };
@@ -245,7 +245,7 @@ function generateSduiPayload(intent: string, bffData: unknown, params?: Record<s
         subtitle: `SAR ${(bffData as Record<string, unknown>)?.price || 0}`,
         image: (bffData as Record<string, unknown>)?.image,
         children: [
-          { type: "button", label: "Add to Cart", variant: "solid", action: { type: "intent", intent: "cart.add", params: { productId: params?.productId } } },
+          { type: "button", label: "Add to Cart", variant: "solid", action: { type: "intent", intent: "cart.add", data: { productId: params?.productId } } },
         ],
       };
 
@@ -255,7 +255,7 @@ function generateSduiPayload(intent: string, bffData: unknown, params?: Record<s
         direction: "vertical",
         spacing: "sm",
         children: [
-          { type: "text", content: "Your Cart", variant: "heading" },
+          { type: "text", content: "Your Cart", variant: "h2" },
           ...(Array.isArray((bffData as Record<string, unknown>)?.items)
             ? ((bffData as Record<string, unknown>).items as Array<Record<string, unknown>>).map((item) => ({
                 type: "card",
@@ -263,7 +263,7 @@ function generateSduiPayload(intent: string, bffData: unknown, params?: Record<s
                 subtitle: `${item.quantity}x SAR ${item.price}`,
               }))
             : []),
-          { type: "button", label: "Proceed to Checkout", variant: "solid", action: { type: "intent", intent: "order.create" } },
+          { type: "button", label: "Proceed to Checkout", variant: "solid", action: { type: "intent", intent: "order.create", data: {} } },
         ],
       };
 
@@ -273,8 +273,8 @@ function generateSduiPayload(intent: string, bffData: unknown, params?: Record<s
         title: action === "track" ? "Order Tracking" : "Order Confirmed",
         subtitle: (bffData as Record<string, unknown>)?.orderId as string || "Processing",
         children: [
-          { type: "text", content: `Status: ${(bffData as Record<string, unknown>)?.status || "pending"}` },
-          { type: "text", content: `Total: SAR ${(bffData as Record<string, unknown>)?.total || 0}` },
+          { type: "text", content: `Status: ${(bffData as Record<string, unknown>)?.status || "pending"}`, variant: "body" },
+          { type: "text", content: `Total: SAR ${(bffData as Record<string, unknown>)?.total || 0}`, variant: "body" },
         ],
       };
 
@@ -283,8 +283,8 @@ function generateSduiPayload(intent: string, bffData: unknown, params?: Record<s
         type: "card",
         title: action === "request" ? "Ride Requested" : "Ride Status",
         children: [
-          { type: "text", content: `Status: ${(bffData as Record<string, unknown>)?.status || "searching"}` },
-          { type: "text", content: `ETA: ${(bffData as Record<string, unknown>)?.eta || "calculating..."}` },
+          { type: "text", content: `Status: ${(bffData as Record<string, unknown>)?.status || "searching"}`, variant: "body" },
+          { type: "text", content: `ETA: ${(bffData as Record<string, unknown>)?.eta || "calculating..."}`, variant: "body" },
         ],
       };
 
@@ -300,7 +300,7 @@ function generateSduiPayload(intent: string, bffData: unknown, params?: Record<s
                 title: e.name,
                 subtitle: e.date,
                 image: e.image,
-                onPress: { type: "intent", intent: "event.book", params: { eventId: e.id } },
+                onPress: { type: "intent", intent: "event.book", data: { eventId: e.id } },
               }))
             : [],
         };
@@ -310,7 +310,7 @@ function generateSduiPayload(intent: string, bffData: unknown, params?: Record<s
         title: "Ticket Booked",
         subtitle: (bffData as Record<string, unknown>)?.eventName as string || "Event",
         children: [
-          { type: "text", content: `Confirmation: ${(bffData as Record<string, unknown>)?.confirmationId || "pending"}` },
+          { type: "text", content: `Confirmation: ${(bffData as Record<string, unknown>)?.confirmationId || "pending"}`, variant: "body" },
         ],
       };
 
@@ -319,7 +319,7 @@ function generateSduiPayload(intent: string, bffData: unknown, params?: Record<s
         type: "card",
         title: action === "symptoms" ? "Symptom Assessment" : "Appointment",
         children: [
-          { type: "text", content: (bffData as Record<string, unknown>)?.recommendation as string || (bffData as Record<string, unknown>)?.details as string || "Processing..." },
+          { type: "text", content: (bffData as Record<string, unknown>)?.recommendation as string || (bffData as Record<string, unknown>)?.details as string || "Processing...", variant: "body" },
         ],
       };
 
@@ -328,7 +328,7 @@ function generateSduiPayload(intent: string, bffData: unknown, params?: Record<s
         type: "card",
         title: INTENT_MAP[intent]?.description || intent,
         children: [
-          { type: "text", content: JSON.stringify(bffData || { status: "completed" }) },
+          { type: "text", content: JSON.stringify(bffData || { status: "completed" }), variant: "body" },
         ],
       };
   }

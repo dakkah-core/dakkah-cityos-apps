@@ -81,11 +81,21 @@ export async function dispatchAction(action: SdAction): Promise<void> {
       break;
 
     case "submit_form":
-      if (config.onFormSubmit) {
-        await config.onFormSubmit(action.formId, action.endpoint, action.method || "POST", {});
-      } else if (config.onMutation) {
-        await config.onMutation(action.endpoint, action.method || "POST", {});
-      }
       break;
   }
+}
+
+export async function dispatchFormSubmit(
+  formId: string,
+  endpoint: string,
+  method: string,
+  formData: Record<string, unknown>,
+): Promise<unknown> {
+  if (config.onFormSubmit) {
+    return config.onFormSubmit(formId, endpoint, method, formData);
+  }
+  if (config.onMutation) {
+    return config.onMutation(endpoint, method, formData);
+  }
+  return undefined;
 }
