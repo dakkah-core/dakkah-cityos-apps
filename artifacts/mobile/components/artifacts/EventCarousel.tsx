@@ -2,17 +2,27 @@ import React from "react";
 import { View, Text, Image, ScrollView, StyleSheet, Pressable } from "react-native";
 import { COLORS } from "../../constants/colors";
 import type { CityEvent } from "../../types/chat";
+import type { DetailItem } from "../DetailsDrawer";
 
 interface Props {
   data: { events: CityEvent[] };
   onAction?: (action: string) => void;
+  onShowDetails?: (item: DetailItem) => void;
 }
 
-export function EventCarousel({ data, onAction }: Props) {
+export function EventCarousel({ data, onAction, onShowDetails }: Props) {
+  const handlePress = (evt: CityEvent) => {
+    if (onShowDetails) {
+      onShowDetails({ type: "event", data: evt });
+    } else {
+      onAction?.(`Tell me more about ${evt.name}`);
+    }
+  };
+
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scroll}>
       {data.events.map((evt) => (
-        <Pressable key={evt.id} style={styles.card} onPress={() => onAction?.(`Tell me more about ${evt.name}`)}>
+        <Pressable key={evt.id} style={styles.card} onPress={() => handlePress(evt)}>
           <Image source={{ uri: evt.image }} style={styles.image} />
           <View style={styles.dateBadge}>
             <Text style={styles.dateBadgeText}>{evt.date}</Text>

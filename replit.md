@@ -127,9 +127,16 @@ Express 5 API server. Routes live in `src/routes/` and use `@workspace/api-zod` 
 - **Propose** — structured actions requiring confirmation (amber badge)
 - **Execute** — instant results (green badge)
 
-#### Discovery
-- **Action Discovery Sheet** (`components/DiscoverySheet.tsx`) — 14 categories (Food, Nightlife, Culture, Wellness, Shopping, etc.) with 60+ quick-action prompts
+#### Discovery & Drawers
+- **Action Discovery Sheet** (`components/DiscoverySheet.tsx`) — 20 categories (Food & Drink, Nightlife, Culture, Wellness, Shopping, Services, Transit, Family, Work, Education, Home, Social, Intel, Planning, Outdoor, Beauty, Health, My Activity, Utility) with 80+ quick-action prompts
+- **Right Drawer** (`components/RightDrawer.tsx`) — city context panel with quick actions (Ride, Book, Events, Map, Contact, Share, SOS), live activity card, weather summary, today's agenda, community feed
+- **Details Drawer** (`components/DetailsDrawer.tsx`) — bottom sheet for entity detail views: POI (hero image, rating, vibe tags, action buttons), ticket (dark pass card with QR), event detail, friend/ambassador profile, order tracking, product detail
 - **Thread Management** (`components/ThreadsDrawer.tsx`) — conversation history with AsyncStorage persistence
+
+#### Detail View Flow
+- Tapping artifact cards (POI, event, ambassador, ticket, order, product) opens DetailsDrawer with type-specific views
+- `onShowDetails` callback wired: `index.tsx` → `CopilotMessage` → `ArtifactRenderer` → individual artifact components
+- All detail view actions feed back into the copilot conversation
 
 #### Theme
 - Primary: teal `#0A9396`

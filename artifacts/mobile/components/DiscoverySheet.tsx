@@ -75,7 +75,7 @@ export function DiscoverySheet({ visible, onClose, onSelect }: Props) {
               return (
                 <Pressable key={action.id} style={styles.actionItem} onPress={() => handleSelect(action.prompt)}>
                   <View style={[styles.actionIcon, { backgroundColor: cat?.bgColor || COLORS.chipBg }]}>
-                    <Text style={[styles.actionIconText, { color: cat?.color || COLORS.textSecondary }]}>●</Text>
+                    <Text style={styles.actionIconText}>{cat?.icon || "●"}</Text>
                   </View>
                   <View style={styles.actionContent}>
                     <Text style={styles.actionTitle}>{action.title}</Text>

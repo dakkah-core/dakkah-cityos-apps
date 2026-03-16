@@ -1,6 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import type { Artifact } from "../../types/chat";
+import type { DetailItem } from "../DetailsDrawer";
 import { POICarousel } from "./POICarousel";
 import { EventCarousel } from "./EventCarousel";
 import { AmbassadorCarousel } from "./AmbassadorCarousel";
@@ -52,26 +53,27 @@ import { CurrencyConverter } from "./CurrencyConverter";
 interface Props {
   artifacts: Artifact[];
   onAction?: (action: string) => void;
+  onShowDetails?: (item: DetailItem) => void;
 }
 
-export function ArtifactRenderer({ artifacts, onAction }: Props) {
+export function ArtifactRenderer({ artifacts, onAction, onShowDetails }: Props) {
   return (
     <View style={{ gap: 8 }}>
       {artifacts.map((artifact, i) => (
-        <ArtifactItem key={i} artifact={artifact} onAction={onAction} />
+        <ArtifactItem key={i} artifact={artifact} onAction={onAction} onShowDetails={onShowDetails} />
       ))}
     </View>
   );
 }
 
-function ArtifactItem({ artifact, onAction }: { artifact: Artifact; onAction?: (action: string) => void }) {
+function ArtifactItem({ artifact, onAction, onShowDetails }: { artifact: Artifact; onAction?: (action: string) => void; onShowDetails?: (item: DetailItem) => void }) {
   switch (artifact.type) {
     case "poi-carousel":
-      return <POICarousel data={artifact.data} onAction={onAction} />;
+      return <POICarousel data={artifact.data} onAction={onAction} onShowDetails={onShowDetails} />;
     case "event-carousel":
-      return <EventCarousel data={artifact.data} onAction={onAction} />;
+      return <EventCarousel data={artifact.data} onAction={onAction} onShowDetails={onShowDetails} />;
     case "ambassador-carousel":
-      return <AmbassadorCarousel data={artifact.data} onAction={onAction} />;
+      return <AmbassadorCarousel data={artifact.data} onAction={onAction} onShowDetails={onShowDetails} />;
     case "itinerary-timeline":
       return <ItineraryTimeline data={artifact.data} onAction={onAction} />;
     case "confirmation-card":
@@ -85,13 +87,13 @@ function ArtifactItem({ artifact, onAction }: { artifact: Artifact; onAction?: (
     case "selection-chips":
       return <SelectionChips data={artifact.data} onAction={onAction} />;
     case "ticket-pass":
-      return <TicketPass data={artifact.data} />;
+      return <TicketPass data={artifact.data} onAction={onAction} onShowDetails={onShowDetails} />;
     case "order-tracker":
-      return <OrderTracker data={artifact.data} />;
+      return <OrderTracker data={artifact.data} onAction={onAction} onShowDetails={onShowDetails} />;
     case "analytics-snapshot":
       return <AnalyticsSnapshot data={artifact.data} />;
     case "product-carousel":
-      return <ProductCarousel data={artifact.data} onAction={onAction} />;
+      return <ProductCarousel data={artifact.data} onAction={onAction} onShowDetails={onShowDetails} />;
     case "service-menu":
       return <ServiceMenu data={artifact.data} onAction={onAction} />;
     case "agent-sync-card":

@@ -2,17 +2,27 @@ import React from "react";
 import { View, Text, Image, ScrollView, StyleSheet, Pressable } from "react-native";
 import { COLORS } from "../../constants/colors";
 import type { POI } from "../../types/chat";
+import type { DetailItem } from "../DetailsDrawer";
 
 interface Props {
   data: { pois: POI[] };
   onAction?: (action: string) => void;
+  onShowDetails?: (item: DetailItem) => void;
 }
 
-export function POICarousel({ data, onAction }: Props) {
+export function POICarousel({ data, onAction, onShowDetails }: Props) {
+  const handlePress = (poi: POI) => {
+    if (onShowDetails) {
+      onShowDetails({ type: "poi", data: poi });
+    } else {
+      onAction?.(`Tell me more about ${poi.name}`);
+    }
+  };
+
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scroll}>
       {data.pois.map((poi) => (
-        <Pressable key={poi.id} style={styles.card} onPress={() => onAction?.(`Tell me more about ${poi.name}`)}>
+        <Pressable key={poi.id} style={styles.card} onPress={() => handlePress(poi)}>
           <Image source={{ uri: poi.image }} style={styles.image} />
           <View style={styles.badge}>
             <Text style={styles.badgeText}>{poi.openNow ? "Open" : "Closed"}</Text>

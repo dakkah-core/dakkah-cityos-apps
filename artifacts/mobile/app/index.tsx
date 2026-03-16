@@ -6,6 +6,8 @@ import { useCopilot } from "@/context/ChatContext";
 import { CopilotMessage } from "@/components/CopilotMessage";
 import { DiscoverySheet } from "@/components/DiscoverySheet";
 import { ThreadsDrawer } from "@/components/ThreadsDrawer";
+import { RightDrawer } from "@/components/RightDrawer";
+import { DetailsDrawer, type DetailItem } from "@/components/DetailsDrawer";
 import type { Message } from "@/types/chat";
 
 export default function CopilotScreen() {
@@ -14,6 +16,9 @@ export default function CopilotScreen() {
   const [input, setInput] = useState("");
   const [discoveryOpen, setDiscoveryOpen] = useState(false);
   const [threadsOpen, setThreadsOpen] = useState(false);
+  const [rightDrawerOpen, setRightDrawerOpen] = useState(false);
+  const [detailsItem, setDetailsItem] = useState<DetailItem | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
   const prevMsgCountRef = useRef(messages.length);
@@ -41,9 +46,22 @@ export default function CopilotScreen() {
     await sendMessage(prompt);
   }, [sendMessage]);
 
+  const handleShowDetails = useCallback((item: DetailItem) => {
+    setDetailsItem(item);
+    setDetailsOpen(true);
+  }, []);
+
+  const handleDetailsAction = useCallback(async (message: string) => {
+    await sendMessage(message);
+  }, [sendMessage]);
+
+  const handleRightDrawerAction = useCallback(async (message: string) => {
+    await sendMessage(message);
+  }, [sendMessage]);
+
   const renderMessage = useCallback(({ item }: { item: Message }) => (
-    <CopilotMessage message={item} onAction={handleChipAction} />
-  ), [handleChipAction]);
+    <CopilotMessage message={item} onAction={handleChipAction} onShowDetails={handleShowDetails} />
+  ), [handleChipAction, handleShowDetails]);
 
   const keyExtractor = useCallback((item: Message) => item.id, []);
 
@@ -64,6 +82,9 @@ export default function CopilotScreen() {
             </View>
           </View>
         </View>
+        <Pressable style={styles.contextBtn} onPress={() => setRightDrawerOpen(true)}>
+          <Text style={styles.contextIcon}>☷</Text>
+        </Pressable>
         <Pressable style={styles.discoverBtn} onPress={() => setDiscoveryOpen(true)}>
           <Text style={styles.discoverIcon}>◉</Text>
         </Pressable>
@@ -114,6 +135,8 @@ export default function CopilotScreen() {
 
       <DiscoverySheet visible={discoveryOpen} onClose={() => setDiscoveryOpen(false)} onSelect={handleDiscoverySelect} />
       <ThreadsDrawer visible={threadsOpen} onClose={() => setThreadsOpen(false)} threads={threads} onNewChat={createNewChat} onLoadThread={loadThread} onRefresh={refreshThreads} />
+      <RightDrawer visible={rightDrawerOpen} onClose={() => setRightDrawerOpen(false)} onAction={handleRightDrawerAction} />
+      <DetailsDrawer visible={detailsOpen} item={detailsItem} onClose={() => { setDetailsOpen(false); setDetailsItem(null); }} onAction={handleDetailsAction} />
     </View>
   );
 }
@@ -121,15 +144,17 @@ export default function CopilotScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.surface },
   flex: { flex: 1 },
-  header: { backgroundColor: COLORS.surfaceWhite, borderBottomWidth: 1, borderBottomColor: COLORS.border, paddingBottom: 12, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  header: { backgroundColor: COLORS.surfaceWhite, borderBottomWidth: 1, borderBottomColor: COLORS.border, paddingBottom: 12, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 },
   menuBtn: { width: 40, height: 40, borderRadius: 12, backgroundColor: COLORS.darkNavy, alignItems: "center", justifyContent: "center" },
   menuIcon: { color: "#fff", fontSize: 18, fontWeight: "600" },
-  headerCenter: { flex: 1, marginHorizontal: 12 },
+  headerCenter: { flex: 1, marginHorizontal: 4 },
   logoRow: { flexDirection: "row", alignItems: "center", gap: 10 },
   logo: { width: 36, height: 36, borderRadius: 10, backgroundColor: COLORS.darkNavy, alignItems: "center", justifyContent: "center" },
   logoText: { color: COLORS.primary, fontSize: 16, fontWeight: "700" },
   headerTitle: { fontSize: 18, fontWeight: "800", color: COLORS.text },
   headerSub: { fontSize: 11, color: COLORS.textSecondary, fontWeight: "500" },
+  contextBtn: { width: 40, height: 40, borderRadius: 12, backgroundColor: COLORS.surface, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: COLORS.border },
+  contextIcon: { color: COLORS.textSecondary, fontSize: 20 },
   discoverBtn: { width: 40, height: 40, borderRadius: 12, backgroundColor: COLORS.primaryTint, alignItems: "center", justifyContent: "center" },
   discoverIcon: { color: COLORS.primary, fontSize: 20 },
   chatContent: { paddingTop: 16, paddingBottom: 8 },

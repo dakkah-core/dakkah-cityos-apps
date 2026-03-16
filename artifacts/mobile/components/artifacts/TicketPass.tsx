@@ -1,36 +1,49 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import { COLORS } from "../../constants/colors";
 import type { TicketData } from "../../types/chat";
+import type { DetailItem } from "../DetailsDrawer";
 
 interface Props {
   data: TicketData;
+  onAction?: (action: string) => void;
+  onShowDetails?: (item: DetailItem) => void;
 }
 
-export function TicketPass({ data }: Props) {
+export function TicketPass({ data, onAction, onShowDetails }: Props) {
+  const handlePress = () => {
+    if (onShowDetails) {
+      onShowDetails({ type: "ticket", data });
+    } else {
+      onAction?.(`Show details for ${data.eventName} ticket`);
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.eventName}>{data.eventName}</Text>
-        <View style={styles.seatBadge}>
-          <Text style={styles.seatText}>{data.seat}</Text>
+    <Pressable onPress={handlePress}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.eventName}>{data.eventName}</Text>
+          <View style={styles.seatBadge}>
+            <Text style={styles.seatText}>{data.seat}</Text>
+          </View>
+        </View>
+        <View style={styles.divider}>
+          <View style={styles.notchLeft} />
+          <View style={styles.dashes} />
+          <View style={styles.notchRight} />
+        </View>
+        <View style={styles.details}>
+          <DetailItem label="Date" value={data.date} />
+          <DetailItem label="Time" value={data.time} />
+          <DetailItem label="Location" value={data.location} />
+        </View>
+        <View style={styles.qrPlaceholder}>
+          <Text style={styles.qrText}>▣ QR Code</Text>
+          <Text style={styles.qrSub}>Show at entrance</Text>
         </View>
       </View>
-      <View style={styles.divider}>
-        <View style={styles.notchLeft} />
-        <View style={styles.dashes} />
-        <View style={styles.notchRight} />
-      </View>
-      <View style={styles.details}>
-        <DetailItem label="Date" value={data.date} />
-        <DetailItem label="Time" value={data.time} />
-        <DetailItem label="Location" value={data.location} />
-      </View>
-      <View style={styles.qrPlaceholder}>
-        <Text style={styles.qrText}>▣ QR Code</Text>
-        <Text style={styles.qrSub}>Show at entrance</Text>
-      </View>
-    </View>
+    </Pressable>
   );
 }
 

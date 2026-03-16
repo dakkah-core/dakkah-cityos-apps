@@ -2,17 +2,27 @@ import React from "react";
 import { View, Text, Image, ScrollView, StyleSheet, Pressable } from "react-native";
 import { COLORS } from "../../constants/colors";
 import type { Ambassador } from "../../types/chat";
+import type { DetailItem } from "../DetailsDrawer";
 
 interface Props {
   data: { ambassadors: Ambassador[] };
   onAction?: (action: string) => void;
+  onShowDetails?: (item: DetailItem) => void;
 }
 
-export function AmbassadorCarousel({ data, onAction }: Props) {
+export function AmbassadorCarousel({ data, onAction, onShowDetails }: Props) {
+  const handlePress = (amb: Ambassador) => {
+    if (onShowDetails) {
+      onShowDetails({ type: "friend", data: amb });
+    } else {
+      onAction?.(`Connect me with ${amb.name}`);
+    }
+  };
+
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scroll}>
       {data.ambassadors.map((amb) => (
-        <Pressable key={amb.id} style={styles.card} onPress={() => onAction?.(`Connect me with ${amb.name}`)}>
+        <Pressable key={amb.id} style={styles.card} onPress={() => handlePress(amb)}>
           <View style={styles.header}>
             <Image source={{ uri: amb.avatar }} style={styles.avatar} />
             {amb.verified && (

@@ -2,11 +2,13 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { COLORS } from "../constants/colors";
 import type { Message } from "../types/chat";
+import type { DetailItem } from "./DetailsDrawer";
 import { ArtifactRenderer } from "./artifacts/ArtifactRenderer";
 
 interface Props {
   message: Message;
   onAction?: (action: string) => void;
+  onShowDetails?: (item: DetailItem) => void;
 }
 
 const MODE_CONFIG = {
@@ -15,7 +17,7 @@ const MODE_CONFIG = {
   execute: { label: "Result", color: COLORS.execute, bg: "#D1FAE5" },
 };
 
-export function CopilotMessage({ message, onAction }: Props) {
+export function CopilotMessage({ message, onAction, onShowDetails }: Props) {
   const isUser = message.role === "user";
   const isAssistant = message.role === "assistant";
   const mode = message.mode ? MODE_CONFIG[message.mode] : null;
@@ -48,13 +50,13 @@ export function CopilotMessage({ message, onAction }: Props) {
           <Text style={[styles.content, isUser && styles.userContent]}>{message.content}</Text>
           {inlineArtifacts.length > 0 && (
             <View style={styles.inlineArtifacts}>
-              <ArtifactRenderer artifacts={inlineArtifacts} onAction={onAction} />
+              <ArtifactRenderer artifacts={inlineArtifacts} onAction={onAction} onShowDetails={onShowDetails} />
             </View>
           )}
         </View>
         {blockArtifacts.length > 0 && (
           <View style={styles.blockArtifacts}>
-            <ArtifactRenderer artifacts={blockArtifacts} onAction={onAction} />
+            <ArtifactRenderer artifacts={blockArtifacts} onAction={onAction} onShowDetails={onShowDetails} />
           </View>
         )}
       </View>

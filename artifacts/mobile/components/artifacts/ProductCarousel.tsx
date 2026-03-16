@@ -2,17 +2,27 @@ import React from "react";
 import { View, Text, Image, ScrollView, StyleSheet, Pressable } from "react-native";
 import { COLORS } from "../../constants/colors";
 import type { Product } from "../../types/chat";
+import type { DetailItem } from "../DetailsDrawer";
 
 interface Props {
   data: { products: Product[] };
   onAction?: (action: string) => void;
+  onShowDetails?: (item: DetailItem) => void;
 }
 
-export function ProductCarousel({ data, onAction }: Props) {
+export function ProductCarousel({ data, onAction, onShowDetails }: Props) {
+  const handlePress = (p: Product) => {
+    if (onShowDetails) {
+      onShowDetails({ type: "product", data: p });
+    } else {
+      onAction?.(`Tell me more about ${p.name}`);
+    }
+  };
+
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scroll}>
       {data.products.map((p) => (
-        <Pressable key={p.id} style={styles.card} onPress={() => onAction?.(`Tell me more about ${p.name}`)}>
+        <Pressable key={p.id} style={styles.card} onPress={() => handlePress(p)}>
           <Image source={{ uri: p.image }} style={styles.image} />
           <View style={styles.info}>
             <Text style={styles.brand}>{p.brand}</Text>

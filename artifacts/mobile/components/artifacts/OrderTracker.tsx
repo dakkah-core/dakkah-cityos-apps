@@ -1,54 +1,67 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import { COLORS } from "../../constants/colors";
 import type { OrderData } from "../../types/chat";
+import type { DetailItem } from "../DetailsDrawer";
 
 interface Props {
   data: OrderData;
+  onAction?: (action: string) => void;
+  onShowDetails?: (item: DetailItem) => void;
 }
 
 const STEPS = ["confirmed", "preparing", "on-the-way", "delivered"] as const;
 const STEP_LABELS = ["Confirmed", "Preparing", "On the Way", "Delivered"];
 
-export function OrderTracker({ data }: Props) {
+export function OrderTracker({ data, onAction, onShowDetails }: Props) {
   const currentIndex = STEPS.indexOf(data.status);
 
+  const handlePress = () => {
+    if (onShowDetails) {
+      onShowDetails({ type: "order", data });
+    } else {
+      onAction?.(`Track order ${data.orderNumber}`);
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.orderNum}>Order #{data.orderNumber}</Text>
-        <Text style={styles.eta}>ETA: {data.estimatedTime}</Text>
-      </View>
+    <Pressable onPress={handlePress}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.orderNum}>Order #{data.orderNumber}</Text>
+          <Text style={styles.eta}>ETA: {data.estimatedTime}</Text>
+        </View>
 
-      <View style={styles.stepper}>
-        {STEPS.map((step, i) => (
-          <View key={step} style={styles.stepItem}>
-            <View style={[styles.stepDot, i <= currentIndex && styles.stepDotActive, i === currentIndex && styles.stepDotCurrent]} />
-            {i < STEPS.length - 1 && (
-              <View style={[styles.stepLine, i < currentIndex && styles.stepLineActive]} />
-            )}
-          </View>
-        ))}
-      </View>
-      <View style={styles.stepLabels}>
-        {STEP_LABELS.map((label, i) => (
-          <Text key={label} style={[styles.stepLabel, i <= currentIndex && styles.stepLabelActive]}>
-            {label}
-          </Text>
-        ))}
-      </View>
+        <View style={styles.stepper}>
+          {STEPS.map((step, i) => (
+            <View key={step} style={styles.stepItem}>
+              <View style={[styles.stepDot, i <= currentIndex && styles.stepDotActive, i === currentIndex && styles.stepDotCurrent]} />
+              {i < STEPS.length - 1 && (
+                <View style={[styles.stepLine, i < currentIndex && styles.stepLineActive]} />
+              )}
+            </View>
+          ))}
+        </View>
+        <View style={styles.stepLabels}>
+          {STEP_LABELS.map((label, i) => (
+            <Text key={label} style={[styles.stepLabel, i <= currentIndex && styles.stepLabelActive]}>
+              {label}
+            </Text>
+          ))}
+        </View>
 
-      <View style={styles.items}>
-        <Text style={styles.itemsTitle}>Items</Text>
-        {data.items.map((item, i) => (
-          <Text key={i} style={styles.itemText}>• {item}</Text>
-        ))}
+        <View style={styles.items}>
+          <Text style={styles.itemsTitle}>Items</Text>
+          {data.items.map((item, i) => (
+            <Text key={i} style={styles.itemText}>• {item}</Text>
+          ))}
+        </View>
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>Total</Text>
+          <Text style={styles.totalValue}>{data.total}</Text>
+        </View>
       </View>
-      <View style={styles.totalRow}>
-        <Text style={styles.totalLabel}>Total</Text>
-        <Text style={styles.totalValue}>{data.total}</Text>
-      </View>
-    </View>
+    </Pressable>
   );
 }
 
