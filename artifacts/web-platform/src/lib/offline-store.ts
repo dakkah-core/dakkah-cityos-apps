@@ -30,6 +30,7 @@ export async function saveMessages(messages: unknown[]): Promise<void> {
   const db = await openDB();
   const tx = db.transaction(STORES.messages, "readwrite");
   const store = tx.objectStore(STORES.messages);
+  store.clear();
   for (const msg of messages) {
     store.put(msg);
   }
@@ -74,10 +75,21 @@ export async function queueMutation(mutation: { endpoint: string; method: string
   const db = await openDB();
   const tx = db.transaction(STORES.mutationQueue, "readwrite");
   tx.objectStore(STORES.mutationQueue).add({ ...mutation, queuedAt: Date.now() });
-  return new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
   });
+
+  if ("serviceWorker" in navigator && "SyncManager" in window) {
+    const reg = await navigator.serviceWorker.ready;
+    try {
+      await (reg as ServiceWorkerRegistration & { sync: { register: (tag: string) => Promise<void> } }).sync.register("mutation-sync");
+    } catch {
+      await drainMutationQueue();
+    }
+  } else {
+    await drainMutationQueue();
+  }
 }
 
 export async function drainMutationQueue(): Promise<Array<{ endpoint: string; method: string; body: unknown }>> {
@@ -86,9 +98,21 @@ export async function drainMutationQueue(): Promise<Array<{ endpoint: string; me
   const store = tx.objectStore(STORES.mutationQueue);
   return new Promise((resolve, reject) => {
     const req = store.getAll();
-    req.onsuccess = () => {
+    req.onsuccess = async () => {
       const mutations = req.result;
-      store.clear();
+      const results = await Promise.allSettled(
+        mutations.map((m: { endpoint: string; method: string; body: unknown }) =>
+          fetch(m.endpoint, {
+            method: m.method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(m.body),
+          })
+        )
+      );
+      const allOk = results.every((r) => r.status === "fulfilled" && (r.value as Response).ok);
+      if (allOk) {
+        store.clear();
+      }
       resolve(mutations);
     };
     req.onerror = () => reject(req.error);

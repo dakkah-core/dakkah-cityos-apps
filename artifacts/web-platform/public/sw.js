@@ -32,7 +32,7 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
   if (url.pathname.includes("/api/sdui/")) {
-    event.respondWith(networkFirstWithCache(event.request, SDUI_CACHE));
+    event.respondWith(staleWhileRevalidate(event.request, SDUI_CACHE));
     return;
   }
 
@@ -72,6 +72,33 @@ async function cacheFirstWithNetwork(request, cacheName) {
   }
 }
 
+async function staleWhileRevalidate(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+
+  const fetchPromise = fetch(request)
+    .then((response) => {
+      if (response.ok) {
+        cache.put(request, response.clone());
+      }
+      return response;
+    })
+    .catch(() => null);
+
+  if (cached) {
+    fetchPromise.catch(() => {});
+    return cached;
+  }
+
+  const networkResponse = await fetchPromise;
+  if (networkResponse) return networkResponse;
+
+  return new Response(JSON.stringify({ error: "offline", cached: false }), {
+    status: 503,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
 async function networkFirstWithCache(request, cacheName) {
   try {
     const response = await fetch(request);
@@ -100,6 +127,59 @@ async function networkOnly(request) {
       headers: { "Content-Type": "application/json" },
     });
   }
+}
+
+self.addEventListener("sync", (event) => {
+  if (event.tag === "mutation-sync") {
+    event.waitUntil(drainMutationQueue());
+  }
+});
+
+async function drainMutationQueue() {
+  try {
+    const db = await openIDB();
+    const tx = db.transaction("mutation-queue", "readwrite");
+    const store = tx.objectStore("mutation-queue");
+
+    return new Promise((resolve, reject) => {
+      const req = store.getAll();
+      req.onsuccess = async () => {
+        const mutations = req.result || [];
+        const results = await Promise.allSettled(
+          mutations.map((m) =>
+            fetch(m.endpoint, {
+              method: m.method,
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(m.body),
+            })
+          )
+        );
+
+        const succeeded = results.filter((r) => r.status === "fulfilled" && r.value.ok);
+        if (succeeded.length === mutations.length) {
+          store.clear();
+        }
+        resolve();
+      };
+      req.onerror = () => reject(req.error);
+    });
+  } catch (e) {
+    console.warn("Background sync failed:", e);
+  }
+}
+
+function openIDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open("dakkah-cityos", 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains("mutation-queue")) {
+        db.createObjectStore("mutation-queue", { keyPath: "id", autoIncrement: true });
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
 }
 
 self.addEventListener("message", (event) => {

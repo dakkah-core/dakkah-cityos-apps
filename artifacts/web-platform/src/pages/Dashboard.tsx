@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { Header } from "@/components/layout/Header";
 import { ThreadsSidebar } from "@/components/layout/ThreadsSidebar";
 import { DiscoverySidebar } from "@/components/discovery/DiscoverySidebar";
+import { CityContextPanel } from "@/components/city/CityContextPanel";
 import { ChatPanel } from "@/components/chat/ChatPanel";
 import { OfflineBanner } from "@/components/layout/OfflineBanner";
 import { InstallPrompt } from "@/components/layout/InstallPrompt";
@@ -10,7 +11,7 @@ import { useChat } from "@/hooks/use-chat";
 export default function Dashboard() {
   const [threadsOpen, setThreadsOpen] = useState(false);
   const [discoveryOpen, setDiscoveryOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [cityContextOpen, setCityContextOpen] = useState(false);
   const { sendMessage } = useChat();
 
   const handleDiscoverySelect = useCallback(async (prompt: string) => {
@@ -22,9 +23,10 @@ export default function Dashboard() {
       <Header
         onToggleThreads={() => setThreadsOpen(!threadsOpen)}
         onToggleDiscovery={() => setDiscoveryOpen(!discoveryOpen)}
-        onToggleSearch={() => setSearchOpen(!searchOpen)}
+        onToggleSearch={() => setCityContextOpen(!cityContextOpen)}
       />
       <OfflineBanner />
+      <CityContextPanel isOpen={cityContextOpen} onClose={() => setCityContextOpen(false)} />
       <div className="flex-1 flex overflow-hidden">
         <div className="hidden lg:block">
           <ThreadsSidebar isOpen={true} onClose={() => {}} />

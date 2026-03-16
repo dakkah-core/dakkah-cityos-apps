@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from "react";
 import type { Message, Thread, MessageAttachment } from "@/types/chat";
+import { saveMessages, loadMessages } from "@/lib/offline-store";
 
 interface ChatContextValue {
   messages: Message[];
@@ -11,6 +12,8 @@ interface ChatContextValue {
 }
 
 const ChatContext = createContext<ChatContextValue | null>(null);
+
+const API_BASE = `${import.meta.env.BASE_URL}api`;
 
 const DEMO_RESPONSES: Record<string, { content: string; artifacts?: Message["artifacts"] }> = {
   default: {
@@ -47,6 +50,14 @@ const DEMO_RESPONSES: Record<string, { content: string; artifacts?: Message["art
     content: "Here are today's events in the city:",
     artifacts: [{ type: "event-carousel", data: { title: "Today's Events", items: [{ id: "1", title: "Art Exhibition Opening", venue: "National Museum", time: "6:00 PM", category: "Culture" }, { id: "2", title: "Tech Meetup", venue: "KAUST Hub", time: "7:30 PM", category: "Technology" }, { id: "3", title: "Night Market", venue: "Boulevard", time: "8:00 PM", category: "Shopping" }] } }],
   },
+  clinic: {
+    content: "Here are nearby healthcare facilities:",
+    artifacts: [{ type: "poi-carousel", data: { title: "Nearby Clinics", items: [{ id: "1", name: "King Faisal Specialist Hospital", category: "Hospital", rating: 4.8, distance: "2.1 km", image: "" }, { id: "2", name: "Saudi German Hospital", category: "Hospital", rating: 4.5, distance: "3.5 km", image: "" }, { id: "3", name: "Dr. Sulaiman Al Habib", category: "Medical Center", rating: 4.7, distance: "1.8 km", image: "" }] } }],
+  },
+  permit: {
+    content: "Here's your permit status:",
+    artifacts: [{ type: "status-tracker", data: { title: "Building Permit #BP-2026-4521", status: "In Review", steps: [{ label: "Submitted", completed: true }, { label: "Document Review", completed: true }, { label: "Site Inspection", completed: false, current: true }, { label: "Approved", completed: false }], eta: "3-5 business days" } }],
+  },
 };
 
 function matchResponse(text: string) {
@@ -55,7 +66,31 @@ function matchResponse(text: string) {
   if (lower.includes("ride") || lower.includes("book") || lower.includes("taxi")) return DEMO_RESPONSES.ride;
   if (lower.includes("restaurant") || lower.includes("food") || lower.includes("eat")) return DEMO_RESPONSES.restaurant;
   if (lower.includes("event") || lower.includes("happening") || lower.includes("today")) return DEMO_RESPONSES.event;
-  return { content: `I understand you're asking about "${text}". In a production environment, I would connect to the relevant city service to help you with this. For now, try asking about weather, restaurants, rides, or events!` };
+  if (lower.includes("clinic") || lower.includes("hospital") || lower.includes("doctor") || lower.includes("health")) return DEMO_RESPONSES.clinic;
+  if (lower.includes("permit") || lower.includes("license") || lower.includes("status")) return DEMO_RESPONSES.permit;
+  return { content: `I understand you're asking about "${text}". In a production environment, I would connect to the relevant city service to help you with this. For now, try asking about weather, restaurants, rides, events, clinics, or permits!` };
+}
+
+async function fetchFromApi(text: string): Promise<{ content: string; artifacts?: Message["artifacts"] } | null> {
+  try {
+    const res = await fetch(`${API_BASE}/ai/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text, threadId: "web-default" }),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.reply) {
+      return {
+        content: data.reply,
+        artifacts: data.artifacts || data.sduiPayload ? [{ type: "sdui-node", data: { node: data.sduiPayload } }] : undefined,
+      };
+    }
+    return null;
+  } catch {
+    return null;
+  }
 }
 
 export function ChatProvider({ children }: { children: ReactNode }) {
@@ -74,6 +109,22 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const idCounter = useRef(1);
 
+  useEffect(() => {
+    loadMessages()
+      .then((cached) => {
+        if (cached && Array.isArray(cached) && cached.length > 0) {
+          setMessages(cached as Message[]);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (messages.length > 1) {
+      saveMessages(messages).catch(() => {});
+    }
+  }, [messages]);
+
   const sendMessage = useCallback(async (text: string, replyTo?: Message, attachments?: MessageAttachment[]) => {
     const userMsg: Message = {
       id: `msg-${++idCounter.current}`,
@@ -86,9 +137,13 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     setMessages((prev) => [...prev, userMsg]);
     setIsProcessing(true);
 
-    await new Promise((r) => setTimeout(r, 800 + Math.random() * 600));
+    const apiResponse = await fetchFromApi(text);
+    const response = apiResponse || matchResponse(text);
 
-    const response = matchResponse(text);
+    if (!apiResponse) {
+      await new Promise((r) => setTimeout(r, 600 + Math.random() * 400));
+    }
+
     const assistantMsg: Message = {
       id: `msg-${++idCounter.current}`,
       role: "assistant",
