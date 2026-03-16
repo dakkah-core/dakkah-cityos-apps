@@ -121,6 +121,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   ]);
   const [isProcessing, setIsProcessing] = useState(false);
   const idCounter = useRef(1);
+  const messagesRef = useRef(messages);
+  messagesRef.current = messages;
 
   useEffect(() => {
     loadMessages()
@@ -150,7 +152,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     setMessages((prev) => [...prev, userMsg]);
     setIsProcessing(true);
 
-    const apiResponse = await fetchFromApi(text, messages);
+    const apiResponse = await fetchFromApi(text, messagesRef.current);
     const response = apiResponse || matchResponse(text);
 
     if (!apiResponse) {
