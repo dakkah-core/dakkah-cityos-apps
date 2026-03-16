@@ -30,7 +30,7 @@ export function ChatPanel({ className }: { className?: string }) {
       {/* Mobile Toggle Button (Visible only on small screens) */}
       <Button
         size="icon"
-        variant="primary"
+        variant="default"
         className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-xl shadow-primary/30 z-50 md:hidden"
         onClick={() => setIsOpen(!isOpen)}
       >

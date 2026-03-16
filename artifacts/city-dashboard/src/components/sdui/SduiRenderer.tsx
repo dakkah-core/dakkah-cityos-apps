@@ -1,11 +1,18 @@
 import React from "react";
 import { SduiRenderer as SharedRenderer, configureActionHandler } from "@workspace/sdui-renderer-web";
 import type { SdNode } from "@workspace/sdui-protocol";
+import type { SduiNode } from "@/hooks/use-sdui";
 
 configureActionHandler({
   onNavigate: (target) => console.log("Navigate:", target),
-  onMutation: (action) => console.log("Mutation:", action),
-  onHardwareAccess: (action) => console.log("Hardware:", action),
+  onMutation: async (endpoint, method, payload) => {
+    console.log("Mutation:", endpoint, method, payload);
+    return { success: true };
+  },
+  onHardwareAccess: async (hardware) => {
+    console.log("Hardware:", hardware);
+    return true;
+  },
 });
 
 interface StatNode {
@@ -29,7 +36,7 @@ interface ListNode {
   items: ListItem[];
 }
 
-type ExtendedNode = SdNode | StatNode | ListNode | { type: string; children?: ExtendedNode[]; [key: string]: unknown };
+type ExtendedNode = SduiNode | SdNode | StatNode | ListNode;
 
 function StatRenderer({ node }: { node: StatNode }) {
   return (
@@ -78,10 +85,10 @@ export function SduiRenderer({ node }: { node: ExtendedNode }) {
     return <SharedRenderer node={node as SdNode} theme="dark" />;
   }
 
-  if ("children" in node && Array.isArray(node.children)) {
+  if ("children" in node && Array.isArray((node as SduiNode).children)) {
     return (
       <div className="space-y-3">
-        {node.children.map((child: ExtendedNode, i: number) => (
+        {(node as SduiNode).children!.map((child, i) => (
           <SduiRenderer key={i} node={child} />
         ))}
       </div>

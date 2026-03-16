@@ -38,7 +38,7 @@ export default function Dashboard() {
                 <div className="text-xs text-muted-foreground uppercase tracking-wider">{user?.roles?.[0]?.replace('_', ' ') ?? 'merchant'}</div>
               </div>
               <div className="w-9 h-9 rounded-full bg-secondary overflow-hidden border border-border">
-                <img src={user?.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.name}`} alt="Avatar" />
+                <img src={`https://api.dicebear.com/7.x/initials/svg?seed=${user?.name}`} alt="Avatar" />
               </div>
             </div>
             <button onClick={logout} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-destructive/10 hover:text-destructive transition-colors ml-1" title="Logout">

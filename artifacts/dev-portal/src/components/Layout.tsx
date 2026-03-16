@@ -46,7 +46,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3 px-3 py-1.5 rounded-full bg-secondary border border-border">
-              <img src={user?.avatar} alt="Avatar" className="w-6 h-6 rounded-full bg-background" />
+              <img src={`https://api.dicebear.com/7.x/initials/svg?seed=${user?.name}`} alt="Avatar" className="w-6 h-6 rounded-full bg-background" />
               <span className="text-sm font-medium font-mono text-muted-foreground">{user?.name}</span>
             </div>
             <button 

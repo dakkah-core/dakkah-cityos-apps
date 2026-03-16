@@ -4,8 +4,14 @@ import type { SdNode } from "@workspace/sdui-protocol";
 
 configureActionHandler({
   onNavigate: (target) => console.log("Navigate:", target),
-  onMutation: (action) => console.log("Mutation:", action),
-  onHardwareAccess: (action) => console.log("Hardware:", action),
+  onMutation: async (endpoint, method, payload) => {
+    console.log("Mutation:", endpoint, method, payload);
+    return { success: true };
+  },
+  onHardwareAccess: async (hardware) => {
+    console.log("Hardware:", hardware);
+    return true;
+  },
 });
 
 interface StatNode {
