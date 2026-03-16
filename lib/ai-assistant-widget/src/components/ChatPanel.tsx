@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Minimize2, Trash2, Send, Mic, MicOff, GripVertical } from "lucide-react";
+import { Minimize2, Trash2, Send, Mic, MicOff, GripVertical, X } from "lucide-react";
 import { useAssistantContext } from "../hooks/useAssistantContext";
 import { MessageBubble } from "./MessageBubble";
 import type { AssistantPosition } from "../lib/types";
@@ -245,6 +245,24 @@ export function ChatPanel({ onClose, onMinimize, placeholder, position }: ChatPa
           }}
         >
           <Minimize2 size={14} />
+        </button>
+        <button
+          onClick={onClose}
+          title="Close"
+          style={{
+            background: "rgba(255,255,255,0.15)",
+            border: "none",
+            borderRadius: 6,
+            width: 28,
+            height: 28,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            color: "inherit",
+          }}
+        >
+          <X size={14} />
         </button>
       </div>
 

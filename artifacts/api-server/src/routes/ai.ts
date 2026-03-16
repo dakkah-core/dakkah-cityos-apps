@@ -1,6 +1,12 @@
 import { Router } from "express";
+import type { Request } from "express";
 import OpenAI from "openai";
-import { optionalAuth } from "../middleware/auth";
+import { optionalAuth, type AuthenticatedRequest } from "../middleware/auth";
+
+function isAuthenticated(req: Request): boolean {
+  const userId = (req as AuthenticatedRequest).userId;
+  return !!userId && userId !== "anonymous";
+}
 
 const router = Router();
 
@@ -177,6 +183,23 @@ router.post("/chat", optionalAuth, async (req, res) => {
   }
 });
 
+const MUTATING_INTENTS = new Set([
+  "cart.add", "order.create", "ride.request",
+  "health.appointment", "permit.apply", "event.book",
+  "iot.smart-home",
+]);
+
+const MUTATION_ENDPOINT_ALLOWLIST = new Set([
+  "/api/commerce/cart",
+  "/api/commerce/orders",
+  "/api/transport/rides",
+  "/api/healthcare/appointments",
+  "/api/governance/permits",
+  "/api/events/bookings",
+  "/api/iot/devices",
+  "/api/social/posts",
+]);
+
 router.post("/execute", optionalAuth, async (req, res) => {
   try {
     const { intent, params, threadId } = req.body;
@@ -185,9 +208,50 @@ router.post("/execute", optionalAuth, async (req, res) => {
       return;
     }
 
+    if (intent === "api_mutation") {
+      const endpoint = params?.endpoint as string;
+      if (!endpoint || !MUTATION_ENDPOINT_ALLOWLIST.has(endpoint.split("?")[0])) {
+        res.status(403).json({ success: false, error: { code: "FORBIDDEN", message: "Endpoint not in allowlist" } });
+        return;
+      }
+      if (!isAuthenticated(req)) {
+        res.status(401).json({ success: false, error: { code: "AUTH_REQUIRED", message: "Authentication required for mutations" } });
+        return;
+      }
+      const mapping = Object.values(INTENT_MAP).find((m) => endpoint.includes(m.service));
+      const bffData = mapping
+        ? await callBff(mapping.service, mapping.action, params?.payload || {})
+        : null;
+      res.json({ success: true, data: { intent: "api_mutation", bffData, threadId: threadId || null } });
+      return;
+    }
+
+    if (intent === "submit_form") {
+      const endpoint = params?.endpoint as string;
+      if (!endpoint || !MUTATION_ENDPOINT_ALLOWLIST.has(endpoint.split("?")[0])) {
+        res.status(403).json({ success: false, error: { code: "FORBIDDEN", message: "Endpoint not in allowlist" } });
+        return;
+      }
+      if (!isAuthenticated(req)) {
+        res.status(401).json({ success: false, error: { code: "AUTH_REQUIRED", message: "Authentication required for form submissions" } });
+        return;
+      }
+      const mapping = Object.values(INTENT_MAP).find((m) => endpoint.includes(m.service));
+      const bffData = mapping
+        ? await callBff(mapping.service, mapping.action, params?.formData || {})
+        : null;
+      res.json({ success: true, data: { intent: "submit_form", formId: params?.formId, bffData, threadId: threadId || null } });
+      return;
+    }
+
     const mapping = INTENT_MAP[intent];
     if (!mapping) {
       res.status(400).json({ success: false, error: { code: "UNKNOWN_INTENT", message: `Unknown intent: ${intent}` } });
+      return;
+    }
+
+    if (MUTATING_INTENTS.has(intent) && !isAuthenticated(req)) {
+      res.status(401).json({ success: false, error: { code: "AUTH_REQUIRED", message: "Authentication required for this action" } });
       return;
     }
 
