@@ -11,6 +11,6 @@ images:
 
 notes:
   - "App is an AI copilot-first interface. Traditional navigation is replaced by natural language input."
-  - "Left side renders Server-Driven UI (SDUI) fetched from /api/sdui/city_dashboard."
+  - "Left side renders Server-Driven UI (SDUI) fetched from /api/sdui/city_analytics?surface=desktop_wide."
   - "Right side is a persistent AI chat interface."
   - "Auth is mock-based for demonstration (role: city_admin)."

@@ -22,6 +22,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={() => <ProtectedRoute component={Dashboard} />} />
+      <Route path="/login" component={Login} />
       <Route path="/callback" component={AuthCallback} />
       <Route>
         {/* Simple 404 Fallback that still utilizes Layout if logged in */}

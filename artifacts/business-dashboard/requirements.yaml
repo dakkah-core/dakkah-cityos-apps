@@ -12,5 +12,5 @@ images:
     aspect_ratio: "16:9"
 
 notes:
-  - Assumes SDUI endpoint is available at /api/sdui/business_dashboard
+  - Assumes SDUI endpoint is available at /api/sdui/merchant_overview?surface=dashboard
   - Using a simplified guest auth flow for demonstration purposes

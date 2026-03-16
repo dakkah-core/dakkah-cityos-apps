@@ -15,5 +15,5 @@ images:
 
 notes:
   - The application relies on a single AI Copilot interface for navigation, replacing traditional menus.
-  - SDUI widgets are fetched from the same origin API at /api/sdui/smart_city_portal.
+  - SDUI widgets are fetched from the same origin API at /api/sdui/citizen_home?surface=web.
   - Auth is simulated via Zustand store for the purpose of the frontend demo, utilizing a 'citizen' role.
