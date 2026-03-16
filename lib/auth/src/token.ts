@@ -1,11 +1,21 @@
 import type { User, AuthTokens } from "./types";
 
+function base64UrlDecode(input: string): string {
+  const padded = input + "=".repeat((4 - (input.length % 4)) % 4);
+  const base64 = padded.replace(/-/g, "+").replace(/_/g, "/");
+  if (typeof globalThis.atob === "function") {
+    return globalThis.atob(base64);
+  }
+  if (typeof Buffer !== "undefined") {
+    return Buffer.from(base64, "base64").toString("binary");
+  }
+  throw new Error("No base64 decoding available (neither atob nor Buffer)");
+}
+
 export function decodeJwt(token: string): Record<string, unknown> {
   const parts = token.split(".");
   if (parts.length !== 3) throw new Error("Invalid JWT format");
-  const payload = parts[1];
-  const padded = payload + "=".repeat((4 - (payload.length % 4)) % 4);
-  const decoded = atob(padded.replace(/-/g, "+").replace(/_/g, "/"));
+  const decoded = base64UrlDecode(parts[1]);
   return JSON.parse(decoded);
 }
 
@@ -125,11 +135,11 @@ export async function exchangeCodeForTokens(config: {
     throw new Error(`Token exchange failed: ${res.status} ${text}`);
   }
 
-  const data = await res.json();
+  const data: Record<string, unknown> = await res.json();
   return {
-    accessToken: data.access_token,
-    refreshToken: data.refresh_token,
-    idToken: data.id_token,
+    accessToken: data.access_token as string,
+    refreshToken: data.refresh_token as string,
+    idToken: data.id_token as string | undefined,
     expiresAt: Date.now() + (data.expires_in as number) * 1000,
   };
 }
@@ -157,11 +167,11 @@ export async function refreshTokens(config: {
     throw new Error(`Token refresh failed: ${res.status}`);
   }
 
-  const data = await res.json();
+  const data: Record<string, unknown> = await res.json();
   return {
-    accessToken: data.access_token,
-    refreshToken: data.refresh_token,
-    idToken: data.id_token,
+    accessToken: data.access_token as string,
+    refreshToken: data.refresh_token as string,
+    idToken: data.id_token as string | undefined,
     expiresAt: Date.now() + (data.expires_in as number) * 1000,
   };
 }

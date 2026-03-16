@@ -206,52 +206,60 @@ export type SdNode =
 export type SdModifiers = z.infer<typeof SdModifiersSchema>;
 export type SdAction = z.infer<typeof SdActionSchema>;
 
-const SdNodeSchemaLazy: z.ZodType<SdNode> = z.lazy(() =>
+const SdChildrenSchema: z.ZodType<SdNode[]> = z.lazy(() => z.array(SdNodeSchema));
+
+export const SdStackNodeSchema: z.ZodType<SdStackNode> = z.object({
+  ...SdBaseNodeFields,
+  type: z.literal("stack"),
+  direction: z.enum(["horizontal", "vertical"]).optional(),
+  spacing: SdSizeSchema.optional(),
+  align: SdAlignmentSchema.optional(),
+  justify: SdAlignmentSchema.optional(),
+  wrap: z.boolean().optional(),
+  children: SdChildrenSchema,
+});
+
+export const SdCardNodeSchema: z.ZodType<SdCardNode> = z.object({
+  ...SdBaseNodeFields,
+  type: z.literal("card"),
+  title: z.string().optional(),
+  subtitle: z.string().optional(),
+  image: z.string().optional(),
+  imageAspectRatio: z.number().optional(),
+  badge: z.string().optional(),
+  children: SdChildrenSchema.optional(),
+});
+
+export const SdCarouselNodeSchema: z.ZodType<SdCarouselNode> = z.object({
+  ...SdBaseNodeFields,
+  type: z.literal("carousel"),
+  autoPlay: z.boolean().optional(),
+  autoPlayInterval: z.number().optional(),
+  showDots: z.boolean().optional(),
+  itemWidth: z.number().optional(),
+  children: SdChildrenSchema,
+});
+
+export const SdGridNodeSchema: z.ZodType<SdGridNode> = z.object({
+  ...SdBaseNodeFields,
+  type: z.literal("grid"),
+  columns: z.number().min(1).max(12),
+  spacing: SdSizeSchema.optional(),
+  children: SdChildrenSchema,
+});
+
+export const SdNodeSchema: z.ZodType<SdNode> = z.lazy(() =>
   z.union([
     SdTextNodeSchema,
     SdButtonNodeSchema,
     SdImageNodeSchema,
-    z.object({
-      ...SdBaseNodeFields,
-      type: z.literal("stack"),
-      direction: z.enum(["horizontal", "vertical"]).optional(),
-      spacing: SdSizeSchema.optional(),
-      align: SdAlignmentSchema.optional(),
-      justify: SdAlignmentSchema.optional(),
-      wrap: z.boolean().optional(),
-      children: z.array(SdNodeSchemaLazy),
-    }),
-    z.object({
-      ...SdBaseNodeFields,
-      type: z.literal("card"),
-      title: z.string().optional(),
-      subtitle: z.string().optional(),
-      image: z.string().optional(),
-      imageAspectRatio: z.number().optional(),
-      badge: z.string().optional(),
-      children: z.array(SdNodeSchemaLazy).optional(),
-    }),
-    z.object({
-      ...SdBaseNodeFields,
-      type: z.literal("carousel"),
-      autoPlay: z.boolean().optional(),
-      autoPlayInterval: z.number().optional(),
-      showDots: z.boolean().optional(),
-      itemWidth: z.number().optional(),
-      children: z.array(SdNodeSchemaLazy),
-    }),
-    z.object({
-      ...SdBaseNodeFields,
-      type: z.literal("grid"),
-      columns: z.number().min(1).max(12),
-      spacing: SdSizeSchema.optional(),
-      children: z.array(SdNodeSchemaLazy),
-    }),
+    SdStackNodeSchema,
+    SdCardNodeSchema,
+    SdCarouselNodeSchema,
+    SdGridNodeSchema,
     SdMapNodeSchema,
   ])
 );
-
-export const SdNodeSchema = SdNodeSchemaLazy;
 
 export const SdCapabilitiesSchema = z.object({
   os: z.enum(["ios", "android", "web", "macos", "windows", "linux", "tvos", "watchos", "carplay"]),

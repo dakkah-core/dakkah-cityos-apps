@@ -37,16 +37,14 @@ const AuthContext = createContext<AuthContextValue>({
 interface AuthProviderProps {
   config: KeycloakConfig;
   storage?: TokenStorage;
-  onLoginRedirect?: (url: string) => void;
-  onLogoutRedirect?: (url: string) => void;
+  onRedirect: (url: string) => void;
   children: React.ReactNode;
 }
 
 export function AuthProvider({
   config,
   storage = webStorage,
-  onLoginRedirect,
-  onLogoutRedirect,
+  onRedirect,
   children,
 }: AuthProviderProps) {
   const [state, setState] = useState<AuthState>({ status: "loading" });
@@ -134,12 +132,8 @@ export function AuthProvider({
       scopes: config.scopes,
     });
 
-    if (onLoginRedirect) {
-      onLoginRedirect(authUrl);
-    } else {
-      window.location.href = authUrl;
-    }
-  }, [config, storage, onLoginRedirect]);
+    onRedirect(authUrl);
+  }, [config, storage, onRedirect]);
 
   const handleCallback = useCallback(async (callbackUrl: string): Promise<boolean> => {
     const url = new URL(callbackUrl);
@@ -189,12 +183,8 @@ export function AuthProvider({
       redirectUri: config.redirectUri,
     });
 
-    if (onLogoutRedirect) {
-      onLogoutRedirect(logoutUrl);
-    } else {
-      window.location.href = logoutUrl;
-    }
-  }, [config, storage, onLogoutRedirect]);
+    onRedirect(logoutUrl);
+  }, [config, storage, onRedirect]);
 
   const getToken = useCallback(async (): Promise<string | null> => {
     const tokens = tokensRef.current;
