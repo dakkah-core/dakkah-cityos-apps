@@ -3,7 +3,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { Message, ChatThread, MessageReaction, MessageAttachment } from "@/types/chat";
 import { generateId } from "@/lib/id";
 import { processUserMessage } from "@/lib/copilot-brain";
-import { aiChat, syncThread, deleteServerThread } from "@/lib/ai-client";
+import { aiChat, aiExecute, syncThread, deleteServerThread } from "@/lib/ai-client";
+import type { Artifact } from "@/types/chat";
 import { useAuth } from "@/context/AuthContext";
 
 const THREADS_KEY = "dakkah_threads";
@@ -177,26 +178,50 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           ? aiResponse.data.content
           : localResponse.content;
 
+        const artifacts: Artifact[] = [];
+
+        if (aiResponse.data?.sdui) {
+          artifacts.push({
+            type: "sdui-node",
+            data: { node: aiResponse.data.sdui, theme: "dark" as const },
+          });
+        }
+
+        if (aiResponse.data?.intent && !aiResponse.data?.sdui) {
+          try {
+            const execResult = await aiExecute(
+              aiResponse.data.intent,
+              aiResponse.data.bffData ? { data: aiResponse.data.bffData } : undefined,
+              { threadId, accessToken: accessToken || undefined }
+            );
+            if (execResult.success && execResult.data?.sdui) {
+              artifacts.push({
+                type: "sdui-node",
+                data: { node: execResult.data.sdui, theme: "dark" as const },
+              });
+            }
+          } catch {}
+        }
+
+        if (artifacts.length === 0 && aiResponse.data?.intent) {
+          artifacts.push({
+            type: "toast",
+            data: {
+              message: `Action: ${aiResponse.data.intent}`,
+              type: "info" as const,
+              duration: 3000,
+            },
+          });
+        }
+
         const assistantMsg: Message = {
           id: generateId("msg"),
           role: "assistant",
           content,
           timestamp: Date.now(),
           mode: "suggest",
+          ...(artifacts.length > 0 ? { artifacts } : {}),
         };
-
-        if (aiResponse.data?.intent && aiResponse.data?.bffData) {
-          assistantMsg.artifacts = [
-            {
-              type: "toast",
-              data: {
-                message: `Action: ${aiResponse.data.intent}`,
-                type: "info" as const,
-                duration: 3000,
-              },
-            },
-          ];
-        }
 
         setMessages((prev) => {
           const finalMsgs = [...prev, assistantMsg];

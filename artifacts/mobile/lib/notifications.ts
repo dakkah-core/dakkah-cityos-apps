@@ -10,7 +10,8 @@ let pushToken: string | null = null;
 
 export async function registerForPushNotifications(
   userId?: string,
-  categories?: NotificationCategory[]
+  categories?: NotificationCategory[],
+  accessToken?: string
 ): Promise<string | null> {
   try {
     let Notifications: { getPermissionsAsync: () => Promise<{ status: string }>; requestPermissionsAsync: () => Promise<{ status: string }>; getExpoPushTokenAsync: () => Promise<{ data: string }>; setNotificationCategoryAsync?: (id: string, actions: unknown[]) => Promise<void> };
@@ -40,11 +41,15 @@ export async function registerForPushNotifications(
     const tokenData = await Notifications.getExpoPushTokenAsync();
     pushToken = tokenData.data;
 
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+
     await fetch(`${API_BASE}/notifications/register`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({
-        userId: userId || "anonymous",
         token: pushToken,
         platform: Platform.OS === "ios" ? "ios" : Platform.OS === "android" ? "android" : "web",
         categories: categories || ["order", "delivery", "city_alert", "event", "chat", "health", "transport", "general"],
@@ -85,12 +90,16 @@ async function setupNotificationCategories(
   ]);
 }
 
-export async function updateNotificationCategories(categories: NotificationCategory[]): Promise<boolean> {
+export async function updateNotificationCategories(categories: NotificationCategory[], accessToken?: string): Promise<boolean> {
   if (!pushToken) return false;
   try {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    }
     const res = await fetch(`${API_BASE}/notifications/categories`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({ token: pushToken, categories }),
     });
     const data = await res.json();
@@ -100,12 +109,16 @@ export async function updateNotificationCategories(categories: NotificationCateg
   }
 }
 
-export async function unregisterPushNotifications(): Promise<void> {
+export async function unregisterPushNotifications(accessToken?: string): Promise<void> {
   if (!pushToken) return;
   try {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    }
     await fetch(`${API_BASE}/notifications/unregister`, {
       method: "DELETE",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({ token: pushToken }),
     });
     pushToken = null;

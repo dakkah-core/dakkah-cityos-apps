@@ -105,7 +105,7 @@ interface AuthContextValue {
   isLoading: boolean;
   tokens: AuthTokens | null;
   copilotSettings: CopilotSettings;
-  signIn: (name: string, email: string) => Promise<void>;
+  signInAsGuest: (name: string, email: string) => Promise<void>;
   signInWithKeycloak: () => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
@@ -119,7 +119,7 @@ const AuthContext = createContext<AuthContextValue>({
   isLoading: true,
   tokens: null,
   copilotSettings: DEFAULT_COPILOT_SETTINGS,
-  signIn: async () => {},
+  signInAsGuest: async () => {},
   signInWithKeycloak: async () => {},
   signOut: async () => {},
   updateProfile: async () => {},
@@ -234,7 +234,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [scheduleRefresh]);
 
-  const signIn = useCallback(async (name: string, email: string) => {
+  const signInAsGuest = useCallback(async (name: string, email: string) => {
     const profile: UserProfile = {
       ...DEFAULT_PROFILE,
       id: generateId("user"),
@@ -243,7 +243,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
     setUser(profile);
     await AsyncStorage.setItem(AUTH_KEY, JSON.stringify(profile)).catch(() => {});
-    registerForPushNotifications(profile.id).catch(() => {});
+    registerForPushNotifications(profile.id, undefined, undefined).catch(() => {});
   }, []);
 
   const signInWithKeycloak = useCallback(async () => {
@@ -309,7 +309,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(profile);
         await AsyncStorage.setItem(AUTH_KEY, JSON.stringify(profile));
         scheduleRefresh(exchangedTokens);
-        registerForPushNotifications(profile.id).catch(() => {});
+        registerForPushNotifications(profile.id, undefined, exchangedTokens.accessToken).catch(() => {});
       }
     } catch (err) {
       console.error("Keycloak sign-in failed:", err);
@@ -324,7 +324,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(DEFAULT_PROFILE);
     await AsyncStorage.setItem(AUTH_KEY, JSON.stringify(DEFAULT_PROFILE));
     await secureDelete(TOKENS_KEY);
-    unregisterPushNotifications().catch(() => {});
+    if (currentTokens?.accessToken) {
+      unregisterPushNotifications(currentTokens.accessToken).catch(() => {});
+    }
 
     if (currentTokens?.idToken) {
       const redirectUri = Linking.createURL("/");
@@ -391,7 +393,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isLoading,
       tokens,
       copilotSettings,
-      signIn,
+      signInAsGuest,
       signInWithKeycloak,
       signOut,
       updateProfile,
