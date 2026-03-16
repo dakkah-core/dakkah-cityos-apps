@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import { COLORS } from "@/constants/colors";
 import { useMerchant } from "@/context/MerchantContext";
 import { DynamicScreen } from "@/components/artifacts/DynamicScreen";
+import { configureActionHandler } from "@workspace/sdui-renderer-native";
 
 export default function MerchantHomeScreen() {
   const insets = useSafeAreaInsets();
@@ -17,17 +18,14 @@ export default function MerchantHomeScreen() {
     toggleStoreOpen,
   } = useMerchant();
 
-  const handleSduiCallback = useCallback((id: string) => {
-    const routes: Record<string, string> = {
-      view_orders: "/merchant/orders",
-      manage_catalog: "/merchant/catalog",
-      view_inventory: "/merchant/inventory",
-      view_bookings: "/merchant/bookings",
-      view_analytics: "/merchant/analytics",
-      view_campaigns: "/merchant/campaigns",
-    };
-    const route = routes[id];
-    if (route) router.push(route as never);
+  React.useEffect(() => {
+    configureActionHandler({
+      onNavigate: (screen) => {
+        if (screen.startsWith("merchant/")) {
+          router.push(`/${screen}` as never);
+        }
+      },
+    });
   }, [router]);
 
   if (isLoading) {
@@ -86,7 +84,7 @@ export default function MerchantHomeScreen() {
           )}
         </View>
 
-        <DynamicScreen screenId="merchant_home" surface="tablet" onAction={handleSduiCallback} />
+        <DynamicScreen screenId="merchant_home" surface="tablet" />
 
         <View style={styles.quickGrid}>
           {[

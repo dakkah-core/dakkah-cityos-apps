@@ -15,6 +15,7 @@ export default function MerchantLayout() {
           <Stack.Screen name="bookings" />
           <Stack.Screen name="analytics" />
           <Stack.Screen name="campaigns" />
+          <Stack.Screen name="register" />
         </Stack>
       </MerchantProvider>
     </MerchantRoleGate>

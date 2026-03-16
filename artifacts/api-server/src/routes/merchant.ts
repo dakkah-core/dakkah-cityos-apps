@@ -479,4 +479,47 @@ router.post("/merchant/campaigns/:campaignId/status", requireAuth, requireRole(.
   res.json({ success: true, data: { campaign } });
 });
 
+const vendorApplications = new Map<string, Record<string, unknown>>();
+
+router.post("/merchant/register", requireAuth, (req, res) => {
+  const userId = (req as AuthenticatedRequest).userId;
+  const { storeName, category, ownerName, phone, email, address, city, crNumber, operatingHours, description } = req.body;
+
+  if (!storeName || !category || !ownerName || !phone || !email || !address || !city) {
+    res.status(400).json({ success: false, error: { code: "VALIDATION_ERROR", message: "Missing required fields" } });
+    return;
+  }
+
+  const application = {
+    id: `vendor-app-${Date.now()}`,
+    userId,
+    storeName,
+    category,
+    ownerName,
+    phone,
+    email,
+    address,
+    city,
+    crNumber: crNumber || null,
+    operatingHours: operatingHours || { open: "08:00", close: "23:00" },
+    description: description || "",
+    status: "pending_review",
+    submittedAt: new Date().toISOString(),
+  };
+
+  vendorApplications.set(userId, application);
+
+  res.json({ success: true, data: { application } });
+});
+
+router.get("/merchant/register/status", requireAuth, (req, res) => {
+  const userId = (req as AuthenticatedRequest).userId;
+  const application = vendorApplications.get(userId);
+  if (!application) {
+    res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "No application found" } });
+    return;
+  }
+  res.json({ success: true, data: { application } });
+});
+
 export default router;

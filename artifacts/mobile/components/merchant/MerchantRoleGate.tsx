@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, usePathname } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 import { COLORS } from "@/constants/colors";
 
@@ -13,9 +13,16 @@ interface MerchantRoleGateProps {
 export function MerchantRoleGate({ children }: MerchantRoleGateProps) {
   const { user, isAuthenticated } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+
+  const isRegisterRoute = pathname === "/merchant/register";
 
   const hasMerchantRole = user?.roles?.some((r) => MERCHANT_ROLES.includes(r));
   const isDev = process.env.NODE_ENV === "development" || process.env.EXPO_PUBLIC_ALLOW_DEV_MERCHANT === "true";
+
+  if (isRegisterRoute) {
+    return <>{children}</>;
+  }
 
   if (!isAuthenticated && !isDev) {
     return (
@@ -36,6 +43,9 @@ export function MerchantRoleGate({ children }: MerchantRoleGateProps) {
         <Text style={styles.icon}>🏪</Text>
         <Text style={styles.title}>Merchant Access Only</Text>
         <Text style={styles.subtitle}>This section is restricted to authorized merchants and vendors</Text>
+        <Pressable style={styles.registerBtn} onPress={() => router.push("/merchant/register" as never)}>
+          <Text style={styles.registerBtnText}>Register as Vendor</Text>
+        </Pressable>
         <Pressable style={styles.backBtn} onPress={() => router.replace("/")}>
           <Text style={styles.backBtnText}>Go to Home</Text>
         </Pressable>
@@ -51,6 +61,8 @@ const styles = StyleSheet.create({
   icon: { fontSize: 48, marginBottom: 16 },
   title: { fontSize: 20, fontWeight: "800", color: COLORS.text, marginBottom: 8, textAlign: "center" },
   subtitle: { fontSize: 14, color: COLORS.textSecondary, textAlign: "center", marginBottom: 24, lineHeight: 20 },
+  registerBtn: { backgroundColor: "#0d9488", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10, marginBottom: 12 },
+  registerBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
   backBtn: { backgroundColor: "#0a1628", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10 },
   backBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
 });
