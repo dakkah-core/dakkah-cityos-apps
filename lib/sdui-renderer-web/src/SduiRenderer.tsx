@@ -248,12 +248,11 @@ function SdGridRenderer({ node, theme }: { node: SdGridNode; theme: "light" | "d
   );
 }
 
-function SdMapRenderer({ node, theme }: { node: SdMapNode; theme: "light" | "dark" }) {
-  const colors = getSemanticColors(theme);
+function SdMapRenderer({ node }: { node: SdMapNode }) {
   const mapHeight = node.height || 200;
-  const tileUrl = `https://tile.openstreetmap.org/{z}/{x}/{y}.png`;
   const zoom = node.zoom || 13;
-  const embedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${node.longitude - 0.02},${node.latitude - 0.02},${node.longitude + 0.02},${node.latitude + 0.02}&layer=mapnik&marker=${node.latitude},${node.longitude}`;
+  const degSpan = 360 / Math.pow(2, zoom) * 0.5;
+  const embedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${node.longitude - degSpan},${node.latitude - degSpan},${node.longitude + degSpan},${node.latitude + degSpan}&layer=mapnik&marker=${node.latitude},${node.longitude}`;
 
   return (
     <div
@@ -287,7 +286,7 @@ export function SduiRenderer({ node, theme = "light" }: SduiRendererProps) {
     case "grid":
       return <SdGridRenderer node={node} theme={theme} />;
     case "map":
-      return <SdMapRenderer node={node} theme={theme} />;
+      return <SdMapRenderer node={node} />;
     default:
       return null;
   }
