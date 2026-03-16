@@ -32,6 +32,7 @@ interface CopilotContextValue {
   sendMessage: (text: string) => Promise<void>;
   createNewChat: () => void;
   loadThread: (id: string) => void;
+  refreshThreads: () => void;
 }
 
 const CopilotContext = createContext<CopilotContextValue | null>(null);
@@ -144,6 +145,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     setIsProcessing(false);
   }, []);
 
+  const refreshThreads = useCallback(() => {
+    loadThreadsList();
+  }, []);
+
   const loadThread = useCallback(async (id: string) => {
     try {
       requestTokenRef.current++;
@@ -163,7 +168,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <CopilotContext.Provider value={{ messages, threads, isProcessing, currentThreadId, sendMessage, createNewChat, loadThread }}>
+    <CopilotContext.Provider value={{ messages, threads, isProcessing, currentThreadId, sendMessage, createNewChat, loadThread, refreshThreads }}>
       {children}
     </CopilotContext.Provider>
   );

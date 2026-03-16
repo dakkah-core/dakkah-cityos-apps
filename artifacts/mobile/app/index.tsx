@@ -10,7 +10,7 @@ import type { Message } from "@/types/chat";
 
 export default function CopilotScreen() {
   const insets = useSafeAreaInsets();
-  const { messages, threads, isProcessing, sendMessage, createNewChat, loadThread } = useCopilot();
+  const { messages, threads, isProcessing, sendMessage, createNewChat, loadThread, refreshThreads } = useCopilot();
   const [input, setInput] = useState("");
   const [discoveryOpen, setDiscoveryOpen] = useState(false);
   const [threadsOpen, setThreadsOpen] = useState(false);
@@ -113,7 +113,7 @@ export default function CopilotScreen() {
       </KeyboardAvoidingView>
 
       <DiscoverySheet visible={discoveryOpen} onClose={() => setDiscoveryOpen(false)} onSelect={handleDiscoverySelect} />
-      <ThreadsDrawer visible={threadsOpen} onClose={() => setThreadsOpen(false)} threads={threads} onNewChat={createNewChat} onLoadThread={loadThread} />
+      <ThreadsDrawer visible={threadsOpen} onClose={() => setThreadsOpen(false)} threads={threads} onNewChat={createNewChat} onLoadThread={loadThread} onRefresh={refreshThreads} />
     </View>
   );
 }

@@ -22,7 +22,7 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 artifacts-monorepo/
 ├── artifacts/              # Deployable applications
 │   ├── api-server/         # Express API server
-│   └── mobile/             # Dakkah CityOS - Expo React Native mobile app
+│   └── mobile/             # Dakkah CityOS - Expo React Native mobile app (with enhanced App Menu, Copilot Settings)
 ├── lib/                    # Shared libraries
 │   ├── api-spec/           # OpenAPI spec + Orval codegen config
 │   ├── api-client-react/   # Generated React Query hooks
