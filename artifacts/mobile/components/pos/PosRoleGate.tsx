@@ -1,11 +1,26 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, StyleSheet, Pressable, TextInput } from "react-native";
+import { View, Text, StyleSheet, Pressable, TextInput, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 
 const POS_ROLES = ["cashier", "pos_operator", "store_manager", "merchant"];
 const PIN_STORAGE_KEY = "dakkah_pos_pin";
+
+async function storePin(value: string): Promise<void> {
+  if (Platform.OS === "web") {
+    sessionStorage.setItem(PIN_STORAGE_KEY, value);
+  } else {
+    await SecureStore.setItemAsync(PIN_STORAGE_KEY, value);
+  }
+}
+
+async function getPin(): Promise<string | null> {
+  if (Platform.OS === "web") {
+    return sessionStorage.getItem(PIN_STORAGE_KEY);
+  }
+  return SecureStore.getItemAsync(PIN_STORAGE_KEY);
+}
 
 interface PosRoleGateProps {
   children: React.ReactNode;
@@ -34,14 +49,14 @@ export function PosRoleGate({ children }: PosRoleGateProps) {
       setPinError("PINs do not match");
       return;
     }
-    await AsyncStorage.setItem(PIN_STORAGE_KEY, newPin);
+    await storePin(newPin);
     setShowPinSetup(false);
     setPinUnlocked(true);
     setPinError("");
   }, [newPin, confirmPin]);
 
   const handlePinLogin = useCallback(async () => {
-    const savedPin = await AsyncStorage.getItem(PIN_STORAGE_KEY);
+    const savedPin = await getPin();
     if (pin === savedPin) {
       setPinUnlocked(true);
       setShowPinEntry(false);
@@ -52,7 +67,7 @@ export function PosRoleGate({ children }: PosRoleGateProps) {
   }, [pin]);
 
   const handleShowPinEntry = useCallback(async () => {
-    const savedPin = await AsyncStorage.getItem(PIN_STORAGE_KEY);
+    const savedPin = await getPin();
     if (savedPin) {
       setShowPinEntry(true);
     } else {

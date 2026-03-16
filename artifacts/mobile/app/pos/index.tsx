@@ -31,8 +31,8 @@ function useSduiSurface(surface: string): SdNode | null {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
         if (res.ok && !cancelled) {
-          const data = await res.json();
-          const node = data.screen || data;
+          const json = await res.json();
+          const node = json?.data?.screen || json?.screen || json?.data || json;
           if (isSdNode(node)) {
             setSduiTree(node);
           }
@@ -51,12 +51,14 @@ export default function PosTerminalScreen() {
   const {
     products, categories, cart, activeShift, isOnline,
     isLoading, offlineQueueCount, addToCart, removeFromCart,
-    updateQuantity, clearCart, openShift,
+    updateQuantity, setLineDiscount, clearCart, openShift,
   } = usePos();
   const sduiTree = useSduiSurface("tablet_pos");
 
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [search, setSearch] = useState("");
+  const [discountEditId, setDiscountEditId] = useState<string | null>(null);
+  const [discountInput, setDiscountInput] = useState("");
   const [showShiftDialog, setShowShiftDialog] = useState(false);
   const [openingCash, setOpeningCash] = useState("");
 
@@ -251,34 +253,86 @@ export default function PosTerminalScreen() {
                 <Text style={styles.emptyCartSub}>Tap products to add</Text>
               </View>
             ) : (
-              cart.items.map((item, idx) => (
-                <View key={`${item.product.id}-${item.variantId || ""}-${idx}`} style={styles.cartItem}>
-                  <View style={styles.cartItemInfo}>
-                    <Text style={styles.cartItemName} numberOfLines={1}>{item.product.name}</Text>
-                    {item.variantId && (
-                      <Text style={styles.cartItemVariant}>
-                        {item.product.variants.find((v) => v.id === item.variantId)?.name}
-                      </Text>
+              cart.items.map((item, idx) => {
+                const itemKey = `${item.product.id}-${item.variantId || ""}`;
+                const lineTotal = item.product.price * item.quantity;
+                const discounted = item.lineDiscount ? lineTotal - item.lineDiscount : lineTotal;
+                const isEditingDiscount = discountEditId === itemKey;
+                return (
+                  <View key={`${itemKey}-${idx}`} style={styles.cartItem}>
+                    <View style={styles.cartItemInfo}>
+                      <Text style={styles.cartItemName} numberOfLines={1}>{item.product.name}</Text>
+                      {item.variantId && (
+                        <Text style={styles.cartItemVariant}>
+                          {item.product.variants.find((v) => v.id === item.variantId)?.name}
+                        </Text>
+                      )}
+                      <Text style={styles.cartItemPrice}>{item.product.price} SAR</Text>
+                    </View>
+                    <View style={styles.qtyControls}>
+                      <Pressable style={styles.qtyBtn} onPress={() => updateQuantity(item.product.id, item.quantity - 1, item.variantId)}>
+                        <Text style={styles.qtyBtnText}>-</Text>
+                      </Pressable>
+                      <Text style={styles.qtyText}>{item.quantity}</Text>
+                      <Pressable style={styles.qtyBtn} onPress={() => updateQuantity(item.product.id, item.quantity + 1, item.variantId)}>
+                        <Text style={styles.qtyBtnText}>+</Text>
+                      </Pressable>
+                    </View>
+                    <View style={styles.cartItemRight}>
+                      {item.lineDiscount > 0 ? (
+                        <>
+                          <Text style={styles.cartItemTotalStrike}>{lineTotal.toFixed(2)}</Text>
+                          <Text style={styles.cartItemTotal}>{discounted.toFixed(2)}</Text>
+                        </>
+                      ) : (
+                        <Text style={styles.cartItemTotal}>{lineTotal.toFixed(2)}</Text>
+                      )}
+                      <Pressable onPress={() => {
+                        if (isEditingDiscount) {
+                          setDiscountEditId(null);
+                        } else {
+                          setDiscountEditId(itemKey);
+                          setDiscountInput(item.lineDiscount > 0 ? String(item.lineDiscount) : "");
+                        }
+                      }}>
+                        <Text style={styles.discountToggle}>{item.lineDiscount > 0 ? "✏️" : "🏷️"}</Text>
+                      </Pressable>
+                    </View>
+                    <Pressable onPress={() => removeFromCart(item.product.id, item.variantId)}>
+                      <Text style={styles.removeBtn}>✕</Text>
+                    </Pressable>
+                    {isEditingDiscount && (
+                      <View style={styles.discountRow}>
+                        <Text style={styles.discountLabel}>Discount (SAR):</Text>
+                        <TextInput
+                          style={styles.discountInput}
+                          value={discountInput}
+                          onChangeText={setDiscountInput}
+                          placeholder="0.00"
+                          placeholderTextColor="rgba(255,255,255,0.3)"
+                          keyboardType="decimal-pad"
+                        />
+                        <Pressable style={styles.discountApplyBtn} onPress={() => {
+                          const val = parseFloat(discountInput) || 0;
+                          const max = item.product.price * item.quantity;
+                          setLineDiscount(item.product.id, Math.min(val, max), item.variantId);
+                          setDiscountEditId(null);
+                        }}>
+                          <Text style={styles.discountApplyText}>Apply</Text>
+                        </Pressable>
+                        {item.lineDiscount > 0 ? (
+                          <Pressable style={styles.discountClearBtn} onPress={() => {
+                            setLineDiscount(item.product.id, 0, item.variantId);
+                            setDiscountEditId(null);
+                          }}>
+                            <Text style={styles.discountClearText}>Clear</Text>
+                          </Pressable>
+                        ) : null}
+                      </View>
                     )}
-                    <Text style={styles.cartItemPrice}>{item.product.price} SAR</Text>
                   </View>
-                  <View style={styles.qtyControls}>
-                    <Pressable style={styles.qtyBtn} onPress={() => updateQuantity(item.product.id, item.quantity - 1, item.variantId)}>
-                      <Text style={styles.qtyBtnText}>-</Text>
-                    </Pressable>
-                    <Text style={styles.qtyText}>{item.quantity}</Text>
-                    <Pressable style={styles.qtyBtn} onPress={() => updateQuantity(item.product.id, item.quantity + 1, item.variantId)}>
-                      <Text style={styles.qtyBtnText}>+</Text>
-                    </Pressable>
-                  </View>
-                  <Text style={styles.cartItemTotal}>
-                    {(item.product.price * item.quantity).toFixed(2)}
-                  </Text>
-                  <Pressable onPress={() => removeFromCart(item.product.id, item.variantId)}>
-                    <Text style={styles.removeBtn}>✕</Text>
-                  </Pressable>
-                </View>
-              ))
+                );
+              })
             )}
           </ScrollView>
 
@@ -358,7 +412,7 @@ const styles = StyleSheet.create({
   emptyCartIcon: { fontSize: 40, marginBottom: 8 },
   emptyCartText: { fontSize: 15, fontWeight: "700", color: COLORS.text },
   emptyCartSub: { fontSize: 12, color: COLORS.textMuted, marginTop: 4 },
-  cartItem: { flexDirection: "row", alignItems: "center", paddingHorizontal: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: COLORS.border, gap: 8 },
+  cartItem: { flexDirection: "row", alignItems: "center", paddingHorizontal: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: COLORS.border, gap: 8, flexWrap: "wrap" },
   cartItemInfo: { flex: 1 },
   cartItemName: { fontSize: 13, fontWeight: "600", color: COLORS.text },
   cartItemVariant: { fontSize: 10, color: COLORS.textMuted },
@@ -367,8 +421,18 @@ const styles = StyleSheet.create({
   qtyBtn: { width: 26, height: 26, borderRadius: 6, backgroundColor: COLORS.surface, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: COLORS.border },
   qtyBtnText: { fontSize: 14, fontWeight: "700", color: COLORS.text },
   qtyText: { fontSize: 14, fontWeight: "700", color: COLORS.text, width: 24, textAlign: "center" },
-  cartItemTotal: { fontSize: 13, fontWeight: "700", color: COLORS.text, width: 60, textAlign: "right" },
+  cartItemRight: { alignItems: "flex-end", gap: 2 },
+  cartItemTotal: { fontSize: 13, fontWeight: "700", color: COLORS.text },
+  cartItemTotalStrike: { fontSize: 11, color: COLORS.textMuted, textDecorationLine: "line-through" },
+  discountToggle: { fontSize: 12 },
   removeBtn: { fontSize: 14, color: COLORS.textMuted, paddingLeft: 4 },
+  discountRow: { flexDirection: "row", alignItems: "center", gap: 8, width: "100%", paddingTop: 6 },
+  discountLabel: { fontSize: 11, color: COLORS.textSecondary },
+  discountInput: { flex: 1, backgroundColor: COLORS.surface, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, fontSize: 13, color: COLORS.text, borderWidth: 1, borderColor: COLORS.border },
+  discountApplyBtn: { backgroundColor: "#0d9488", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 },
+  discountApplyText: { color: "#fff", fontSize: 11, fontWeight: "700" },
+  discountClearBtn: { paddingHorizontal: 6, paddingVertical: 4 },
+  discountClearText: { color: "#e11d48", fontSize: 11, fontWeight: "600" },
   cartSummary: { padding: 16, borderTopWidth: 1, borderTopColor: COLORS.border, backgroundColor: COLORS.surface },
   summaryRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 4 },
   summaryLabel: { fontSize: 13, color: COLORS.textSecondary },
