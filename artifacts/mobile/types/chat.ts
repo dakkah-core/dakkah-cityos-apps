@@ -1,3 +1,17 @@
+export interface MessageReaction {
+  emoji: string;
+  count: number;
+  reacted: boolean;
+}
+
+export interface MessageAttachment {
+  uri: string;
+  type: "image" | "file";
+  name: string;
+  size?: number;
+  mimeType?: string;
+}
+
 export interface Message {
   id: string;
   role: "user" | "assistant" | "system";
@@ -5,6 +19,13 @@ export interface Message {
   timestamp: number;
   artifacts?: Artifact[];
   mode?: "suggest" | "propose" | "execute";
+  reactions?: MessageReaction[];
+  pinned?: boolean;
+  replyToId?: string;
+  replyToContent?: string;
+  editedAt?: number;
+  mentions?: string[];
+  attachments?: MessageAttachment[];
 }
 
 export type ArtifactType =
@@ -199,4 +220,13 @@ export interface QuickAction {
   prompt: string;
   category: string;
   icon: string;
+}
+
+export interface Contact {
+  id: string;
+  name: string;
+  role: string;
+  department: string;
+  isOnline: boolean;
+  avatar?: string;
 }
