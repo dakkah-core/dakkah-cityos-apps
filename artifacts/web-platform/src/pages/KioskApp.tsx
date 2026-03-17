@@ -125,6 +125,8 @@ export default function KioskApp() {
   return (
     <div
       className="kiosk-root"
+      role="application"
+      aria-label="Dakkah CityOS Public Service Kiosk"
       style={{
         width: "100vw",
         height: "100vh",
@@ -248,6 +250,7 @@ export default function KioskApp() {
               ].map((item) => (
                 <button
                   key={item.view}
+                  aria-label={item.label}
                   onClick={() => item.view === "emergency" ? setAlertVisible(true) : setView(item.view)}
                   style={{
                     minHeight: 140,
