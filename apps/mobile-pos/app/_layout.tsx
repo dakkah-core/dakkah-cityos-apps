@@ -12,7 +12,9 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { ErrorBoundary, AuthProvider, ChatProvider, ThemeProvider } from "@cityos/mobile-core";
+import { ErrorBoundary, AuthProvider, ThemeProvider } from "@cityos/mobile-core";
+import { PosProvider } from "@/context/PosContext";
+import { PosRoleGate } from "@/components/pos/PosRoleGate";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,6 +22,12 @@ function RootLayoutNav() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
+      <Stack.Screen name="scanner" />
+      <Stack.Screen name="payment" />
+      <Stack.Screen name="receipt" />
+      <Stack.Screen name="kitchen" />
+      <Stack.Screen name="reports" />
+      <Stack.Screen name="returns" />
     </Stack>
   );
 }
@@ -47,9 +55,11 @@ export default function RootLayout() {
           <KeyboardProvider>
             <ThemeProvider>
               <AuthProvider>
-                <ChatProvider>
-                  <RootLayoutNav />
-                </ChatProvider>
+                <PosRoleGate>
+                  <PosProvider>
+                    <RootLayoutNav />
+                  </PosProvider>
+                </PosRoleGate>
               </AuthProvider>
             </ThemeProvider>
           </KeyboardProvider>

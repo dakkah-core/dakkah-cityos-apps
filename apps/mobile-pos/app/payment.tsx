@@ -59,7 +59,7 @@ export default function PaymentScreen() {
           ...(method === "nfc" ? { nfcToken: `nfc-sim-${Date.now()}` } : {}),
         });
       }
-      router.replace("/pos/receipt" as never);
+      router.replace("/receipt" as never);
     } catch {
       Alert.alert("Payment Failed", "Please try again");
     } finally {

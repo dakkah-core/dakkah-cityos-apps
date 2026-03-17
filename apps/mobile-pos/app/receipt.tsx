@@ -172,7 +172,7 @@ export default function ReceiptScreen() {
   }, []);
 
   if (!lastTransaction) {
-    router.replace("/pos" as never);
+    router.replace("/" as never);
     return null;
   }
 
@@ -285,7 +285,7 @@ export default function ReceiptScreen() {
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}>
-        <Pressable style={styles.newSaleBtn} onPress={() => router.replace("/pos" as never)}>
+        <Pressable style={styles.newSaleBtn} onPress={() => router.replace("/" as never)}>
           <Text style={styles.newSaleBtnText}>New Sale</Text>
         </Pressable>
       </View>

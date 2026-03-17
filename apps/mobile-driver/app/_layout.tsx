@@ -12,7 +12,9 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { ErrorBoundary, AuthProvider, ChatProvider, ThemeProvider } from "@cityos/mobile-core";
+import { ErrorBoundary, AuthProvider, ThemeProvider } from "@cityos/mobile-core";
+import { DriverProvider } from "@/context/DriverContext";
+import { DriverRoleGate } from "@/components/driver/DriverRoleGate";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,6 +22,9 @@ function RootLayoutNav() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
+      <Stack.Screen name="job" />
+      <Stack.Screen name="earnings" />
+      <Stack.Screen name="inspection" />
     </Stack>
   );
 }
@@ -47,9 +52,11 @@ export default function RootLayout() {
           <KeyboardProvider>
             <ThemeProvider>
               <AuthProvider>
-                <ChatProvider>
-                  <RootLayoutNav />
-                </ChatProvider>
+                <DriverRoleGate>
+                  <DriverProvider>
+                    <RootLayoutNav />
+                  </DriverProvider>
+                </DriverRoleGate>
               </AuthProvider>
             </ThemeProvider>
           </KeyboardProvider>

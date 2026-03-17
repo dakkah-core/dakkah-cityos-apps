@@ -26,7 +26,7 @@ export default function DriverHomeScreen() {
   };
 
   const handleJobPress = (job: DriverJob) => {
-    router.push({ pathname: "/driver/job", params: { jobId: job.id } });
+    router.push({ pathname: "/job", params: { jobId: job.id } });
   };
 
   if (isLoading) {
@@ -51,10 +51,10 @@ export default function DriverHomeScreen() {
           </View>
         </View>
         <View style={styles.headerRight}>
-          <Pressable style={styles.headerBtn} onPress={() => router.push("/driver/earnings")}>
+          <Pressable style={styles.headerBtn} onPress={() => router.push("/earnings")}>
             <Text style={styles.headerBtnIcon}>💰</Text>
           </Pressable>
-          <Pressable style={styles.headerBtn} onPress={() => router.push("/driver/inspection")}>
+          <Pressable style={styles.headerBtn} onPress={() => router.push("/inspection")}>
             <Text style={styles.headerBtnIcon}>🔧</Text>
           </Pressable>
           <Pressable style={styles.headerBtn} onPress={signOut}>
@@ -81,8 +81,8 @@ export default function DriverHomeScreen() {
             surface="mobile"
             extraParams={{ driverStatus: status }}
             onAction={(action) => {
-              if (action === "view_earnings") router.push("/driver/earnings");
-              else if (action === "start_inspection") router.push("/driver/inspection");
+              if (action === "view_earnings") router.push("/earnings");
+              else if (action === "start_inspection") router.push("/inspection");
             }}
           />
         </View>

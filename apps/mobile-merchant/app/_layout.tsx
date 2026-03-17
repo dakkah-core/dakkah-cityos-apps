@@ -12,7 +12,9 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { ErrorBoundary, AuthProvider, ChatProvider, ThemeProvider } from "@cityos/mobile-core";
+import { ErrorBoundary, AuthProvider, ThemeProvider } from "@cityos/mobile-core";
+import { MerchantProvider } from "@/context/MerchantContext";
+import { MerchantRoleGate } from "@/components/merchant/MerchantRoleGate";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,6 +22,13 @@ function RootLayoutNav() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
+      <Stack.Screen name="orders" />
+      <Stack.Screen name="catalog" />
+      <Stack.Screen name="inventory" />
+      <Stack.Screen name="bookings" />
+      <Stack.Screen name="analytics" />
+      <Stack.Screen name="campaigns" />
+      <Stack.Screen name="register" />
     </Stack>
   );
 }
@@ -47,9 +56,11 @@ export default function RootLayout() {
           <KeyboardProvider>
             <ThemeProvider>
               <AuthProvider>
-                <ChatProvider>
-                  <RootLayoutNav />
-                </ChatProvider>
+                <MerchantRoleGate>
+                  <MerchantProvider>
+                    <RootLayoutNav />
+                  </MerchantProvider>
+                </MerchantRoleGate>
               </AuthProvider>
             </ThemeProvider>
           </KeyboardProvider>

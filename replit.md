@@ -60,11 +60,11 @@ The project uses a pnpm monorepo with `apps/` for deployable applications, `pack
 - **Push Notifications**: Expo Notifications integration with category system.
 - **SDUI Renderer**: `@cityos/sdui-renderer-native` for recursive rendering of 8 SDUI node types.
 
-### Specialized Mobile Applications (Driver, Merchant, POS)
-- **Role-Based Experiences**: Built as route groups within the main Expo mobile artifact, sharing core auth, design tokens, and packages.
-- **Driver App**: Features a Driver Dashboard (status, job tracking), Delivery Flow (accept, pickup, complete), Earnings Dashboard, Vehicle Inspection checklist, SOS/Emergency function, Offline Tolerance with sync, and Position Reporting.
-- **Merchant App**: Includes a MerchantRoleGate, SDUI Home with Store Dashboard, Order Management (real-time feed, status progression), Catalog Management (product CRUD), Inventory Tracking, Bookings & Tables management, Sales Analytics, and Campaigns creation.
-- **POS / Counter Runtime**: Features PosRoleGate, Shift Management (open/close, cash count), Product Grid, Cart & Checkout (discounts, VAT, multiple payment methods), Receipt Generation, Barcode Scanner, Kitchen Display, Returns & Exchanges, and End-of-Day Reports. Includes offline tolerance for sales.
+### Specialized Mobile Applications (Separate Expo Apps)
+- **Driver App (`apps/mobile-driver`)**: `@cityos/mobile-driver` — Standalone Expo app with bundle ID `city.dakkah.driver`. Features Driver Dashboard (status, job tracking), Delivery Flow (accept, pickup, complete), Earnings Dashboard, Vehicle Inspection checklist, SOS/Emergency, Offline Tolerance with sync, Position Reporting. Own DriverContext, driver-api, driver components (DeliveryMap, BarcodeScanner, SignaturePad, SOSButton, etc.).
+- **Merchant App (`apps/mobile-merchant`)**: `@cityos/mobile-merchant` — Standalone Expo app with bundle ID `city.dakkah.merchant`. SDUI Home with Store Dashboard, Order Management, Catalog Management, Inventory Tracking, Bookings & Tables, Sales Analytics, Campaigns. Own MerchantContext, merchant-api.
+- **POS App (`apps/mobile-pos`)**: `@cityos/mobile-pos` — Standalone Expo app with bundle ID `city.dakkah.pos`. Shift Management, Product Grid, Cart & Checkout, Receipt Generation, Barcode Scanner, Kitchen Display, Returns & Exchanges, End-of-Day Reports. Own PosContext, pos-api. Offline tolerance for sales.
+- All three apps import shared UI/contexts/libs from `@cityos/mobile-core`. Only the consumer app (`apps/mobile`) has a workflow slot; other apps can be started manually.
 
 ### API Services for Specialized Apps
 - **Transport API (`/api/transport/driver/`)**: Manages driver status, job lifecycle, position tracking, earnings, vehicle inspections, SOS alerts, and offline sync.

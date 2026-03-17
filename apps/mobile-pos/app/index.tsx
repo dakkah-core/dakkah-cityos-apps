@@ -69,9 +69,8 @@ export default function PosTerminalScreen() {
   useEffect(() => {
     configureActionHandler({
       onNavigate: (screen) => {
-        if (screen.startsWith("pos/")) {
-          router.push(`/${screen}` as never);
-        }
+        const route = screen.startsWith("pos/") ? screen.replace("pos/", "") : screen;
+          router.push(`/${route}` as never);
       },
     });
   }, [router]);
@@ -204,16 +203,16 @@ export default function PosTerminalScreen() {
           </View>
         )}
         <View style={styles.headerActions}>
-          <Pressable style={styles.headerActionBtn} onPress={() => router.push("/pos/scanner" as never)}>
+          <Pressable style={styles.headerActionBtn} onPress={() => router.push("/scanner" as never)}>
             <Text style={styles.headerActionIcon}>📷</Text>
           </Pressable>
-          <Pressable style={styles.headerActionBtn} onPress={() => router.push("/pos/kitchen" as never)}>
+          <Pressable style={styles.headerActionBtn} onPress={() => router.push("/kitchen" as never)}>
             <Text style={styles.headerActionIcon}>🍳</Text>
           </Pressable>
-          <Pressable style={styles.headerActionBtn} onPress={() => router.push("/pos/reports" as never)}>
+          <Pressable style={styles.headerActionBtn} onPress={() => router.push("/reports" as never)}>
             <Text style={styles.headerActionIcon}>📊</Text>
           </Pressable>
-          <Pressable style={styles.headerActionBtn} onPress={() => router.push("/pos/returns" as never)}>
+          <Pressable style={styles.headerActionBtn} onPress={() => router.push("/returns" as never)}>
             <Text style={styles.headerActionIcon}>↩️</Text>
           </Pressable>
         </View>
@@ -383,7 +382,7 @@ export default function PosTerminalScreen() {
               </View>
               <Pressable
                 style={styles.checkoutBtn}
-                onPress={() => router.push("/pos/payment" as never)}
+                onPress={() => router.push("/payment" as never)}
               >
                 <Text style={styles.checkoutBtnText}>Charge {cart.total.toFixed(2)} SAR</Text>
               </Pressable>

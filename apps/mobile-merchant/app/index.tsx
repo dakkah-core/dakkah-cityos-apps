@@ -20,9 +20,8 @@ export default function MerchantHomeScreen() {
   React.useEffect(() => {
     configureActionHandler({
       onNavigate: (screen) => {
-        if (screen.startsWith("merchant/")) {
-          router.push(`/${screen}` as never);
-        }
+        const route = screen.startsWith("merchant/") ? screen.replace("merchant/", "") : screen;
+          router.push(`/${route}` as never);
       },
     });
   }, [router]);
@@ -62,7 +61,7 @@ export default function MerchantHomeScreen() {
       <ScrollView style={styles.content} contentContainerStyle={styles.contentInner}>
         <View style={styles.alertRow}>
           {pendingCount > 0 && (
-            <Pressable style={styles.alertCard} onPress={() => router.push("/merchant/orders" as never)}>
+            <Pressable style={styles.alertCard} onPress={() => router.push("/orders" as never)}>
               <Text style={styles.alertIcon}>🔔</Text>
               <View style={styles.alertContent}>
                 <Text style={styles.alertTitle}>{pendingCount} Pending Order{pendingCount > 1 ? "s" : ""}</Text>
@@ -72,7 +71,7 @@ export default function MerchantHomeScreen() {
             </Pressable>
           )}
           {lowStockCount > 0 && (
-            <Pressable style={[styles.alertCard, styles.alertWarning]} onPress={() => router.push("/merchant/inventory" as never)}>
+            <Pressable style={[styles.alertCard, styles.alertWarning]} onPress={() => router.push("/inventory" as never)}>
               <Text style={styles.alertIcon}>⚠️</Text>
               <View style={styles.alertContent}>
                 <Text style={styles.alertTitle}>{lowStockCount} Low Stock Item{lowStockCount > 1 ? "s" : ""}</Text>
@@ -87,12 +86,12 @@ export default function MerchantHomeScreen() {
 
         <View style={styles.quickGrid}>
           {[
-            { icon: "📦", label: "Orders", route: "/merchant/orders", badge: pendingCount > 0 ? String(pendingCount) : undefined },
-            { icon: "📋", label: "Catalog", route: "/merchant/catalog" },
-            { icon: "📊", label: "Inventory", route: "/merchant/inventory", badge: lowStockCount > 0 ? String(lowStockCount) : undefined },
-            { icon: "📅", label: "Bookings", route: "/merchant/bookings" },
-            { icon: "📈", label: "Analytics", route: "/merchant/analytics" },
-            { icon: "🎯", label: "Campaigns", route: "/merchant/campaigns" },
+            { icon: "📦", label: "Orders", route: "/orders", badge: pendingCount > 0 ? String(pendingCount) : undefined },
+            { icon: "📋", label: "Catalog", route: "/catalog" },
+            { icon: "📊", label: "Inventory", route: "/inventory", badge: lowStockCount > 0 ? String(lowStockCount) : undefined },
+            { icon: "📅", label: "Bookings", route: "/bookings" },
+            { icon: "📈", label: "Analytics", route: "/analytics" },
+            { icon: "🎯", label: "Campaigns", route: "/campaigns" },
           ].map((item) => (
             <Pressable key={item.label} style={styles.quickItem} onPress={() => router.push(item.route as never)}>
               <View style={styles.quickIconWrap}>
