@@ -6,16 +6,22 @@ import { CityContextPanel } from "@/components/city/CityContextPanel";
 import { ChatPanel } from "@/components/chat/ChatPanel";
 import { OfflineBanner } from "@/components/layout/OfflineBanner";
 import { InstallPrompt } from "@/components/layout/InstallPrompt";
+import { SearchOverlay } from "@/components/layout/SearchOverlay";
 import { useChat } from "@/hooks/use-chat";
 
 export default function Dashboard() {
   const [threadsOpen, setThreadsOpen] = useState(false);
   const [discoveryOpen, setDiscoveryOpen] = useState(false);
   const [cityContextOpen, setCityContextOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { sendMessage } = useChat();
 
   const handleDiscoverySelect = useCallback(async (prompt: string) => {
     await sendMessage(prompt);
+  }, [sendMessage]);
+
+  const handleSearch = useCallback(async (query: string) => {
+    if (query) await sendMessage(query);
   }, [sendMessage]);
 
   return (
@@ -23,7 +29,8 @@ export default function Dashboard() {
       <Header
         onToggleThreads={() => setThreadsOpen(!threadsOpen)}
         onToggleDiscovery={() => setDiscoveryOpen(!discoveryOpen)}
-        onToggleSearch={() => setCityContextOpen(!cityContextOpen)}
+        onToggleSearch={() => setSearchOpen(true)}
+        onToggleCityContext={() => setCityContextOpen(!cityContextOpen)}
       />
       <OfflineBanner />
       <CityContextPanel isOpen={cityContextOpen} onClose={() => setCityContextOpen(false)} />
@@ -39,6 +46,7 @@ export default function Dashboard() {
       </div>
 
       <DiscoverySidebar isOpen={discoveryOpen} onClose={() => setDiscoveryOpen(false)} onSelect={handleDiscoverySelect} />
+      <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} onSearch={handleSearch} />
       <InstallPrompt />
     </div>
   );

@@ -79,7 +79,8 @@ The project uses a pnpm monorepo with `apps/` for deployable applications, `pack
 - **Discovery Sidebar**: 8 service categories (Transport, Healthcare, Commerce, Government, Events, Education, Smart City, Community) with expandable prompt lists and search.
 - **Auth**: Keycloak PKCE via `@cityos/auth` + guest demo mode (dev/demo only). Auth callback page with state/verifier validation.
 - **SEO Pages**: About, Contact, Privacy, Terms — all with back-to-copilot navigation.
-- **Layout**: Responsive with threads sidebar (left, collapsible), header with Dakkah branding, and discovery sidebar (right, slide-out).
+- **Search Overlay**: Cmd+K / click search bar opens a modal overlay with trending searches, recent searches (localStorage), and type-ahead suggestions. Selecting a search sends it as a chat message to the copilot.
+- **Layout**: Responsive with threads sidebar (left, collapsible), header with Dakkah branding, search bar (desktop), city context (MapPin), and discovery sidebar (right, slide-out).
 - **Port**: 5000, path `/web-platform/`. Vite proxy: `${basePath}api` → `http://localhost:8080`.
 - **Router**: wouter with `BASE_URL` base path. React Query for data fetching.
 

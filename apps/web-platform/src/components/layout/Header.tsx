@@ -1,4 +1,4 @@
-import { Menu, Search, Compass, LogOut, User } from "lucide-react";
+import { Menu, Search, Compass, LogOut, User, MapPin } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { NotificationBell } from "./NotificationBell";
 
@@ -6,9 +6,10 @@ interface Props {
   onToggleThreads: () => void;
   onToggleDiscovery: () => void;
   onToggleSearch: () => void;
+  onToggleCityContext: () => void;
 }
 
-export function Header({ onToggleThreads, onToggleDiscovery, onToggleSearch }: Props) {
+export function Header({ onToggleThreads, onToggleDiscovery, onToggleSearch, onToggleCityContext }: Props) {
   const { user, logout } = useAuth();
 
   return (
@@ -27,10 +28,22 @@ export function Header({ onToggleThreads, onToggleDiscovery, onToggleSearch }: P
         </div>
       </div>
 
-      <div className="flex-1" />
-
-      <button onClick={onToggleSearch} className="p-2 rounded-lg hover:bg-muted transition-colors" title="City Context">
+      <button
+        onClick={onToggleSearch}
+        className="hidden sm:flex items-center gap-2 flex-1 max-w-sm mx-4 px-3 py-1.5 rounded-lg border border-input bg-muted/50 text-muted-foreground text-sm hover:bg-muted transition-colors cursor-pointer"
+      >
+        <Search className="h-4 w-4" />
+        <span className="flex-1 text-left">Ask Dakkah anything...</span>
+        <kbd className="hidden md:inline-flex px-1.5 py-0.5 rounded border border-border bg-background text-[10px] font-mono">&#8984;K</kbd>
+      </button>
+      <button onClick={onToggleSearch} className="sm:hidden p-2 rounded-lg hover:bg-muted transition-colors" title="Search">
         <Search className="h-5 w-5 text-muted-foreground" />
+      </button>
+
+      <div className="flex-1 sm:hidden" />
+
+      <button onClick={onToggleCityContext} className="p-2 rounded-lg hover:bg-muted transition-colors" title="City Context">
+        <MapPin className="h-5 w-5 text-muted-foreground" />
       </button>
       <NotificationBell />
       <button onClick={onToggleDiscovery} className="p-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors" title="Discover Services">
