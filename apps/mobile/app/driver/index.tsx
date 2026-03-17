@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator, RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 import { useDriver } from "@/context/DriverContext";
 import { useAuth } from "@/context/AuthContext";
 import { StatusToggle } from "@/components/driver/StatusToggle";
@@ -148,16 +148,16 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.surface },
   center: { justifyContent: "center", alignItems: "center" },
   loadingText: { marginTop: 12, fontSize: 14, color: COLORS.textSecondary },
-  header: { backgroundColor: "#0a1628", paddingBottom: 12, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  header: { backgroundColor: BRAND.navy, paddingBottom: 12, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   headerLeft: { flexDirection: "row", alignItems: "center", gap: 10 },
-  driverAvatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#3182ce", alignItems: "center", justifyContent: "center" },
+  driverAvatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: BRAND.blue, alignItems: "center", justifyContent: "center" },
   driverAvatarText: { color: "#fff", fontSize: 18, fontWeight: "700" },
   headerTitle: { fontSize: 18, fontWeight: "800", color: "#fff" },
   headerSub: { fontSize: 12, color: "#94a3b8" },
   headerRight: { flexDirection: "row", gap: 6 },
   headerBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
   headerBtnIcon: { fontSize: 16 },
-  offlineBanner: { backgroundColor: "#d97706", paddingVertical: 6, paddingHorizontal: 16 },
+  offlineBanner: { backgroundColor: BRAND.amber, paddingVertical: 6, paddingHorizontal: 16 },
   offlineBannerText: { color: "#fff", fontSize: 12, fontWeight: "600", textAlign: "center" },
   content: { flex: 1 },
   sduiContainer: { marginHorizontal: 16, marginTop: 12, borderRadius: 12, overflow: "hidden" },

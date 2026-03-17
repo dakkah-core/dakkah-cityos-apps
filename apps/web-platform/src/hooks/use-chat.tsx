@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from "react";
 import type { Message, Thread, MessageAttachment } from "@/types/chat";
 import { saveMessages, loadMessages } from "@/lib/offline-store";
+import { CityOSClient } from "@cityos/api-client";
 
 interface ChatContextValue {
   messages: Message[];
@@ -14,6 +15,21 @@ interface ChatContextValue {
 const ChatContext = createContext<ChatContextValue | null>(null);
 
 const API_BASE = `${import.meta.env.BASE_URL}api`;
+
+const apiClient = new CityOSClient({
+  baseUrl: `${window.location.origin}${import.meta.env.BASE_URL}api`.replace(/\/$/, ""),
+  getToken: async () => {
+    try {
+      const tokenJson = localStorage.getItem("cityos_tokens");
+      if (tokenJson) {
+        const tokens = JSON.parse(tokenJson);
+        return tokens.accessToken || null;
+      }
+    } catch {}
+    return null;
+  },
+  surface: "desktop",
+});
 
 const DEMO_RESPONSES: Record<string, { content: string; artifacts?: Message["artifacts"] }> = {
   default: {
@@ -82,14 +98,10 @@ async function fetchFromApi(
       .map((m) => ({ role: m.role, content: m.content }));
     messages.push({ role: "user", content: text });
 
-    const res = await fetch(`${API_BASE}/ai/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages, threadId: "web-default" }),
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) return null;
-    const json = await res.json();
+    const json = await apiClient.post<{ success: boolean; data?: { content: string; sdui?: unknown } }>(
+      "/ai/chat",
+      { messages, threadId: "web-default" },
+    );
     if (!json.success || !json.data) return null;
 
     const { content, sdui } = json.data;

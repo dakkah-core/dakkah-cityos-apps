@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, Pressable, TextInput, Image, Alert, Platform } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { SignaturePad } from "./SignaturePad";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 
 interface ProofOfDeliveryProps {
   onSubmit: (proof: {
@@ -169,10 +169,10 @@ const styles = StyleSheet.create({
   sigOpenBtnText: { fontSize: 14, fontWeight: "600", color: COLORS.textSecondary },
   sigDoneRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: "#ecfdf5", borderRadius: 10, padding: 12, marginBottom: 12 },
   sigDoneText: { fontSize: 14, fontWeight: "600", color: "#059669" },
-  sigRedoText: { fontSize: 13, fontWeight: "600", color: "#3182ce" },
+  sigRedoText: { fontSize: 13, fontWeight: "600", color: BRAND.blue },
   proofSummary: { backgroundColor: "#ecfdf5", borderRadius: 8, padding: 10, marginBottom: 12 },
   proofSummaryText: { fontSize: 12, color: "#059669", fontWeight: "600", textAlign: "center" },
-  submitBtn: { backgroundColor: "#0d9488", paddingVertical: 14, borderRadius: 12, alignItems: "center" },
+  submitBtn: { backgroundColor: BRAND.teal, paddingVertical: 14, borderRadius: 12, alignItems: "center" },
   submitBtnDisabled: { opacity: 0.4 },
   submitBtnText: { color: "#fff", fontSize: 16, fontWeight: "700" },
 });

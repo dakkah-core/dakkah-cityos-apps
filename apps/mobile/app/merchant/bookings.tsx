@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { View, Text, FlatList, Pressable, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 import { useMerchant } from "@/context/MerchantContext";
 import type { Booking, TableInfo } from "@/types/merchant";
 
@@ -16,9 +16,9 @@ const BOOKING_STATUS_COLORS: Record<string, { bg: string; text: string }> = {
 };
 
 const TABLE_STATUS_COLORS: Record<string, string> = {
-  available: "#0d9488",
-  occupied: "#d97706",
-  reserved: "#3182ce",
+  available: BRAND.teal,
+  occupied: BRAND.amber,
+  reserved: BRAND.blue,
   maintenance: "#6b7280",
 };
 
@@ -173,7 +173,7 @@ export default function BookingsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.surface },
-  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, backgroundColor: "#0a1628", gap: 12 },
+  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, backgroundColor: BRAND.navy, gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.15)", alignItems: "center", justifyContent: "center" },
   backIcon: { color: "#fff", fontSize: 18, fontWeight: "700" },
   title: { flex: 1, fontSize: 20, fontWeight: "800", color: "#fff" },
@@ -181,9 +181,9 @@ const styles = StyleSheet.create({
   refreshIcon: { color: "#fff", fontSize: 20 },
   tabs: { flexDirection: "row", backgroundColor: COLORS.surfaceWhite, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   tab: { flex: 1, paddingVertical: 12, alignItems: "center", borderBottomWidth: 2, borderBottomColor: "transparent" },
-  tabActive: { borderBottomColor: "#0a1628" },
+  tabActive: { borderBottomColor: BRAND.navy },
   tabText: { fontSize: 14, fontWeight: "600", color: COLORS.textSecondary },
-  tabTextActive: { color: "#0a1628" },
+  tabTextActive: { color: BRAND.navy },
   list: { padding: 16, gap: 12, paddingBottom: 40 },
   bookingCard: { backgroundColor: COLORS.surfaceWhite, borderRadius: 14, padding: 16, borderWidth: 1, borderColor: COLORS.border, gap: 10 },
   bookingHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
@@ -195,15 +195,15 @@ const styles = StyleSheet.create({
   detailItem: { flexDirection: "row", alignItems: "center", gap: 4 },
   detailIcon: { fontSize: 14 },
   detailText: { fontSize: 13, color: COLORS.text },
-  bookingNotes: { fontSize: 12, color: "#d97706", fontStyle: "italic" },
+  bookingNotes: { fontSize: 12, color: BRAND.amber, fontStyle: "italic" },
   actionRow: { flexDirection: "row", gap: 10, marginTop: 4 },
-  cancelBtnAction: { flex: 1, paddingVertical: 10, borderRadius: 10, borderWidth: 1, borderColor: "#e11d48", alignItems: "center" },
-  cancelBtnText: { color: "#e11d48", fontWeight: "700", fontSize: 14 },
-  confirmBtn: { flex: 2, paddingVertical: 10, borderRadius: 10, backgroundColor: "#0d9488", alignItems: "center" },
+  cancelBtnAction: { flex: 1, paddingVertical: 10, borderRadius: 10, borderWidth: 1, borderColor: BRAND.rose, alignItems: "center" },
+  cancelBtnText: { color: BRAND.rose, fontWeight: "700", fontSize: 14 },
+  confirmBtn: { flex: 2, paddingVertical: 10, borderRadius: 10, backgroundColor: BRAND.teal, alignItems: "center" },
   confirmBtnText: { color: "#fff", fontWeight: "700", fontSize: 14 },
-  seatBtn: { paddingVertical: 10, borderRadius: 10, backgroundColor: "#3182ce", alignItems: "center", marginTop: 4 },
+  seatBtn: { paddingVertical: 10, borderRadius: 10, backgroundColor: BRAND.blue, alignItems: "center", marginTop: 4 },
   seatBtnText: { color: "#fff", fontWeight: "700", fontSize: 14 },
-  completeBtn: { paddingVertical: 10, borderRadius: 10, backgroundColor: "#0d9488", alignItems: "center", marginTop: 4 },
+  completeBtn: { paddingVertical: 10, borderRadius: 10, backgroundColor: BRAND.teal, alignItems: "center", marginTop: 4 },
   completeBtnText: { color: "#fff", fontWeight: "700", fontSize: 14 },
   tableCard: { flexDirection: "row", alignItems: "center", backgroundColor: COLORS.surfaceWhite, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: COLORS.border, gap: 12 },
   tableStatus: { width: 4, height: 40, borderRadius: 2 },

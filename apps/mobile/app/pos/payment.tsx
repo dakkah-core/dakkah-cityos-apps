@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { View, Text, Pressable, StyleSheet, TextInput, Alert, ActivityIndicator, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 import { usePos } from "@/context/PosContext";
 import type { PaymentMethod } from "@/types/pos";
 
@@ -263,7 +263,7 @@ export default function PaymentScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0a1628" },
+  container: { flex: 1, backgroundColor: BRAND.navy },
   header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.15)", alignItems: "center", justifyContent: "center" },
   backIcon: { color: "#fff", fontSize: 18, fontWeight: "700" },
@@ -272,15 +272,15 @@ const styles = StyleSheet.create({
   bodyContent: { padding: 20 },
   totalCard: { backgroundColor: "rgba(13,148,136,0.15)", borderRadius: 16, padding: 24, alignItems: "center", marginBottom: 24, borderWidth: 1, borderColor: "rgba(13,148,136,0.3)" },
   totalLabel: { fontSize: 14, color: "rgba(255,255,255,0.6)", marginBottom: 4 },
-  totalAmount: { fontSize: 36, fontWeight: "800", color: "#0d9488" },
+  totalAmount: { fontSize: 36, fontWeight: "800", color: BRAND.teal },
   totalItems: { fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 4 },
   sectionTitle: { fontSize: 14, fontWeight: "700", color: "rgba(255,255,255,0.6)", marginBottom: 12 },
   methodRow: { flexDirection: "row", gap: 10, marginBottom: 24 },
   methodCard: { flex: 1, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 14, padding: 14, alignItems: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
-  methodActive: { backgroundColor: "rgba(13,148,136,0.15)", borderColor: "#0d9488" },
+  methodActive: { backgroundColor: "rgba(13,148,136,0.15)", borderColor: BRAND.teal },
   methodIcon: { fontSize: 24, marginBottom: 4 },
   methodLabel: { fontSize: 11, fontWeight: "600", color: "rgba(255,255,255,0.6)" },
-  methodLabelActive: { color: "#0d9488" },
+  methodLabelActive: { color: BRAND.teal },
   paymentDetail: { backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
   detailLabel: { fontSize: 12, fontWeight: "600", color: "rgba(255,255,255,0.5)", marginBottom: 8 },
   cashInput: { backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 24, color: "#fff", textAlign: "center", marginBottom: 12, borderWidth: 1, borderColor: "rgba(255,255,255,0.15)" },
@@ -289,19 +289,19 @@ const styles = StyleSheet.create({
   quickCashText: { color: "#fff", fontWeight: "700", fontSize: 14 },
   changeBox: { backgroundColor: "rgba(13,148,136,0.2)", borderRadius: 10, padding: 12, flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   changeLabel: { fontSize: 14, color: "rgba(255,255,255,0.6)" },
-  changeAmount: { fontSize: 20, fontWeight: "800", color: "#0d9488" },
+  changeAmount: { fontSize: 20, fontWeight: "800", color: BRAND.teal },
   cardSimBox: { backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 12, padding: 24, alignItems: "center", marginBottom: 16 },
   cardSimIcon: { fontSize: 32, marginBottom: 8 },
   cardSimText: { fontSize: 14, color: "rgba(255,255,255,0.5)" },
   cardInput: { backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 24, color: "#fff", textAlign: "center", letterSpacing: 8, borderWidth: 1, borderColor: "rgba(255,255,255,0.15)" },
   nfcSimBtn: { backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 14, padding: 32, alignItems: "center", borderWidth: 2, borderColor: "rgba(255,255,255,0.15)", borderStyle: "dashed" },
-  nfcSimDone: { borderColor: "#0d9488", borderStyle: "solid", backgroundColor: "rgba(13,148,136,0.15)" },
+  nfcSimDone: { borderColor: BRAND.teal, borderStyle: "solid", backgroundColor: "rgba(13,148,136,0.15)" },
   nfcSimIcon: { fontSize: 40, marginBottom: 8 },
   nfcSimText: { fontSize: 14, fontWeight: "600", color: "rgba(255,255,255,0.6)" },
   splitRow: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 10 },
   splitMethodPicker: { flexDirection: "row", gap: 4 },
   splitMethodBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.08)", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
-  splitMethodActive: { backgroundColor: "rgba(13,148,136,0.2)", borderColor: "#0d9488" },
+  splitMethodActive: { backgroundColor: "rgba(13,148,136,0.2)", borderColor: BRAND.teal },
   splitMethodText: { fontSize: 16 },
   splitMethodTextActive: {},
   splitAmountInput: { flex: 1, backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 16, color: "#fff", textAlign: "right", borderWidth: 1, borderColor: "rgba(255,255,255,0.15)" },
@@ -312,10 +312,10 @@ const styles = StyleSheet.create({
   splitRemainingBox: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: "rgba(217,119,6,0.15)", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "rgba(217,119,6,0.3)" },
   splitBalanced: { backgroundColor: "rgba(13,148,136,0.15)", borderColor: "rgba(13,148,136,0.3)" },
   splitRemainingLabel: { fontSize: 13, color: "rgba(255,255,255,0.6)" },
-  splitRemainingValue: { fontSize: 16, fontWeight: "700", color: "#d97706" },
-  splitBalancedText: { color: "#0d9488" },
+  splitRemainingValue: { fontSize: 16, fontWeight: "700", color: BRAND.amber },
+  splitBalancedText: { color: BRAND.teal },
   footer: { paddingHorizontal: 20, paddingTop: 12 },
-  payBtn: { backgroundColor: "#0d9488", paddingVertical: 16, borderRadius: 14, alignItems: "center" },
+  payBtn: { backgroundColor: BRAND.teal, paddingVertical: 16, borderRadius: 14, alignItems: "center" },
   payBtnDisabled: { opacity: 0.4 },
   payBtnText: { color: "#fff", fontWeight: "700", fontSize: 16 },
 });

@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@cityos/auth": "workspace:*",
+    "@cityos/api-client": "workspace:*",
     "@cityos/sdui-renderer-web": "workspace:*",
     "@cityos/sdui-protocol": "workspace:*",
     "@cityos/design-tokens": "workspace:*",

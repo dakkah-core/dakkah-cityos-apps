@@ -13,3 +13,5 @@ export {
 export { webStorage, createNativeStorage } from "./storage";
 export type { TokenStorage, NativeSecureStoreModule } from "./storage";
 export type { KeycloakConfig, User, AuthTokens, AuthState } from "./types";
+export { createDashboardAuth } from "./dashboard";
+export type { DashboardUser, DashboardAuthContextType, DashboardAuthConfig } from "./dashboard";

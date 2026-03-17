@@ -876,6 +876,9 @@ importers:
       '@cityos/ai-assistant-widget':
         specifier: workspace:*
         version: link:../../packages/ai-assistant-widget
+      '@cityos/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
       '@cityos/auth':
         specifier: workspace:*
         version: link:../../packages/auth
@@ -1086,6 +1089,9 @@ importers:
       '@cityos/sdui-protocol':
         specifier: workspace:*
         version: link:../sdui-protocol
+      '@tanstack/react-query':
+        specifier: 'catalog:'
+        version: 5.90.21(react@19.1.0)
     devDependencies:
       '@types/react':
         specifier: 'catalog:'

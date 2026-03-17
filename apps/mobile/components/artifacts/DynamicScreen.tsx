@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator, Text, StyleSheet } from "react-native";
 import { fetchSduiScreen } from "@/lib/ai-client";
 import { SduiNodeRenderer } from "./SduiNodeRenderer";
+import { BRAND } from "@/constants/colors";
 
 interface Props {
   screenId: string;
@@ -48,7 +49,7 @@ export function DynamicScreen({ screenId, surface, tenant, theme = "dark", onAct
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="small" color="#3182ce" />
+        <ActivityIndicator size="small" color={BRAND.blue} />
       </View>
     );
   }
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
     minHeight: 80,
   },
   errorText: {
-    color: "#e11d48",
+    color: BRAND.rose,
     fontSize: 13,
     textAlign: "center",
   },

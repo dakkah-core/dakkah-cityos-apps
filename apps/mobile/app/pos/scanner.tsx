@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import { View, Text, Pressable, StyleSheet, TextInput, Alert, ActivityIndicator, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 import { usePos } from "@/context/PosContext";
 import { CameraView, useCameraPermissions, type BarcodeScanningResult } from "expo-camera";
 
@@ -155,7 +155,7 @@ export default function ScannerScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0a1628" },
+  container: { flex: 1, backgroundColor: BRAND.navy },
   header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.15)", alignItems: "center", justifyContent: "center" },
   backIcon: { color: "#fff", fontSize: 18, fontWeight: "700" },
@@ -166,20 +166,20 @@ const styles = StyleSheet.create({
   scanOverlay: { flex: 1, alignItems: "center", justifyContent: "center" },
   cameraPlaceholder: { flex: 1, backgroundColor: "rgba(255,255,255,0.05)", alignItems: "center", justifyContent: "center" },
   scanFrame: { width: 200, height: 150, position: "relative", marginBottom: 16 },
-  corner: { position: "absolute", width: 24, height: 24, borderColor: "#0d9488" },
+  corner: { position: "absolute", width: 24, height: 24, borderColor: BRAND.teal },
   topLeft: { top: 0, left: 0, borderTopWidth: 3, borderLeftWidth: 3 },
   topRight: { top: 0, right: 0, borderTopWidth: 3, borderRightWidth: 3 },
   bottomLeft: { bottom: 0, left: 0, borderBottomWidth: 3, borderLeftWidth: 3 },
   bottomRight: { bottom: 0, right: 0, borderBottomWidth: 3, borderRightWidth: 3 },
   scanText: { fontSize: 14, fontWeight: "600", color: "rgba(255,255,255,0.6)" },
   scanSubtext: { fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 4 },
-  permBtn: { backgroundColor: "#0d9488", paddingHorizontal: 20, paddingVertical: 10, borderRadius: 8, marginTop: 12 },
+  permBtn: { backgroundColor: BRAND.teal, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 8, marginTop: 12 },
   permBtnText: { color: "#fff", fontWeight: "700", fontSize: 13 },
   manualSection: { backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 16, padding: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
   manualTitle: { fontSize: 16, fontWeight: "700", color: "#fff", marginBottom: 12 },
   manualRow: { flexDirection: "row", gap: 8, marginBottom: 20 },
   manualInput: { flex: 1, backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: "#fff", borderWidth: 1, borderColor: "rgba(255,255,255,0.2)" },
-  lookupBtn: { backgroundColor: "#0d9488", paddingHorizontal: 20, borderRadius: 10, justifyContent: "center" },
+  lookupBtn: { backgroundColor: BRAND.teal, paddingHorizontal: 20, borderRadius: 10, justifyContent: "center" },
   lookupBtnText: { color: "#fff", fontWeight: "700", fontSize: 14 },
   btnDisabled: { opacity: 0.5 },
   quickTitle: { fontSize: 13, fontWeight: "600", color: "rgba(255,255,255,0.5)", marginBottom: 8 },
@@ -188,5 +188,5 @@ const styles = StyleSheet.create({
   quickBtnText: { fontSize: 12, fontWeight: "600", color: "rgba(255,255,255,0.7)", fontFamily: "monospace" },
   lastScanned: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 16, paddingTop: 12, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.1)" },
   lastScannedLabel: { fontSize: 12, color: "rgba(255,255,255,0.5)" },
-  lastScannedValue: { fontSize: 14, fontWeight: "700", color: "#0d9488" },
+  lastScannedValue: { fontSize: 14, fontWeight: "700", color: BRAND.teal },
 });

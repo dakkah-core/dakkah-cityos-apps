@@ -6,6 +6,7 @@ import { usePos } from "@/context/PosContext";
 import type { PosTransaction, ReceiptData } from "@/types/pos";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
+import { BRAND } from "@/constants/colors";
 
 function generateEscPosCommands(tx: PosTransaction): string {
   const receipt = tx.receiptData;
@@ -293,18 +294,18 @@ export default function ReceiptScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0a1628" },
+  container: { flex: 1, backgroundColor: BRAND.navy },
   header: { alignItems: "center", paddingVertical: 16 },
   title: { fontSize: 18, fontWeight: "800", color: "#fff" },
   body: { flex: 1 },
   bodyContent: { padding: 20, alignItems: "center" },
-  successIcon: { width: 64, height: 64, borderRadius: 32, backgroundColor: "#0d9488", alignItems: "center", justifyContent: "center", marginBottom: 12 },
+  successIcon: { width: 64, height: 64, borderRadius: 32, backgroundColor: BRAND.teal, alignItems: "center", justifyContent: "center", marginBottom: 12 },
   checkmark: { color: "#fff", fontSize: 32, fontWeight: "700" },
-  successText: { fontSize: 20, fontWeight: "800", color: "#0d9488", marginBottom: 4 },
+  successText: { fontSize: 20, fontWeight: "800", color: BRAND.teal, marginBottom: 4 },
   orderNum: { fontSize: 14, color: "rgba(255,255,255,0.5)", marginBottom: 20 },
   receiptCard: { backgroundColor: "#fff", borderRadius: 12, padding: 20, width: "100%", maxWidth: 380 },
   receiptHeader: { alignItems: "center", marginBottom: 4 },
-  storeName: { fontSize: 16, fontWeight: "800", color: "#0a1628" },
+  storeName: { fontSize: 16, fontWeight: "800", color: BRAND.navy },
   storeAddr: { fontSize: 11, color: "#666", marginTop: 2 },
   taxId: { fontSize: 10, color: "#999", marginTop: 2 },
   receiptDate: { fontSize: 10, color: "#999" },
@@ -317,10 +318,10 @@ const styles = StyleSheet.create({
   receiptTotalRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 2 },
   receiptTotalLabel: { fontSize: 12, color: "#666" },
   receiptTotalVal: { fontSize: 12, color: "#333" },
-  green: { color: "#0d9488" },
+  green: { color: BRAND.teal },
   receiptDividerDash: { height: 1, borderStyle: "dashed", borderTopWidth: 1, borderColor: "#ccc", marginVertical: 6 },
-  receiptGrandLabel: { fontSize: 14, fontWeight: "800", color: "#0a1628" },
-  receiptGrandVal: { fontSize: 14, fontWeight: "800", color: "#0a1628" },
+  receiptGrandLabel: { fontSize: 14, fontWeight: "800", color: BRAND.navy },
+  receiptGrandVal: { fontSize: 14, fontWeight: "800", color: BRAND.navy },
   payMethodText: { fontSize: 11, color: "#666", textAlign: "center" },
   payDetailText: { fontSize: 10, color: "#999", textAlign: "center" },
   splitSection: { marginTop: 6, paddingTop: 6, borderTopWidth: 1, borderTopColor: "#eee" },
@@ -335,6 +336,6 @@ const styles = StyleSheet.create({
   hwBtnText: { fontSize: 12, fontWeight: "600", color: "rgba(255,255,255,0.7)" },
   hwBtnSub: { fontSize: 9, color: "rgba(255,255,255,0.3)", marginTop: 2 },
   footer: { paddingHorizontal: 20, paddingTop: 12 },
-  newSaleBtn: { backgroundColor: "#3182ce", paddingVertical: 16, borderRadius: 14, alignItems: "center" },
+  newSaleBtn: { backgroundColor: BRAND.blue, paddingVertical: 16, borderRadius: 14, alignItems: "center" },
   newSaleBtnText: { color: "#fff", fontWeight: "700", fontSize: 16 },
 });

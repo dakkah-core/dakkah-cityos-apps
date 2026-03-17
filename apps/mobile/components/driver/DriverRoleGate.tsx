@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 
 interface DriverRoleGateProps {
   children: React.ReactNode;
@@ -52,6 +52,6 @@ const styles = StyleSheet.create({
   icon: { fontSize: 48, marginBottom: 16 },
   title: { fontSize: 20, fontWeight: "800", color: COLORS.text, marginBottom: 8, textAlign: "center" },
   subtitle: { fontSize: 14, color: COLORS.textSecondary, textAlign: "center", marginBottom: 24, lineHeight: 20 },
-  backBtn: { backgroundColor: "#0a1628", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10 },
+  backBtn: { backgroundColor: BRAND.navy, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10 },
   backBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
 });

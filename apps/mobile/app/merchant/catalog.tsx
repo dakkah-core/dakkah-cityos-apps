@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { View, Text, FlatList, Pressable, StyleSheet, TextInput, Alert, Modal, ScrollView, Switch, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 import { useMerchant } from "@/context/MerchantContext";
 import type { MerchantProduct } from "@/types/merchant";
 
@@ -206,7 +206,7 @@ export default function CatalogScreen() {
 
               <View style={styles.switchRow}>
                 <Text style={styles.fieldLabel}>Available</Text>
-                <Switch value={formAvailable} onValueChange={setFormAvailable} trackColor={{ false: "#ccc", true: "#0d9488" }} thumbColor="#fff" />
+                <Switch value={formAvailable} onValueChange={setFormAvailable} trackColor={{ false: "#ccc", true: BRAND.teal }} thumbColor="#fff" />
               </View>
 
               <Text style={styles.fieldLabel}>Stock Level</Text>
@@ -227,18 +227,18 @@ export default function CatalogScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.surface },
-  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, backgroundColor: "#0a1628", gap: 12 },
+  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, backgroundColor: BRAND.navy, gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.15)", alignItems: "center", justifyContent: "center" },
   backIcon: { color: "#fff", fontSize: 18, fontWeight: "700" },
   title: { flex: 1, fontSize: 20, fontWeight: "800", color: "#fff" },
-  addBtn: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10, backgroundColor: "#0d9488" },
+  addBtn: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10, backgroundColor: BRAND.teal },
   addBtnText: { color: "#fff", fontWeight: "700", fontSize: 13 },
   searchRow: { paddingHorizontal: 16, paddingVertical: 10, backgroundColor: COLORS.surfaceWhite, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   searchInput: { backgroundColor: COLORS.surface, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14, color: COLORS.text, borderWidth: 1, borderColor: COLORS.border },
   categories: { backgroundColor: COLORS.surfaceWhite, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   catScroll: { paddingHorizontal: 16, paddingVertical: 8, gap: 8 },
   catChip: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border },
-  catActive: { backgroundColor: "#0a1628", borderColor: "#0a1628" },
+  catActive: { backgroundColor: BRAND.navy, borderColor: BRAND.navy },
   catText: { fontSize: 12, fontWeight: "600", color: COLORS.textSecondary },
   catTextActive: { color: "#fff" },
   list: { padding: 16, gap: 10, paddingBottom: 40 },
@@ -256,9 +256,9 @@ const styles = StyleSheet.create({
   productFooter: { flexDirection: "row", alignItems: "center", gap: 12, borderTopWidth: 1, borderTopColor: COLORS.border, paddingTop: 6 },
   sku: { fontSize: 11, color: COLORS.textMuted },
   stockLabel: { fontSize: 11, color: COLORS.textSecondary, flex: 1 },
-  lowStock: { color: "#d97706", fontWeight: "700" },
-  deleteBtn: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6, borderWidth: 1, borderColor: "#e11d48" },
-  deleteBtnText: { color: "#e11d48", fontSize: 11, fontWeight: "600" },
+  lowStock: { color: BRAND.amber, fontWeight: "700" },
+  deleteBtn: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6, borderWidth: 1, borderColor: BRAND.rose },
+  deleteBtnText: { color: BRAND.rose, fontSize: 11, fontWeight: "600" },
   empty: { alignItems: "center", paddingTop: 80, gap: 8 },
   emptyIcon: { fontSize: 48 },
   emptyText: { fontSize: 16, color: COLORS.textSecondary },
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   fieldInput: { backgroundColor: COLORS.surface, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: COLORS.text, borderWidth: 1, borderColor: COLORS.border },
   multiline: { minHeight: 60, textAlignVertical: "top" },
   switchRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 8 },
-  saveBtn: { backgroundColor: "#0a1628", paddingVertical: 14, borderRadius: 12, alignItems: "center", marginTop: 12 },
+  saveBtn: { backgroundColor: BRAND.navy, paddingVertical: 14, borderRadius: 12, alignItems: "center", marginTop: 12 },
   saveBtnDisabled: { opacity: 0.5 },
   saveBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
 });

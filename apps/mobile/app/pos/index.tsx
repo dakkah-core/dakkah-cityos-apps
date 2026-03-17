@@ -5,7 +5,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 import { usePos } from "@/context/PosContext";
 import { SduiRenderer, configureActionHandler } from "@cityos/sdui-renderer-native";
 import type { SdNode } from "@cityos/sdui-protocol";
@@ -162,7 +162,7 @@ export default function PosTerminalScreen() {
   if (isLoading) {
     return (
       <View style={[styles.loadingContainer, { paddingTop: insets.top }]}>
-        <ActivityIndicator size="large" color="#3182ce" />
+        <ActivityIndicator size="large" color={BRAND.blue} />
         <Text style={styles.loadingText}>Loading POS Terminal...</Text>
       </View>
     );
@@ -409,14 +409,14 @@ export default function PosTerminalScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0a1628" },
-  loadingContainer: { flex: 1, backgroundColor: "#0a1628", justifyContent: "center", alignItems: "center" },
+  container: { flex: 1, backgroundColor: BRAND.navy },
+  loadingContainer: { flex: 1, backgroundColor: BRAND.navy, justifyContent: "center", alignItems: "center" },
   loadingText: { color: "rgba(255,255,255,0.6)", marginTop: 12, fontSize: 14 },
-  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 10, gap: 10, backgroundColor: "#0a1628" },
+  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 10, gap: 10, backgroundColor: BRAND.navy },
   backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.15)", alignItems: "center", justifyContent: "center" },
   backIcon: { color: "#fff", fontSize: 18, fontWeight: "700" },
   title: { fontSize: 20, fontWeight: "800", color: "#fff", flex: 1 },
-  offlineBadge: { backgroundColor: "#d97706", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  offlineBadge: { backgroundColor: BRAND.amber, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   offlineText: { color: "#fff", fontSize: 10, fontWeight: "700" },
   headerActions: { flexDirection: "row", gap: 6 },
   headerActionBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
   categoryBar: { maxHeight: 44, paddingLeft: 12 },
   categoryBarContent: { gap: 6, paddingRight: 12, alignItems: "center" },
   categoryChip: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: COLORS.surfaceWhite, borderWidth: 1, borderColor: COLORS.border },
-  categoryActive: { backgroundColor: "#0a1628", borderColor: "#0a1628" },
+  categoryActive: { backgroundColor: BRAND.navy, borderColor: BRAND.navy },
   categoryText: { fontSize: 12, fontWeight: "600", color: COLORS.textSecondary },
   categoryTextActive: { color: "#fff" },
   productGrid: { padding: 8 },
@@ -438,13 +438,13 @@ const styles = StyleSheet.create({
   productEmoji: { width: 40, height: 40, borderRadius: 10, backgroundColor: COLORS.surface, alignItems: "center", justifyContent: "center", marginBottom: 6 },
   productEmojiText: { fontSize: 20 },
   productName: { fontSize: 12, fontWeight: "600", color: COLORS.text, textAlign: "center", marginBottom: 4 },
-  productPrice: { fontSize: 14, fontWeight: "800", color: "#0d9488" },
-  lowStockBadge: { position: "absolute", top: 4, right: 4, backgroundColor: "#d97706", paddingHorizontal: 4, paddingVertical: 1, borderRadius: 4 },
+  productPrice: { fontSize: 14, fontWeight: "800", color: BRAND.teal },
+  lowStockBadge: { position: "absolute", top: 4, right: 4, backgroundColor: BRAND.amber, paddingHorizontal: 4, paddingVertical: 1, borderRadius: 4 },
   lowStockText: { fontSize: 8, color: "#fff", fontWeight: "700" },
   cartSide: { flex: 1, backgroundColor: COLORS.surfaceWhite, borderLeftWidth: 1, borderLeftColor: COLORS.border },
   cartHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   cartTitle: { fontSize: 16, fontWeight: "800", color: COLORS.text },
-  clearBtn: { fontSize: 13, color: "#e11d48", fontWeight: "600" },
+  clearBtn: { fontSize: 13, color: BRAND.rose, fontWeight: "600" },
   cartItems: { flex: 1 },
   emptyCart: { alignItems: "center", justifyContent: "center", paddingTop: 60 },
   emptyCartIcon: { fontSize: 40, marginBottom: 8 },
@@ -467,21 +467,21 @@ const styles = StyleSheet.create({
   discountRow: { flexDirection: "row", alignItems: "center", gap: 8, width: "100%", paddingTop: 6 },
   discountLabel: { fontSize: 11, color: COLORS.textSecondary },
   discountInput: { flex: 1, backgroundColor: COLORS.surface, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, fontSize: 13, color: COLORS.text, borderWidth: 1, borderColor: COLORS.border },
-  discountApplyBtn: { backgroundColor: "#0d9488", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 },
+  discountApplyBtn: { backgroundColor: BRAND.teal, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 },
   discountApplyText: { color: "#fff", fontSize: 11, fontWeight: "700" },
   discountClearBtn: { paddingHorizontal: 6, paddingVertical: 4 },
-  discountClearText: { color: "#e11d48", fontSize: 11, fontWeight: "600" },
+  discountClearText: { color: BRAND.rose, fontSize: 11, fontWeight: "600" },
   cartSummary: { padding: 16, borderTopWidth: 1, borderTopColor: COLORS.border, backgroundColor: COLORS.surface },
   summaryRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 4 },
   summaryLabel: { fontSize: 13, color: COLORS.textSecondary },
   summaryValue: { fontSize: 13, fontWeight: "600", color: COLORS.text },
-  discountText: { color: "#0d9488" },
+  discountText: { color: BRAND.teal },
   totalRow: { borderTopWidth: 1, borderTopColor: COLORS.border, paddingTop: 8, marginTop: 4, marginBottom: 12 },
   totalLabel: { fontSize: 16, fontWeight: "800", color: COLORS.text },
-  totalValue: { fontSize: 16, fontWeight: "800", color: "#0a1628" },
-  checkoutBtn: { backgroundColor: "#0d9488", paddingVertical: 14, borderRadius: 12, alignItems: "center" },
+  totalValue: { fontSize: 16, fontWeight: "800", color: BRAND.navy },
+  checkoutBtn: { backgroundColor: BRAND.teal, paddingVertical: 14, borderRadius: 12, alignItems: "center" },
   checkoutBtnText: { color: "#fff", fontWeight: "700", fontSize: 16 },
-  shiftContainer: { flex: 1, backgroundColor: "#0a1628" },
+  shiftContainer: { flex: 1, backgroundColor: BRAND.navy },
   shiftHeader: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, gap: 12 },
   shiftBackBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.15)", alignItems: "center", justifyContent: "center" },
   shiftBackIcon: { color: "#fff", fontSize: 18, fontWeight: "700" },
@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
   shiftSubtext: { fontSize: 14, color: "rgba(255,255,255,0.6)", marginBottom: 32 },
   fieldLabel: { fontSize: 12, fontWeight: "600", color: "rgba(255,255,255,0.6)", marginBottom: 8, alignSelf: "flex-start", width: 280 },
   shiftInput: { backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 18, color: "#fff", width: 280, textAlign: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.2)", marginBottom: 24 },
-  shiftOpenBtn: { backgroundColor: "#0d9488", paddingHorizontal: 40, paddingVertical: 14, borderRadius: 12 },
+  shiftOpenBtn: { backgroundColor: BRAND.teal, paddingHorizontal: 40, paddingVertical: 14, borderRadius: 12 },
   shiftOpenBtnText: { color: "#fff", fontWeight: "700", fontSize: 16 },
   sduiBar: { paddingHorizontal: 12, paddingVertical: 6, backgroundColor: "rgba(255,255,255,0.03)", borderBottomWidth: 1, borderBottomColor: "rgba(255,255,255,0.06)" },
 });

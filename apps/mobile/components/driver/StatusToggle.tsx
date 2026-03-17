@@ -1,13 +1,13 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 import { useDriver } from "@/context/DriverContext";
 import type { DriverStatus } from "@/types/driver";
 
 const STATUS_CONFIG: Record<DriverStatus, { label: string; color: string; bg: string }> = {
-  online: { label: "Online", color: "#fff", bg: "#0d9488" },
+  online: { label: "Online", color: "#fff", bg: BRAND.teal },
   offline: { label: "Offline", color: "#fff", bg: "#64748b" },
-  break: { label: "On Break", color: "#fff", bg: "#d97706" },
+  break: { label: "On Break", color: "#fff", bg: BRAND.amber },
 };
 
 export function StatusToggle() {

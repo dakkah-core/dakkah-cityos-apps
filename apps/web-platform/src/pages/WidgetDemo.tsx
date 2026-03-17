@@ -41,7 +41,7 @@ export default function WidgetDemo() {
   apiEndpoint="/api"
   position="bottom-right"
   theme={{
-    primary: "#3182ce",
+    primary: "var(--dt-primary-blue)",
     background: "#ffffff",
   }}
   hostContext={{

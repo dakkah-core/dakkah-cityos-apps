@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, TextInput, Platform } from "react-na
 import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 import * as SecureStore from "expo-secure-store";
+import { BRAND } from "@/constants/colors";
 
 const POS_ROLES = ["cashier", "pos_operator", "store_manager", "merchant"];
 const PIN_STORAGE_KEY = "dakkah_pos_pin";
@@ -177,21 +178,21 @@ export function PosRoleGate({ children }: PosRoleGateProps) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0a1628", justifyContent: "center", alignItems: "center", padding: 32 },
+  container: { flex: 1, backgroundColor: BRAND.navy, justifyContent: "center", alignItems: "center", padding: 32 },
   icon: { fontSize: 48, marginBottom: 16 },
   title: { fontSize: 22, fontWeight: "800", color: "#fff", marginBottom: 8, textAlign: "center" },
   subtitle: { fontSize: 14, color: "rgba(255,255,255,0.6)", textAlign: "center", marginBottom: 24, lineHeight: 20 },
-  signInBtn: { backgroundColor: "#3182ce", paddingHorizontal: 24, paddingVertical: 14, borderRadius: 12, marginBottom: 12, width: 280, alignItems: "center" },
+  signInBtn: { backgroundColor: BRAND.blue, paddingHorizontal: 24, paddingVertical: 14, borderRadius: 12, marginBottom: 12, width: 280, alignItems: "center" },
   signInBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
-  pinBtn: { backgroundColor: "rgba(13,148,136,0.2)", paddingHorizontal: 24, paddingVertical: 14, borderRadius: 12, marginBottom: 12, width: 280, alignItems: "center", borderWidth: 1, borderColor: "#0d9488" },
-  pinBtnText: { color: "#0d9488", fontWeight: "700", fontSize: 15 },
+  pinBtn: { backgroundColor: "rgba(13,148,136,0.2)", paddingHorizontal: 24, paddingVertical: 14, borderRadius: 12, marginBottom: 12, width: 280, alignItems: "center", borderWidth: 1, borderColor: BRAND.teal },
+  pinBtnText: { color: BRAND.teal, fontWeight: "700", fontSize: 15 },
   backBtn: { backgroundColor: "rgba(255,255,255,0.15)", paddingHorizontal: 24, paddingVertical: 14, borderRadius: 12, width: 280, alignItems: "center", marginTop: 8 },
   backBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
   pinActions: { gap: 12, alignItems: "center" },
   pinSection: { width: 280, marginTop: 8, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
   pinTitle: { fontSize: 14, fontWeight: "700", color: "#fff", marginBottom: 12, textAlign: "center" },
   pinInput: { backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 10, paddingHorizontal: 16, paddingVertical: 12, fontSize: 20, color: "#fff", textAlign: "center", letterSpacing: 6, borderWidth: 1, borderColor: "rgba(255,255,255,0.2)" },
-  pinError: { fontSize: 12, color: "#e11d48", textAlign: "center", marginTop: 6 },
-  pinSubmitBtn: { backgroundColor: "#0d9488", paddingVertical: 12, borderRadius: 10, alignItems: "center", marginTop: 12 },
+  pinError: { fontSize: 12, color: BRAND.rose, textAlign: "center", marginTop: 6 },
+  pinSubmitBtn: { backgroundColor: BRAND.teal, paddingVertical: 12, borderRadius: 10, alignItems: "center", marginTop: 12 },
   pinSubmitText: { color: "#fff", fontWeight: "700", fontSize: 14 },
 });

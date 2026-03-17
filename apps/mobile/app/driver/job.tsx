@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, Pressable, ScrollView, Alert, Linking, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 import { useDriver } from "@/context/DriverContext";
 import { DeliveryMap } from "@/components/driver/DeliveryMap";
 import { ProofOfDelivery } from "@/components/driver/ProofOfDelivery";
@@ -251,16 +251,16 @@ const styles = StyleSheet.create({
   errorText: { fontSize: 16, color: COLORS.textSecondary, marginBottom: 12 },
   backBtn: { paddingHorizontal: 20, paddingVertical: 10, backgroundColor: COLORS.primary, borderRadius: 8 },
   backBtnText: { color: "#fff", fontWeight: "600" },
-  header: { backgroundColor: "#0a1628", paddingBottom: 12, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", gap: 10 },
+  header: { backgroundColor: BRAND.navy, paddingBottom: 12, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", gap: 10 },
   headerBackBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
   headerBackText: { color: "#fff", fontSize: 20 },
   headerTitle: { fontSize: 16, fontWeight: "700", color: "#fff" },
   headerSub: { fontSize: 11, color: "#94a3b8", fontWeight: "500" },
-  payoutBadge: { backgroundColor: "#0d9488", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
+  payoutBadge: { backgroundColor: BRAND.teal, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
   payoutText: { color: "#fff", fontWeight: "700", fontSize: 14 },
   progressBar: { flexDirection: "row", gap: 4, paddingHorizontal: 16, paddingVertical: 8, backgroundColor: COLORS.surfaceWhite, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   progressDot: { flex: 1, height: 4, borderRadius: 2, backgroundColor: COLORS.border },
-  progressDotActive: { backgroundColor: "#0d9488" },
+  progressDotActive: { backgroundColor: BRAND.teal },
   content: { flex: 1 },
   podHint: { alignItems: "center", paddingVertical: 12 },
   podHintText: { fontSize: 13, color: COLORS.textSecondary, fontWeight: "500" },
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   itemBarcode: { fontSize: 11, color: COLORS.textSecondary, marginTop: 2 },
   itemQty: { fontSize: 14, fontWeight: "600", color: COLORS.textSecondary },
   itemsHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
-  openScannerBtn: { paddingHorizontal: 12, paddingVertical: 6, backgroundColor: "#3182ce", borderRadius: 8 },
+  openScannerBtn: { paddingHorizontal: 12, paddingVertical: 6, backgroundColor: BRAND.blue, borderRadius: 8 },
   openScannerBtnText: { color: "#fff", fontSize: 12, fontWeight: "600" },
   itemStatusDot: { width: 24, height: 24, borderRadius: 12, backgroundColor: COLORS.border, alignItems: "center", justifyContent: "center" },
   itemStatusDotScanned: { backgroundColor: "#059669" },
@@ -287,14 +287,14 @@ const styles = StyleSheet.create({
   completedCard: { margin: 16, padding: 32, backgroundColor: "#ecfdf5", borderRadius: 16, alignItems: "center", borderWidth: 1, borderColor: "#34d399" },
   completedIcon: { fontSize: 40, marginBottom: 8 },
   completedTitle: { fontSize: 20, fontWeight: "800", color: "#065f46" },
-  completedPayout: { fontSize: 18, fontWeight: "700", color: "#0d9488", marginTop: 4 },
+  completedPayout: { fontSize: 18, fontWeight: "700", color: BRAND.teal, marginTop: 4 },
   actionBar: { paddingHorizontal: 16, paddingTop: 12, backgroundColor: COLORS.surfaceWhite, borderTopWidth: 1, borderTopColor: COLORS.border },
   actionRow: { flexDirection: "row", gap: 10 },
   actionBtn: { paddingVertical: 14, borderRadius: 12, alignItems: "center", justifyContent: "center" },
-  acceptBtn: { flex: 1, backgroundColor: "#0d9488" },
+  acceptBtn: { flex: 1, backgroundColor: BRAND.teal },
   acceptBtnText: { color: "#fff", fontSize: 15, fontWeight: "700" },
-  rejectBtn: { flex: 0.6, backgroundColor: COLORS.surface, borderWidth: 1, borderColor: "#e11d48" },
-  rejectBtnText: { color: "#e11d48", fontSize: 15, fontWeight: "600" },
-  navActionBtn: { flex: 0.5, backgroundColor: "#3182ce" },
+  rejectBtn: { flex: 0.6, backgroundColor: COLORS.surface, borderWidth: 1, borderColor: BRAND.rose },
+  rejectBtnText: { color: BRAND.rose, fontSize: 15, fontWeight: "600" },
+  navActionBtn: { flex: 0.5, backgroundColor: BRAND.blue },
   navActionBtnText: { color: "#fff", fontSize: 14, fontWeight: "600" },
 });

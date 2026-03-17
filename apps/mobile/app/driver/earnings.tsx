@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 import { useDriver } from "@/context/DriverContext";
 import type { DriverEarnings } from "@/types/driver";
 
@@ -97,17 +97,17 @@ export default function EarningsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.surface },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
-  header: { backgroundColor: "#0a1628", paddingBottom: 12, paddingHorizontal: 16, flexDirection: "row", alignItems: "center" },
+  header: { backgroundColor: BRAND.navy, paddingBottom: 12, paddingHorizontal: 16, flexDirection: "row", alignItems: "center" },
   headerBackBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
   headerBackText: { color: "#fff", fontSize: 20 },
   headerTitle: { flex: 1, fontSize: 18, fontWeight: "700", color: "#fff", textAlign: "center" },
   periodRow: { flexDirection: "row", gap: 8, paddingHorizontal: 16, paddingVertical: 12, backgroundColor: COLORS.surfaceWhite, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   periodBtn: { flex: 1, paddingVertical: 10, borderRadius: 10, backgroundColor: COLORS.surface, alignItems: "center", borderWidth: 1, borderColor: COLORS.border },
-  periodBtnActive: { backgroundColor: "#0d9488", borderColor: "#0d9488" },
+  periodBtnActive: { backgroundColor: BRAND.teal, borderColor: BRAND.teal },
   periodText: { fontSize: 13, fontWeight: "600", color: COLORS.textSecondary },
   periodTextActive: { color: "#fff" },
   content: { flex: 1 },
-  earningsCard: { margin: 16, backgroundColor: "#0a1628", borderRadius: 16, padding: 24, alignItems: "center" },
+  earningsCard: { margin: 16, backgroundColor: BRAND.navy, borderRadius: 16, padding: 24, alignItems: "center" },
   earningsLabel: { fontSize: 13, color: "#94a3b8", fontWeight: "500" },
   earningsAmount: { fontSize: 36, fontWeight: "800", color: "#fff", marginTop: 4 },
   earningsStatsRow: { flexDirection: "row", marginTop: 20, gap: 12 },
@@ -119,6 +119,6 @@ const styles = StyleSheet.create({
   historyRow: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 14, backgroundColor: COLORS.surfaceWhite, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   historyDate: { fontSize: 14, fontWeight: "600", color: COLORS.text },
   historyMeta: { fontSize: 11, color: COLORS.textSecondary, marginTop: 2 },
-  historyAmount: { fontSize: 16, fontWeight: "700", color: "#0d9488" },
+  historyAmount: { fontSize: 16, fontWeight: "700", color: BRAND.teal },
   emptyText: { fontSize: 14, color: COLORS.textSecondary },
 });

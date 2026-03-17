@@ -1,58 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import { useSduiScreen, type SduiNode } from "@cityos/sdui-renderer-web";
 
-export type SDUIComponent = {
-  type: string;
-  title?: string;
-  subtitle?: string;
-  badge?: string;
-  label?: string;
-  value?: string | number;
-  icon?: string;
-  trend?: string;
-  content?: string;
-  variant?: string;
-  direction?: string;
-  spacing?: string;
-  columns?: number;
-  children?: SDUIComponent[];
-  items?: Array<{ title: string; subtitle?: string; icon?: string; action?: Record<string, unknown> }>;
-  action?: Record<string, unknown>;
-};
+export type { SduiNode as SDUIComponent } from "@cityos/sdui-renderer-web";
 
-export type SDUIResponse = {
-  success: boolean;
-  data: {
-    screen: SDUIComponent;
-    source?: string;
-  };
-};
-
-export function useDashboardSDUI() {
-  return useQuery({
-    queryKey: ["/api/sdui/merchant_overview"],
-    queryFn: async () => {
-      try {
-        const base = import.meta.env.BASE_URL.replace(/\/$/, "");
-        const res = await fetch(`${base}/api/sdui/merchant_overview?surface=dashboard`);
-        if (!res.ok) throw new Error("Failed to fetch SDUI");
-        const json = await res.json();
-        
-        // Parse SDUI response: json?.data?.screen || json?.screen || json?.data || json
-        const screen = json?.data?.screen || json?.screen || json?.data || json;
-        if (!screen) throw new Error("Invalid SDUI format");
-        
-        return screen as SDUIComponent;
-      } catch (err) {
-        console.error("SDUI Fetch Error:", err);
-        // If the API isn't up during dev/generation, we fallback gracefully to simulate the API response
-        return getFallbackSDUI();
-      }
-    },
-    refetchInterval: 30000, // Refresh every 30s for a "live" feel
-  });
-}
-
-function getFallbackSDUI(): SDUIComponent {
+function getFallbackSDUI(): SduiNode {
   return {
     type: "stack",
     direction: "vertical",
@@ -117,18 +67,28 @@ function getFallbackSDUI(): SDUIComponent {
               },
               { type: "button", label: "Manage Inventory", variant: "outline", action: { type: "navigate", screen: "business/inventory" } },
             ],
-          }
-        ]
+          },
+        ],
       },
       {
         type: "list",
         title: "Quick Actions",
         items: [
-          { title: "Staff Schedule", subtitle: "12 team members on shift today", icon: "👨‍💼", action: { type: "navigate", screen: "business/staff" } },
-          { title: "Marketing Campaigns", subtitle: "2 active, 1 pending review", icon: "📣", action: { type: "navigate", screen: "business/campaigns" } },
-          { title: "Financial Reports", subtitle: "P&L, cash flow, forecasts", icon: "📊", action: { type: "navigate", screen: "business/finance" } },
+          { type: "list-item", title: "Staff Schedule", subtitle: "12 team members on shift today", icon: "👨‍💼", action: { type: "navigate", screen: "business/staff" } },
+          { type: "list-item", title: "Marketing Campaigns", subtitle: "2 active, 1 pending review", icon: "📣", action: { type: "navigate", screen: "business/campaigns" } },
+          { type: "list-item", title: "Financial Reports", subtitle: "P&L, cash flow, forecasts", icon: "📊", action: { type: "navigate", screen: "business/finance" } },
         ],
       },
     ],
   };
+}
+
+export function useDashboardSDUI() {
+  return useSduiScreen({
+    screenId: "merchant_overview",
+    surface: "dashboard",
+    basePath: import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "",
+    refetchInterval: 30000,
+    fallback: getFallbackSDUI,
+  });
 }

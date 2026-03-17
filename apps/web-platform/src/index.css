@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "@cityos/design-tokens/css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -24,10 +25,10 @@
   --input: oklch(0.88 0.01 260);
   --ring: oklch(0.55 0.15 255);
   --radius: 0.625rem;
-  --navy: #0a1628;
-  --teal: #0d9488;
-  --amber: #d97706;
-  --rose: #e11d48;
+  --navy: var(--dt-primary-navy);
+  --teal: var(--dt-teal);
+  --amber: var(--dt-amber);
+  --rose: var(--dt-rose);
 }
 
 .dark {

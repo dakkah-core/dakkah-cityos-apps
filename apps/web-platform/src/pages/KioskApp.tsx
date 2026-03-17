@@ -130,7 +130,7 @@ export default function KioskApp() {
       style={{
         width: "100vw",
         height: "100vh",
-        background: "#0a1628",
+        background: "var(--dt-primary-navy)",
         color: "#ffffff",
         fontFamily: "system-ui, -apple-system, sans-serif",
         overflow: "hidden",
@@ -195,7 +195,7 @@ export default function KioskApp() {
               width: 48,
               height: 48,
               borderRadius: 12,
-              background: "#3182ce",
+              background: "var(--dt-primary-blue)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -309,7 +309,7 @@ export default function KioskApp() {
                   <div>
                     <div style={{ fontSize: 18, fontWeight: 700 }}>{d.name}</div>
                     <div style={{ fontSize: 14, opacity: 0.6 }}>{d.desc}</div>
-                    <div style={{ fontSize: 14, marginTop: 4, color: "#3182ce", fontWeight: 600 }}>Floor: {d.floor}</div>
+                    <div style={{ fontSize: 14, marginTop: 4, color: "var(--dt-primary-blue)", fontWeight: 600 }}>Floor: {d.floor}</div>
                   </div>
                 </div>
               ))}
@@ -328,7 +328,7 @@ export default function KioskApp() {
                   padding: "16px 32px",
                   fontSize: 18,
                   fontWeight: 700,
-                  background: "#3182ce",
+                  background: "var(--dt-primary-blue)",
                   color: "#fff",
                   border: "none",
                   borderRadius: 12,
@@ -397,7 +397,7 @@ export default function KioskApp() {
                 >
                   <div style={{ fontSize: 22, fontWeight: 700 }}>{ev.title}</div>
                   <div style={{ fontSize: 16, opacity: 0.7, marginTop: 8 }}>{ev.date}</div>
-                  <div style={{ fontSize: 14, color: "#3182ce", fontWeight: 600, marginTop: 4 }}>📍 {ev.location}</div>
+                  <div style={{ fontSize: 14, color: "var(--dt-primary-blue)", fontWeight: 600, marginTop: 4 }}>📍 {ev.location}</div>
                 </div>
               ))}
             </div>

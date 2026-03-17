@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, Pressable, Modal, Alert } from "react-native";
 import { useDriver } from "@/context/DriverContext";
 import type { SOSReport } from "@/types/driver";
+import { BRAND } from "@/constants/colors";
 
 const SOS_TYPES: Array<{ type: SOSReport["type"]; label: string; icon: string }> = [
   { type: "accident", label: "Accident", icon: "🚗" },
@@ -74,11 +75,11 @@ const styles = StyleSheet.create({
   sosText: { color: "#fff", fontSize: 14, fontWeight: "900" },
   overlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" },
   sheet: { backgroundColor: "#fff", borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, paddingBottom: 36 },
-  sheetTitle: { fontSize: 20, fontWeight: "800", color: "#0a1628", textAlign: "center", marginBottom: 4 },
+  sheetTitle: { fontSize: 20, fontWeight: "800", color: BRAND.navy, textAlign: "center", marginBottom: 4 },
   sheetSubtitle: { fontSize: 13, color: "#64748b", textAlign: "center", marginBottom: 20 },
   sosOption: { flexDirection: "row", alignItems: "center", gap: 14, paddingVertical: 14, paddingHorizontal: 16, backgroundColor: "#fef2f2", borderRadius: 12, marginBottom: 8, borderWidth: 1, borderColor: "#fecaca" },
   sosOptionIcon: { fontSize: 24 },
-  sosOptionLabel: { fontSize: 16, fontWeight: "600", color: "#0a1628" },
+  sosOptionLabel: { fontSize: 16, fontWeight: "600", color: BRAND.navy },
   cancelBtn: { marginTop: 8, paddingVertical: 14, borderRadius: 12, backgroundColor: "#f1f5f9", alignItems: "center" },
   cancelText: { fontSize: 15, fontWeight: "600", color: "#64748b" },
 });

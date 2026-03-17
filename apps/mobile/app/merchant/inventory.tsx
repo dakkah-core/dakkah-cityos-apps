@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { View, Text, FlatList, Pressable, StyleSheet, TextInput, Alert, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 import { useMerchant } from "@/context/MerchantContext";
 import type { InventoryItem } from "@/types/merchant";
 
@@ -112,11 +112,11 @@ export default function InventoryScreen() {
           <Text style={styles.summaryLabel}>Total Items</Text>
         </View>
         <View style={[styles.summaryItem, styles.summaryWarn]}>
-          <Text style={[styles.summaryValue, { color: "#d97706" }]}>{lowCount}</Text>
+          <Text style={[styles.summaryValue, { color: BRAND.amber }]}>{lowCount}</Text>
           <Text style={styles.summaryLabel}>Low Stock</Text>
         </View>
         <View style={[styles.summaryItem, styles.summaryDanger]}>
-          <Text style={[styles.summaryValue, { color: "#e11d48" }]}>{outCount}</Text>
+          <Text style={[styles.summaryValue, { color: BRAND.rose }]}>{outCount}</Text>
           <Text style={styles.summaryLabel}>Out of Stock</Text>
         </View>
       </View>
@@ -156,7 +156,7 @@ export default function InventoryScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.surface },
-  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, backgroundColor: "#0a1628", gap: 12 },
+  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, backgroundColor: BRAND.navy, gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.15)", alignItems: "center", justifyContent: "center" },
   backIcon: { color: "#fff", fontSize: 18, fontWeight: "700" },
   title: { flex: 1, fontSize: 20, fontWeight: "800", color: "#fff" },
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   summaryLabel: { fontSize: 10, color: COLORS.textSecondary, fontWeight: "600" },
   filters: { flexDirection: "row", paddingHorizontal: 16, paddingVertical: 8, gap: 8, backgroundColor: COLORS.surfaceWhite, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   filterChip: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border },
-  filterActive: { backgroundColor: "#0a1628", borderColor: "#0a1628" },
+  filterActive: { backgroundColor: BRAND.navy, borderColor: BRAND.navy },
   filterText: { fontSize: 12, fontWeight: "600", color: COLORS.textSecondary },
   filterTextActive: { color: "#fff" },
   list: { padding: 16, gap: 10, paddingBottom: 40 },
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
   itemSku: { fontSize: 11, color: COLORS.textMuted },
   stockInfo: { alignItems: "center" },
   stockLevel: { fontSize: 20, fontWeight: "800", color: COLORS.text },
-  stockWarn: { color: "#d97706" },
+  stockWarn: { color: BRAND.amber },
   stockLabel: { fontSize: 10, color: COLORS.textSecondary },
   itemMeta: { flexDirection: "row", justifyContent: "space-between" },
   threshold: { fontSize: 11, color: COLORS.textSecondary },
@@ -191,10 +191,10 @@ const styles = StyleSheet.create({
   stockInput: { flex: 1, backgroundColor: COLORS.surface, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8, fontSize: 14, color: COLORS.text, borderWidth: 1, borderColor: COLORS.border },
   cancelBtn: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, backgroundColor: COLORS.surface },
   cancelBtnText: { color: COLORS.textSecondary, fontWeight: "600", fontSize: 13 },
-  updateBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, backgroundColor: "#0d9488" },
+  updateBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, backgroundColor: BRAND.teal },
   updateBtnText: { color: "#fff", fontWeight: "700", fontSize: 13 },
-  restockBtn: { paddingVertical: 8, borderRadius: 8, borderWidth: 1, borderColor: "#3182ce", alignItems: "center" },
-  restockBtnText: { color: "#3182ce", fontWeight: "600", fontSize: 13 },
+  restockBtn: { paddingVertical: 8, borderRadius: 8, borderWidth: 1, borderColor: BRAND.blue, alignItems: "center" },
+  restockBtnText: { color: BRAND.blue, fontWeight: "600", fontSize: 13 },
   empty: { flex: 1, justifyContent: "center", alignItems: "center", gap: 8, paddingTop: 80 },
   emptyIcon: { fontSize: 48 },
   emptyText: { fontSize: 16, color: COLORS.textSecondary },

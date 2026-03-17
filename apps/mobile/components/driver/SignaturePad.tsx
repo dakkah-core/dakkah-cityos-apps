@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback } from "react";
 import { View, Text, StyleSheet, Pressable, PanResponder, Platform, GestureResponderEvent, PanResponderGestureState } from "react-native";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 
 interface Point {
   x: number;
@@ -111,7 +111,7 @@ export function SignaturePad({ onCapture, onClear, height = 150 }: SignaturePadP
                     top: prev.y - 1,
                     width: length,
                     height: 2.5,
-                    backgroundColor: "#0a1628",
+                    backgroundColor: BRAND.navy,
                     transform: [{ rotate: `${angle}deg` }],
                     borderRadius: 1.25,
                   }}
@@ -157,7 +157,7 @@ function WebSvgRenderer({ points, width, height }: { points: Point[][]; width: n
     return React.createElement("path", {
       key: pathIdx,
       d,
-      stroke: "#0a1628",
+      stroke: BRAND.navy,
       strokeWidth: "2.5",
       fill: "none",
       strokeLinecap: "round",

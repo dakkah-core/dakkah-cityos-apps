@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, Switch } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 import { useMerchant } from "@/context/MerchantContext";
 import { DynamicScreen } from "@/components/artifacts/DynamicScreen";
 import { configureActionHandler } from "@cityos/sdui-renderer-native";
@@ -54,7 +54,7 @@ export default function MerchantHomeScreen() {
           <Switch
             value={profile?.isOpen ?? false}
             onValueChange={toggleStoreOpen}
-            trackColor={{ false: "#ccc", true: "#0d9488" }}
+            trackColor={{ false: "#ccc", true: BRAND.teal }}
             thumbColor="#fff"
           />
         </View>
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.surface },
   loadingContainer: { flex: 1, backgroundColor: COLORS.surface, justifyContent: "center", alignItems: "center" },
   loadingText: { marginTop: 12, color: COLORS.textSecondary, fontSize: 14 },
-  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, backgroundColor: "#0a1628", gap: 12 },
+  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, backgroundColor: BRAND.navy, gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.15)", alignItems: "center", justifyContent: "center" },
   backIcon: { color: "#fff", fontSize: 18, fontWeight: "700" },
   headerCenter: { flex: 1 },
@@ -134,8 +134,8 @@ const styles = StyleSheet.create({
   storeCategory: { fontSize: 12, color: "rgba(255,255,255,0.7)" },
   storeToggle: { flexDirection: "row", alignItems: "center", gap: 8 },
   storeStatus: { fontSize: 12, fontWeight: "700" },
-  statusOpen: { color: "#0d9488" },
-  statusClosed: { color: "#e11d48" },
+  statusOpen: { color: BRAND.teal },
+  statusClosed: { color: BRAND.rose },
   content: { flex: 1 },
   contentInner: { padding: 16, gap: 16, paddingBottom: 40 },
   alertRow: { gap: 8 },
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   quickItem: { width: "30%", backgroundColor: COLORS.surfaceWhite, borderRadius: 12, padding: 16, alignItems: "center", gap: 8, borderWidth: 1, borderColor: COLORS.border },
   quickIconWrap: { position: "relative" },
   quickIcon: { fontSize: 28 },
-  badge: { position: "absolute", top: -6, right: -10, backgroundColor: "#e11d48", borderRadius: 10, minWidth: 18, height: 18, alignItems: "center", justifyContent: "center", paddingHorizontal: 4 },
+  badge: { position: "absolute", top: -6, right: -10, backgroundColor: BRAND.rose, borderRadius: 10, minWidth: 18, height: 18, alignItems: "center", justifyContent: "center", paddingHorizontal: 4 },
   badgeText: { color: "#fff", fontSize: 10, fontWeight: "700" },
   quickLabel: { fontSize: 12, fontWeight: "600", color: COLORS.text, textAlign: "center" },
   storeInfo: { backgroundColor: COLORS.surfaceWhite, borderRadius: 12, padding: 16, gap: 4, borderWidth: 1, borderColor: COLORS.border },

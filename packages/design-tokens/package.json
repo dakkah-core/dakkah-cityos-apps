@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./native": "./src/native/index.ts"
+    "./native": "./src/native/index.ts",
+    "./css": "./src/css/brand-tokens.css"
   }
 }

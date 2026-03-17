@@ -27,7 +27,7 @@ The project uses a pnpm monorepo with `apps/` for deployable applications, `pack
 
 ## UI/UX and Design
 - **Mobile App**: Expo React Native "Super App" focused on a single AI copilot screen, prioritizing conversational AI over traditional navigation.
-- **Design System**: Centralized `packages/design-tokens` for consistent branding across applications (colors, spacing, typography, etc.), with React Native specific exports.
+- **Design System**: Centralized `packages/design-tokens` for consistent branding across applications (colors, spacing, typography, etc.), with React Native specific exports (`@cityos/design-tokens/native`) and CSS custom properties export (`@cityos/design-tokens/css` with `--dt-*` prefixed variables). All web apps import the CSS token file. Mobile uses `BRAND` constants from `@/constants/colors` (sourced from design tokens).
 - **Theming**: Supports light/dark mode with semantic colors and `AsyncStorage` persistence.
 - **Internationalization**: Full English/Arabic support with RTL detection.
 
@@ -96,18 +96,18 @@ The project uses a pnpm monorepo with `apps/` for deployable applications, `pack
 - **Smart City Portal (`apps/smart-city-portal`)**: Citizen-facing portal for accessing city services. Port configured via env, path `/smart-city-portal/`.
 - **Developer Portal (`apps/dev-portal`)**: API platform for third-party developers. Port configured via env, path `/dev-portal/`.
 - All dashboards are AI copilot-first (conversational panel is primary interface), use SDUI widget rendering from the API server, and include auth guards with guest/demo access.
-- **Auth**: Each dashboard uses `@cityos/auth` (Keycloak PKCE with `generatePKCE`/`generateState`) for SSO login, plus guest/demo fallback for development.
-- **SDUI Fetch**: Dashboards fetch SDUI screens with `?surface=` query params. Screen IDs: `city_analytics`, `merchant_overview`, `citizen_home`, `dev_home`.
+- **Auth**: Each dashboard uses `createDashboardAuth()` from `@cityos/auth` — a factory that generates `AuthProvider` + `useAuth` with configurable role, client ID, session key, and guest persona. Eliminates PKCE code duplication across dashboards.
+- **SDUI Fetch**: Dashboards use `useSduiScreen()` from `@cityos/sdui-renderer-web` — a shared React Query hook that handles fetch, response parsing, fallbacks, and refetch intervals. Screen IDs: `city_analytics`, `merchant_overview`, `citizen_home`, `dev_home`.
 - **Vite Proxy**: All dashboard `vite.config.ts` files proxy `${basePath}api` to `http://localhost:8080` (BFF gateway) with path rewriting.
 
 ### Shared Packages (`packages/`)
 - **UI Component Library (`packages/ui`)**: `@cityos/ui` — shared shadcn/ui component library with 55 components (Button, Card, Dialog, Input, etc.), `cn()` utility, `useToast`, `useIsMobile` hooks. Used by all web apps. All Radix UI primitives and shared dependencies centralized here.
 - **Database (`packages/db`)**: Drizzle ORM for PostgreSQL schema and connections.
 - **API Specification (`packages/api-spec`)**: OpenAPI 3.1 specification and Orval configuration for client/schema generation.
-- **Generated Clients/Schemas**: `packages/api-zod` (Zod schemas), `packages/api-client-react` (React Query hooks), `packages/api-client` (generic CityOS client).
+- **Generated Clients/Schemas**: `packages/api-zod` (Zod schemas), `packages/api-client-react` (React Query hooks), `packages/api-client` (generic CityOS client with `CityOSClient` class, used by `web-platform` for chat API and `mobile` for gateway calls).
 - **SDUI Protocol (`packages/sdui-protocol`)**: Defines Zod schemas and TypeScript types for SDUI nodes, actions, modifiers, and capabilities.
-- **SDUI Renderers**: `packages/sdui-renderer-native` and `packages/sdui-renderer-web` map SDUI nodes to platform-specific UI components.
-- **Authentication (`packages/auth`)**: Keycloak PKCE SDK for `AuthProvider`, `useAuth()` hook, token management, and storage abstraction.
+- **SDUI Renderers**: `packages/sdui-renderer-native` and `packages/sdui-renderer-web` map SDUI nodes to platform-specific UI components. Web renderer also exports `useSduiScreen()` React Query hook for fetching and parsing SDUI screens.
+- **Authentication (`packages/auth`)**: Keycloak PKCE SDK for `AuthProvider`, `useAuth()` hook, token management, and storage abstraction. Also exports `createDashboardAuth()` factory for creating role-specific auth providers with configurable guest personas.
 - **AI Assistant Widget (`packages/ai-assistant-widget`)**: Embeddable `<DakkahAssistant />` React component for adding an AI copilot chat to any website. Demo page at `/web-platform/widget-demo`.
 
 # External Dependencies

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, Pressable, ScrollView, Alert, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 import { useDriver } from "@/context/DriverContext";
 import type { InspectionCheck, InspectionResult } from "@/types/driver";
 
@@ -136,7 +136,7 @@ export default function InspectionScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.surface },
-  header: { backgroundColor: "#0a1628", paddingBottom: 12, paddingHorizontal: 16, flexDirection: "row", alignItems: "center" },
+  header: { backgroundColor: BRAND.navy, paddingBottom: 12, paddingHorizontal: 16, flexDirection: "row", alignItems: "center" },
   headerBackBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
   headerBackText: { color: "#fff", fontSize: 20 },
   headerTitle: { flex: 1, fontSize: 18, fontWeight: "700", color: "#fff", textAlign: "center" },
@@ -146,12 +146,12 @@ const styles = StyleSheet.create({
   checkLabel: { flex: 1, fontSize: 14, color: COLORS.text, marginRight: 10 },
   checkButtons: { flexDirection: "row", gap: 8 },
   checkBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: COLORS.surface, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: COLORS.border },
-  checkBtnPass: { backgroundColor: "#0d9488", borderColor: "#0d9488" },
-  checkBtnFail: { backgroundColor: "#e11d48", borderColor: "#e11d48" },
+  checkBtnPass: { backgroundColor: BRAND.teal, borderColor: BRAND.teal },
+  checkBtnFail: { backgroundColor: BRAND.rose, borderColor: BRAND.rose },
   checkBtnText: { fontSize: 16, fontWeight: "700", color: COLORS.textSecondary },
   checkBtnTextActive: { color: "#fff" },
   actionBar: { paddingHorizontal: 16, paddingTop: 12, backgroundColor: COLORS.surfaceWhite, borderTopWidth: 1, borderTopColor: COLORS.border },
-  submitBtn: { backgroundColor: "#0d9488", paddingVertical: 14, borderRadius: 12, alignItems: "center" },
+  submitBtn: { backgroundColor: BRAND.teal, paddingVertical: 14, borderRadius: 12, alignItems: "center" },
   submitBtnDisabled: { opacity: 0.4 },
   submitBtnText: { color: "#fff", fontSize: 16, fontWeight: "700" },
   resultCard: { margin: 16, padding: 32, borderRadius: 16, alignItems: "center" },
@@ -162,6 +162,6 @@ const styles = StyleSheet.create({
   resultSubtitle: { fontSize: 14, color: COLORS.textSecondary, marginTop: 4, textAlign: "center" },
   failedList: { marginTop: 16, alignSelf: "stretch" },
   failedItem: { fontSize: 13, color: "#dc2626", paddingVertical: 4 },
-  doneBtn: { marginTop: 24, backgroundColor: "#0a1628", paddingHorizontal: 32, paddingVertical: 12, borderRadius: 10 },
+  doneBtn: { marginTop: 24, backgroundColor: BRAND.navy, paddingHorizontal: 32, paddingVertical: 12, borderRadius: 10 },
   doneBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
 });

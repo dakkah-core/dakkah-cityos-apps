@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { useRouter, usePathname } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 
 const MERCHANT_ROLES = ["merchant", "vendor", "store_manager", "store_staff"];
 
@@ -64,10 +64,10 @@ const styles = StyleSheet.create({
   icon: { fontSize: 48, marginBottom: 16 },
   title: { fontSize: 20, fontWeight: "800", color: COLORS.text, marginBottom: 8, textAlign: "center" },
   subtitle: { fontSize: 14, color: COLORS.textSecondary, textAlign: "center", marginBottom: 24, lineHeight: 20 },
-  signInBtn: { backgroundColor: "#3182ce", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10, marginBottom: 12, width: 220, alignItems: "center" as const },
+  signInBtn: { backgroundColor: BRAND.blue, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10, marginBottom: 12, width: 220, alignItems: "center" as const },
   signInBtnText: { color: "#fff", fontWeight: "700" as const, fontSize: 15 },
-  registerBtn: { backgroundColor: "#0d9488", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10, marginBottom: 12, width: 220, alignItems: "center" as const },
+  registerBtn: { backgroundColor: BRAND.teal, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10, marginBottom: 12, width: 220, alignItems: "center" as const },
   registerBtnText: { color: "#fff", fontWeight: "700" as const, fontSize: 15 },
-  backBtn: { backgroundColor: "#0a1628", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10, width: 220, alignItems: "center" as const },
+  backBtn: { backgroundColor: BRAND.navy, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10, width: 220, alignItems: "center" as const },
   backBtnText: { color: "#fff", fontWeight: "700" as const, fontSize: 15 },
 });

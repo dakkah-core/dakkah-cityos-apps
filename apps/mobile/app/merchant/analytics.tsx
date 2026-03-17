@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 import { useMerchant } from "@/context/MerchantContext";
 import type { SalesAnalytics } from "@/types/merchant";
 
@@ -131,13 +131,13 @@ export default function AnalyticsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.surface },
-  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, backgroundColor: "#0a1628", gap: 12 },
+  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, backgroundColor: BRAND.navy, gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.15)", alignItems: "center", justifyContent: "center" },
   backIcon: { color: "#fff", fontSize: 18, fontWeight: "700" },
   title: { flex: 1, fontSize: 20, fontWeight: "800", color: "#fff" },
   periodRow: { flexDirection: "row", paddingHorizontal: 16, paddingVertical: 10, gap: 8, backgroundColor: COLORS.surfaceWhite, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   periodChip: { flex: 1, paddingVertical: 8, borderRadius: 10, backgroundColor: COLORS.surface, alignItems: "center", borderWidth: 1, borderColor: COLORS.border },
-  periodActive: { backgroundColor: "#0a1628", borderColor: "#0a1628" },
+  periodActive: { backgroundColor: BRAND.navy, borderColor: BRAND.navy },
   periodText: { fontSize: 13, fontWeight: "600", color: COLORS.textSecondary },
   periodTextActive: { color: "#fff" },
   loadingState: { flex: 1, justifyContent: "center", alignItems: "center" },
@@ -152,8 +152,8 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 16, fontWeight: "800", color: COLORS.text },
   chartContainer: { flexDirection: "row", alignItems: "flex-end", justifyContent: "space-around", height: 120, paddingTop: 10 },
   barColumn: { alignItems: "center", gap: 4, flex: 1 },
-  bar: { width: 20, backgroundColor: "#3182ce", borderRadius: 4 },
-  barPeak: { width: 20, backgroundColor: "#d97706", borderRadius: 4 },
+  bar: { width: 20, backgroundColor: BRAND.blue, borderRadius: 4 },
+  barPeak: { width: 20, backgroundColor: BRAND.amber, borderRadius: 4 },
   barLabel: { fontSize: 9, color: COLORS.textMuted },
   topItemRow: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   topItemRank: { fontSize: 14, fontWeight: "800", color: COLORS.primary, width: 28 },

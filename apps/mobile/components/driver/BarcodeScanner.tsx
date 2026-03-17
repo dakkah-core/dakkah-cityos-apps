@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Pressable, Platform, Modal, Alert } from "react-native";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 
 interface BarcodeScannerProps {
   expectedBarcodes: string[];
@@ -114,7 +114,7 @@ export function BarcodeScanner({ expectedBarcodes, scannedBarcodes, onScan, onCl
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.surface },
-  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingTop: 56, paddingBottom: 12, backgroundColor: "#0a1628" },
+  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingTop: 56, paddingBottom: 12, backgroundColor: BRAND.navy },
   headerTitle: { fontSize: 18, fontWeight: "700", color: "#fff" },
   closeBtn: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: "rgba(255,255,255,0.15)", borderRadius: 8 },
   closeBtnText: { color: "#fff", fontWeight: "600", fontSize: 14 },
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   cameraWrap: { height: 250, position: "relative" },
   camera: { flex: 1 },
   overlay: { ...StyleSheet.absoluteFillObject, alignItems: "center", justifyContent: "center" },
-  scanFrame: { width: 200, height: 200, borderWidth: 2, borderColor: "#3182ce", borderRadius: 12, opacity: 0.7 },
+  scanFrame: { width: 200, height: 200, borderWidth: 2, borderColor: BRAND.blue, borderRadius: 12, opacity: 0.7 },
   manualScanWrap: { height: 150, backgroundColor: "#1e293b", alignItems: "center", justifyContent: "center", gap: 8 },
   manualTitle: { fontSize: 14, color: "#94a3b8", fontWeight: "600" },
   manualSubtitle: { fontSize: 12, color: "#64748b" },
@@ -136,5 +136,5 @@ const styles = StyleSheet.create({
   itemDotText: { color: "#fff", fontWeight: "700", fontSize: 14 },
   itemBarcode: { flex: 1, fontSize: 13, fontWeight: "500", color: COLORS.text, fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace" },
   itemBarcodeScanned: { color: "#059669", textDecorationLine: "line-through" },
-  tapHint: { fontSize: 11, color: "#3182ce", fontWeight: "500" },
+  tapHint: { fontSize: 11, color: BRAND.blue, fontWeight: "500" },
 });

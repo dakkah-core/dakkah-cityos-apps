@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { View, Text, FlatList, Pressable, StyleSheet, ActivityIndicator, Alert, TextInput } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 import { useMerchant } from "@/context/MerchantContext";
 import type { MerchantOrder, OrderStatus } from "@/types/merchant";
 
@@ -196,7 +196,7 @@ export default function OrdersScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.surface },
-  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, backgroundColor: "#0a1628", gap: 12 },
+  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, backgroundColor: BRAND.navy, gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.15)", alignItems: "center", justifyContent: "center" },
   backIcon: { color: "#fff", fontSize: 18, fontWeight: "700" },
   title: { flex: 1, fontSize: 20, fontWeight: "800", color: "#fff" },
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   refreshIcon: { color: "#fff", fontSize: 20 },
   filters: { flexDirection: "row", paddingHorizontal: 16, paddingVertical: 10, gap: 8, backgroundColor: COLORS.surfaceWhite, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   filterChip: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border },
-  filterActive: { backgroundColor: "#0a1628", borderColor: "#0a1628" },
+  filterActive: { backgroundColor: BRAND.navy, borderColor: BRAND.navy },
   filterText: { fontSize: 12, fontWeight: "600", color: COLORS.textSecondary },
   filterTextActive: { color: "#fff" },
   list: { padding: 16, gap: 12, paddingBottom: 40 },
@@ -223,25 +223,25 @@ const styles = StyleSheet.create({
   itemName: { flex: 1, fontSize: 13, color: COLORS.text },
   itemVariant: { fontSize: 11, color: COLORS.textSecondary },
   itemPrice: { fontSize: 13, fontWeight: "600", color: COLORS.text },
-  orderNotes: { fontSize: 12, color: "#d97706", fontStyle: "italic", marginTop: 4 },
+  orderNotes: { fontSize: 12, color: BRAND.amber, fontStyle: "italic", marginTop: 4 },
   orderFooter: { flexDirection: "row", justifyContent: "space-between", borderTopWidth: 1, borderTopColor: COLORS.border, paddingTop: 8 },
   orderTotal: { fontSize: 16, fontWeight: "800", color: COLORS.text },
   prepTime: { fontSize: 13, color: COLORS.textSecondary },
   actionRow: { flexDirection: "row", gap: 10, marginTop: 4 },
-  rejectBtn: { flex: 1, paddingVertical: 10, borderRadius: 10, borderWidth: 1, borderColor: "#e11d48", alignItems: "center" },
-  rejectBtnText: { color: "#e11d48", fontWeight: "700", fontSize: 14 },
-  acceptBtn: { flex: 2, paddingVertical: 10, borderRadius: 10, backgroundColor: "#0d9488", alignItems: "center" },
+  rejectBtn: { flex: 1, paddingVertical: 10, borderRadius: 10, borderWidth: 1, borderColor: BRAND.rose, alignItems: "center" },
+  rejectBtnText: { color: BRAND.rose, fontWeight: "700", fontSize: 14 },
+  acceptBtn: { flex: 2, paddingVertical: 10, borderRadius: 10, backgroundColor: BRAND.teal, alignItems: "center" },
   acceptBtnText: { color: "#fff", fontWeight: "700", fontSize: 14 },
-  prepBtn: { paddingVertical: 10, borderRadius: 10, backgroundColor: "#3182ce", alignItems: "center", marginTop: 4 },
+  prepBtn: { paddingVertical: 10, borderRadius: 10, backgroundColor: BRAND.blue, alignItems: "center", marginTop: 4 },
   prepBtnText: { color: "#fff", fontWeight: "700", fontSize: 14 },
-  readyBtn: { paddingVertical: 10, borderRadius: 10, backgroundColor: "#0d9488", alignItems: "center", marginTop: 4 },
+  readyBtn: { paddingVertical: 10, borderRadius: 10, backgroundColor: BRAND.teal, alignItems: "center", marginTop: 4 },
   readyBtnText: { color: "#fff", fontWeight: "700", fontSize: 14 },
   rejectBox: { borderTopWidth: 1, borderTopColor: COLORS.border, paddingTop: 10, gap: 8 },
   rejectInput: { backgroundColor: COLORS.surface, borderRadius: 8, padding: 10, fontSize: 13, color: COLORS.text, borderWidth: 1, borderColor: COLORS.border },
   rejectActions: { flexDirection: "row", gap: 10 },
   rejectCancelBtn: { flex: 1, paddingVertical: 8, borderRadius: 8, backgroundColor: COLORS.surface, alignItems: "center" },
   rejectCancelText: { color: COLORS.textSecondary, fontWeight: "600", fontSize: 13 },
-  rejectConfirmBtn: { flex: 1, paddingVertical: 8, borderRadius: 8, backgroundColor: "#e11d48", alignItems: "center" },
+  rejectConfirmBtn: { flex: 1, paddingVertical: 8, borderRadius: 8, backgroundColor: BRAND.rose, alignItems: "center" },
   rejectConfirmText: { color: "#fff", fontWeight: "600", fontSize: 13 },
   emptyState: { flex: 1, justifyContent: "center", alignItems: "center", gap: 8 },
   emptyIcon: { fontSize: 48 },

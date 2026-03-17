@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { usePos } from "@/context/PosContext";
 import type { DailySalesReport, PosShift } from "@/types/pos";
 import { TextInput } from "react-native";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 
 export default function ReportsScreen() {
   const insets = useSafeAreaInsets();
@@ -45,7 +45,7 @@ export default function ReportsScreen() {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
         <View style={styles.center}>
-          <ActivityIndicator size="large" color="#0d9488" />
+          <ActivityIndicator size="large" color={BRAND.teal} />
         </View>
       </View>
     );
@@ -190,7 +190,7 @@ export default function ReportsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0a1628" },
+  container: { flex: 1, backgroundColor: BRAND.navy },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
   header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.15)", alignItems: "center", justifyContent: "center" },
@@ -204,15 +204,15 @@ const styles = StyleSheet.create({
   shiftRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 4 },
   shiftLabel: { fontSize: 13, color: "rgba(255,255,255,0.5)" },
   shiftValue: { fontSize: 13, fontWeight: "600", color: "#fff" },
-  teal: { color: "#0d9488" },
-  red: { color: "#e11d48" },
+  teal: { color: BRAND.teal },
+  red: { color: BRAND.rose },
   cashLabel: { fontSize: 12, fontWeight: "600", color: "rgba(255,255,255,0.5)", marginTop: 12, marginBottom: 6 },
   cashInput: { backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, color: "#fff", textAlign: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.15)", marginBottom: 12 },
-  closeBtn: { backgroundColor: "#e11d48", paddingVertical: 12, borderRadius: 10, alignItems: "center" },
+  closeBtn: { backgroundColor: BRAND.rose, paddingVertical: 12, borderRadius: 10, alignItems: "center" },
   closeBtnText: { color: "#fff", fontWeight: "700", fontSize: 14 },
   btnDisabled: { opacity: 0.5 },
   reconciliationCard: { backgroundColor: "rgba(13,148,136,0.1)", borderRadius: 14, padding: 16, borderWidth: 1, borderColor: "rgba(13,148,136,0.3)" },
-  reconciliationTitle: { fontSize: 16, fontWeight: "800", color: "#0d9488", marginBottom: 12 },
+  reconciliationTitle: { fontSize: 16, fontWeight: "800", color: BRAND.teal, marginBottom: 12 },
   varianceRow: { borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.1)", paddingTop: 8, marginTop: 4 },
   varianceLabel: { fontSize: 14, fontWeight: "700", color: "#fff" },
   varianceValue: { fontSize: 14, fontWeight: "800" },
@@ -228,8 +228,8 @@ const styles = StyleSheet.create({
   breakdownLabel: { flex: 1, fontSize: 13, color: "rgba(255,255,255,0.6)" },
   breakdownValue: { fontSize: 13, fontWeight: "600", color: "#fff" },
   topProductRow: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: "rgba(255,255,255,0.05)" },
-  topProductRank: { width: 24, fontSize: 14, fontWeight: "800", color: "#0d9488", textAlign: "center" },
+  topProductRank: { width: 24, fontSize: 14, fontWeight: "800", color: BRAND.teal, textAlign: "center" },
   topProductName: { flex: 1, fontSize: 13, color: "#fff" },
   topProductQty: { fontSize: 11, color: "rgba(255,255,255,0.5)" },
-  topProductRev: { fontSize: 13, fontWeight: "600", color: "#0d9488" },
+  topProductRev: { fontSize: 13, fontWeight: "600", color: BRAND.teal },
 });

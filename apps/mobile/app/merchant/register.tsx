@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { View, Text, ScrollView, Pressable, TextInput, StyleSheet, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 import { useAuth } from "@/context/AuthContext";
 
 const API_BASE = process.env.EXPO_PUBLIC_DOMAIN
@@ -228,18 +228,18 @@ export default function MerchantRegisterScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.surface },
   flex: { flex: 1 },
-  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, backgroundColor: "#0a1628", gap: 12 },
+  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, backgroundColor: BRAND.navy, gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.15)", alignItems: "center", justifyContent: "center" },
   backIcon: { color: "#fff", fontSize: 18, fontWeight: "700" },
   title: { flex: 1, fontSize: 20, fontWeight: "800", color: "#fff" },
   stepper: { flexDirection: "row", justifyContent: "space-around", paddingVertical: 16, paddingHorizontal: 20, backgroundColor: COLORS.surfaceWhite, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   stepItem: { alignItems: "center", gap: 4 },
   stepDot: { width: 28, height: 28, borderRadius: 14, backgroundColor: COLORS.surface, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: COLORS.border },
-  stepDotActive: { backgroundColor: "#0a1628", borderColor: "#0a1628" },
+  stepDotActive: { backgroundColor: BRAND.navy, borderColor: BRAND.navy },
   stepNum: { fontSize: 12, fontWeight: "700", color: COLORS.textMuted },
   stepNumActive: { color: "#fff" },
   stepLabel: { fontSize: 10, color: COLORS.textMuted, fontWeight: "600" },
-  stepLabelActive: { color: "#0a1628" },
+  stepLabelActive: { color: BRAND.navy },
   form: { flex: 1 },
   formContent: { padding: 20, gap: 4, paddingBottom: 40 },
   sectionTitle: { fontSize: 18, fontWeight: "800", color: COLORS.text, marginBottom: 12 },
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   multiline: { minHeight: 80, textAlignVertical: "top" },
   categoryGrid: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 4 },
   categoryChip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: COLORS.surfaceWhite, borderWidth: 1, borderColor: COLORS.border },
-  categoryActive: { backgroundColor: "#0a1628", borderColor: "#0a1628" },
+  categoryActive: { backgroundColor: BRAND.navy, borderColor: BRAND.navy },
   categoryText: { fontSize: 12, fontWeight: "600", color: COLORS.textSecondary },
   categoryTextActive: { color: "#fff" },
   hoursRow: { flexDirection: "row", gap: 12, marginTop: 4 },
@@ -256,15 +256,15 @@ const styles = StyleSheet.create({
   footer: { flexDirection: "row", gap: 12, paddingHorizontal: 20, paddingTop: 12, backgroundColor: COLORS.surfaceWhite, borderTopWidth: 1, borderTopColor: COLORS.border },
   prevBtn: { flex: 1, paddingVertical: 14, borderRadius: 12, borderWidth: 1, borderColor: COLORS.border, alignItems: "center" },
   prevBtnText: { color: COLORS.text, fontWeight: "700", fontSize: 15 },
-  nextBtn: { flex: 2, paddingVertical: 14, borderRadius: 12, backgroundColor: "#3182ce", alignItems: "center" },
+  nextBtn: { flex: 2, paddingVertical: 14, borderRadius: 12, backgroundColor: BRAND.blue, alignItems: "center" },
   nextBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
-  submitBtn: { flex: 2, paddingVertical: 14, borderRadius: 12, backgroundColor: "#0d9488", alignItems: "center" },
+  submitBtn: { flex: 2, paddingVertical: 14, borderRadius: 12, backgroundColor: BRAND.teal, alignItems: "center" },
   submitBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
   btnDisabled: { opacity: 0.4 },
   authGate: { flex: 1, justifyContent: "center", alignItems: "center", padding: 32 },
   authGateIcon: { fontSize: 48, marginBottom: 16 },
   authGateTitle: { fontSize: 20, fontWeight: "800", color: COLORS.text, marginBottom: 8 },
   authGateSubtitle: { fontSize: 14, color: COLORS.textSecondary, textAlign: "center", marginBottom: 24 },
-  authSignInBtn: { backgroundColor: "#3182ce", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10 },
+  authSignInBtn: { backgroundColor: BRAND.blue, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10 },
   authSignInBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
 });

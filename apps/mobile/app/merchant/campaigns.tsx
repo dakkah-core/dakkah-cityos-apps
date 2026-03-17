@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { View, Text, FlatList, Pressable, StyleSheet, Modal, TextInput, ScrollView, Switch, ActivityIndicator, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS } from "@/constants/colors";
+import { COLORS, BRAND } from "@/constants/colors";
 import { useMerchant } from "@/context/MerchantContext";
 import type { Campaign } from "@/types/merchant";
 
@@ -102,7 +102,7 @@ export default function CampaignsScreen() {
             <Switch
               value={item.status === "active"}
               onValueChange={() => handleToggle(item)}
-              trackColor={{ false: "#ccc", true: "#0d9488" }}
+              trackColor={{ false: "#ccc", true: BRAND.teal }}
               thumbColor="#fff"
               disabled={item.status === "ended"}
             />
@@ -186,11 +186,11 @@ export default function CampaignsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.surface },
-  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, backgroundColor: "#0a1628", gap: 12 },
+  header: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, backgroundColor: BRAND.navy, gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.15)", alignItems: "center", justifyContent: "center" },
   backIcon: { color: "#fff", fontSize: 18, fontWeight: "700" },
   title: { flex: 1, fontSize: 20, fontWeight: "800", color: "#fff" },
-  createBtn: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10, backgroundColor: "#0d9488" },
+  createBtn: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10, backgroundColor: BRAND.teal },
   createBtnText: { color: "#fff", fontWeight: "700", fontSize: 13 },
   list: { padding: 16, gap: 12, paddingBottom: 40 },
   campaignCard: { backgroundColor: COLORS.surfaceWhite, borderRadius: 14, padding: 16, borderWidth: 1, borderColor: COLORS.border, gap: 10 },
@@ -223,17 +223,17 @@ const styles = StyleSheet.create({
   fieldInput: { backgroundColor: COLORS.surface, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, color: COLORS.text, borderWidth: 1, borderColor: COLORS.border },
   typeRow: { flexDirection: "row", gap: 8, marginTop: 4 },
   typeChip: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4, paddingVertical: 10, borderRadius: 10, backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border },
-  typeActive: { backgroundColor: "#0a1628", borderColor: "#0a1628" },
+  typeActive: { backgroundColor: BRAND.navy, borderColor: BRAND.navy },
   typeChipIcon: { fontSize: 16 },
   typeChipText: { fontSize: 11, fontWeight: "600", color: COLORS.textSecondary },
   typeChipTextActive: { color: "#fff" },
   discountRow: { flexDirection: "row", gap: 8 },
   discountTypeRow: { flexDirection: "row", gap: 4 },
   discTypeChip: { paddingHorizontal: 14, paddingVertical: 10, borderRadius: 8, backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border },
-  discTypeActive: { backgroundColor: "#0a1628", borderColor: "#0a1628" },
+  discTypeActive: { backgroundColor: BRAND.navy, borderColor: BRAND.navy },
   discTypeText: { fontSize: 14, fontWeight: "600", color: COLORS.textSecondary },
   discTypeTextActive: { color: "#fff" },
-  saveBtn: { backgroundColor: "#0a1628", paddingVertical: 14, borderRadius: 12, alignItems: "center", marginTop: 12 },
+  saveBtn: { backgroundColor: BRAND.navy, paddingVertical: 14, borderRadius: 12, alignItems: "center", marginTop: 12 },
   saveBtnDisabled: { opacity: 0.5 },
   saveBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
 });
