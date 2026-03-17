@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, Pressable, TextInput, Image, Alert, Platform } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { SignaturePad } from "./SignaturePad";
-import { COLORS, BRAND } from "@/constants/colors";
+import { COLORS, BRAND } from "@cityos/mobile-core";
 
 interface ProofOfDeliveryProps {
   onSubmit: (proof: {

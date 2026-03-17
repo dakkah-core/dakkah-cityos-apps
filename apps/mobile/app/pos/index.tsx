@@ -5,12 +5,11 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS, BRAND } from "@/constants/colors";
+import { COLORS, BRAND, apiClient } from "@cityos/mobile-core";
 import { usePos } from "@/context/PosContext";
 import { SduiRenderer, configureActionHandler } from "@cityos/sdui-renderer-native";
 import type { SdNode } from "@cityos/sdui-protocol";
 import type { PosProduct } from "@/types/pos";
-import { apiClient } from "@/lib/gateway";
 
 function isSdNode(data: unknown): data is SdNode {
   return typeof data === "object" && data !== null && "type" in data &&

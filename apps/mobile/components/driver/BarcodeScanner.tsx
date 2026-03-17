@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Pressable, Platform, Modal, Alert } from "react-native";
-import { COLORS, BRAND } from "@/constants/colors";
+import { COLORS, BRAND } from "@cityos/mobile-core";
 
 interface BarcodeScannerProps {
   expectedBarcodes: string[];

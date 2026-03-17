@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Pressable, Animated } from "react-native";
-import { COLORS } from "@/constants/colors";
+import { COLORS } from "../../constants/colors";
 
 interface ToastData {
   message: string;

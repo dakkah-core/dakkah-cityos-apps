@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, Pressable, Modal, Alert } from "react-native";
 import { useDriver } from "@/context/DriverContext";
 import type { SOSReport } from "@/types/driver";
-import { BRAND } from "@/constants/colors";
+import { BRAND } from "@cityos/mobile-core";
 
 const SOS_TYPES: Array<{ type: SOSReport["type"]; label: string; icon: string }> = [
   { type: "accident", label: "Accident", icon: "🚗" },

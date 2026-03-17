@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, Modal, StyleSheet, ScrollView, Switch } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { COLORS } from "@/constants/colors";
-import { useTheme } from "@/context/ThemeContext";
-import { useCopilot } from "@/context/ChatContext";
+import { COLORS } from "../constants/colors";
+import { useTheme } from "../context/ThemeContext";
+import { useCopilot } from "../context/ChatContext";
 
 interface Props {
   visible: boolean;

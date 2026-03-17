@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator, Text, StyleSheet } from "react-native";
-import { fetchSduiScreen } from "@/lib/ai-client";
+import { fetchSduiScreen } from "../../lib/ai-client";
 import { SduiNodeRenderer } from "./SduiNodeRenderer";
-import { BRAND } from "@/constants/colors";
+import { BRAND } from "../../constants/colors";
 
 interface Props {
   screenId: string;

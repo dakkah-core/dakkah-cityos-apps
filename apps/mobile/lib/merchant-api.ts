@@ -9,7 +9,7 @@ import type {
   Campaign,
   MerchantProfile,
 } from "@/types/merchant";
-import { apiClient } from "./gateway";
+import { apiClient } from "@cityos/mobile-core";
 
 export async function getMerchantProfile(_accessToken?: string): Promise<MerchantProfile | null> {
   try {

@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useState, use
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
-import { generateId } from "@/lib/id";
+import { generateId } from "../lib/id";
 import {
   generatePKCE,
   generateState,
@@ -17,7 +17,7 @@ import {
 import type { AuthTokens } from "@cityos/auth";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
-import { registerForPushNotifications, unregisterPushNotifications } from "@/lib/notifications";
+import { registerForPushNotifications, unregisterPushNotifications } from "../lib/notifications";
 
 const AUTH_KEY = "dakkah_auth_profile";
 const TOKENS_KEY = "dakkah_auth_tokens";

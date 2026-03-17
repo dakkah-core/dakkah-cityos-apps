@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
-import { COLORS } from "@/constants/colors";
-import { CONTACTS } from "@/lib/contacts";
+import { COLORS } from "../constants/colors";
+import { CONTACTS } from "../lib/contacts";
 
 interface Props {
   visible: boolean;

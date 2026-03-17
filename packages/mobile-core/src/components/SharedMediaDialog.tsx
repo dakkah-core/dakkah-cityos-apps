@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, Modal, StyleSheet } from "react-native";
-import { COLORS } from "@/constants/colors";
+import { COLORS } from "../constants/colors";
 
 interface Props {
   visible: boolean;

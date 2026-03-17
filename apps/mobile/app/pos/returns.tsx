@@ -4,8 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { usePos } from "@/context/PosContext";
 import { PosApi } from "@/lib/pos-api";
-import { useAuth } from "@/context/AuthContext";
-import { BRAND } from "@/constants/colors";
+import { useAuth, BRAND } from "@cityos/mobile-core";
 
 const RETURN_REASONS = [
   "Defective product",

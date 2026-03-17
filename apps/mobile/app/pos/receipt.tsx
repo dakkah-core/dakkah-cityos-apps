@@ -6,7 +6,7 @@ import { usePos } from "@/context/PosContext";
 import type { PosTransaction, ReceiptData } from "@/types/pos";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
-import { BRAND } from "@/constants/colors";
+import { BRAND } from "@cityos/mobile-core";
 
 function generateEscPosCommands(tx: PosTransaction): string {
   const receipt = tx.receiptData;

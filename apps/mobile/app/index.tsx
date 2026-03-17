@@ -1,27 +1,29 @@
 import React, { useCallback, useRef, useState, useEffect } from "react";
 import { View, Text, FlatList, TextInput, StyleSheet, Pressable, KeyboardAvoidingView, Platform, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { COLORS } from "@/constants/colors";
-import { useCopilot } from "@/context/ChatContext";
-import { CopilotMessage } from "@/components/CopilotMessage";
-import { DiscoverySheet } from "@/components/DiscoverySheet";
-import { ThreadsDrawer } from "@/components/ThreadsDrawer";
-import { RightDrawer } from "@/components/RightDrawer";
-import { DetailsDrawer, type DetailItem } from "@/components/DetailsDrawer";
-import { SearchBar } from "@/components/SearchBar";
-import { SlashCommandPalette } from "@/components/SlashCommandPalette";
-import { MentionPopover } from "@/components/MentionPopover";
-import { GroupInfoDialog } from "@/components/GroupInfoDialog";
-import { AddMemberDialog } from "@/components/AddMemberDialog";
-import { SharedMediaDialog } from "@/components/SharedMediaDialog";
-import { SupportDialog } from "@/components/SupportDialog";
-import { FullSettingsDialog } from "@/components/FullSettingsDialog";
-import { ComingSoonModal } from "@/components/ComingSoonModal";
-import { VoiceInputButton } from "@/components/VoiceInputButton";
-import { MediaPickerButton } from "@/components/MediaPickerButton";
-import { OfflineIndicator } from "@/components/OfflineIndicator";
-import { CopilotSettingsDialog } from "@/components/CopilotSettingsDialog";
-import type { Message, MessageAttachment } from "@/types/chat";
+import {
+  COLORS,
+  useCopilot,
+  CopilotMessage,
+  DiscoverySheet,
+  ThreadsDrawer,
+  RightDrawer,
+  DetailsDrawer,
+  SearchBar,
+  SlashCommandPalette,
+  MentionPopover,
+  GroupInfoDialog,
+  AddMemberDialog,
+  SharedMediaDialog,
+  SupportDialog,
+  FullSettingsDialog,
+  ComingSoonModal,
+  VoiceInputButton,
+  MediaPickerButton,
+  OfflineIndicator,
+  CopilotSettingsDialog,
+} from "@cityos/mobile-core";
+import type { Message, MessageAttachment, DetailItem } from "@cityos/mobile-core";
 
 export default function CopilotScreen() {
   const insets = useSafeAreaInsets();

@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { View, Text, FlatList, Pressable, StyleSheet, TextInput, Alert, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS, BRAND } from "@/constants/colors";
+import { COLORS, BRAND } from "@cityos/mobile-core";
 import { useMerchant } from "@/context/MerchantContext";
 import type { InventoryItem } from "@/types/merchant";
 

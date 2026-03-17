@@ -2,9 +2,7 @@ import React, { useState, useCallback } from "react";
 import { View, Text, ScrollView, Pressable, TextInput, StyleSheet, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS, BRAND } from "@/constants/colors";
-import { useAuth } from "@/context/AuthContext";
-import { apiClient } from "@/lib/gateway";
+import { COLORS, BRAND, useAuth, apiClient } from "@cityos/mobile-core";
 
 const CATEGORIES = [
   "Restaurant",

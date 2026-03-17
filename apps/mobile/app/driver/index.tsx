@@ -2,13 +2,11 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator, RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS, BRAND } from "@/constants/colors";
+import { COLORS, BRAND, useAuth, DynamicScreen } from "@cityos/mobile-core";
 import { useDriver } from "@/context/DriverContext";
-import { useAuth } from "@/context/AuthContext";
 import { StatusToggle } from "@/components/driver/StatusToggle";
 import { JobCard } from "@/components/driver/JobCard";
 import { SOSButton } from "@/components/driver/SOSButton";
-import { DynamicScreen } from "@/components/artifacts/DynamicScreen";
 import type { DriverJob } from "@/types/driver";
 
 export default function DriverHomeScreen() {

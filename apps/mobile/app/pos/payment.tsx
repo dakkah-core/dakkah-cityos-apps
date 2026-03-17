@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { View, Text, Pressable, StyleSheet, TextInput, Alert, ActivityIndicator, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS, BRAND } from "@/constants/colors";
+import { COLORS, BRAND } from "@cityos/mobile-core";
 import { usePos } from "@/context/PosContext";
 import type { PaymentMethod } from "@/types/pos";
 

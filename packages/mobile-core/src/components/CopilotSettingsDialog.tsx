@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, Modal, Pressable, StyleSheet, Switch, ScrollView } from "react-native";
-import { COLORS } from "@/constants/colors";
-import { useAuth } from "@/context/AuthContext";
+import { COLORS } from "../constants/colors";
+import { useAuth } from "../context/AuthContext";
 
 interface Props {
   visible: boolean;

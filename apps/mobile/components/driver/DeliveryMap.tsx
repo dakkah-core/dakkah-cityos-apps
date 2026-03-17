@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable, Linking, Platform } from "react-native";
-import { COLORS, BRAND } from "@/constants/colors";
+import { COLORS, BRAND } from "@cityos/mobile-core";
 
 let MapView: React.ComponentType<any> | null = null;
 let Marker: React.ComponentType<any> | null = null;

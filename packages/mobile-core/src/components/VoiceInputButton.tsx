@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef } from "react";
 import { View, Text, StyleSheet, Pressable, ActivityIndicator, Modal, Animated } from "react-native";
-import { COLORS } from "@/constants/colors";
-import { transcribeAudio } from "@/lib/ai-client";
+import { COLORS } from "../constants/colors";
+import { transcribeAudio } from "../lib/ai-client";
 
 interface Props {
   onTranscript: (text: string) => void;

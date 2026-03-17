@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { usePos } from "@/context/PosContext";
 import type { DailySalesReport, PosShift } from "@/types/pos";
 import { TextInput } from "react-native";
-import { COLORS, BRAND } from "@/constants/colors";
+import { COLORS, BRAND } from "@cityos/mobile-core";
 
 export default function ReportsScreen() {
   const insets = useSafeAreaInsets();

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback } from "react";
 import { View, Text, StyleSheet, Pressable, PanResponder, Platform, GestureResponderEvent, PanResponderGestureState } from "react-native";
-import { COLORS, BRAND } from "@/constants/colors";
+import { COLORS, BRAND } from "@cityos/mobile-core";
 
 interface Point {
   x: number;

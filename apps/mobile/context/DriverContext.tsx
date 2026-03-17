@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useRef, useSt
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import * as Notifications from "expo-notifications";
-import { useAuth } from "./AuthContext";
+import { useAuth, generateId } from "@cityos/mobile-core";
 import type { DriverJob, DriverStatus, DriverEarnings, OfflineAction, InspectionCheck, InspectionResult, SOSReport } from "@/types/driver";
 import {
   getDriverStatus,
@@ -19,7 +19,6 @@ import {
   sendSOS as apiSendSOS,
   syncOfflineActions,
 } from "@/lib/driver-api";
-import { generateId } from "@/lib/id";
 
 const OFFLINE_QUEUE_KEY = "dakkah_driver_offline_queue";
 const CACHED_JOBS_KEY = "dakkah_driver_cached_jobs";

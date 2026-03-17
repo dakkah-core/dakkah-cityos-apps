@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from "react";
 import { View, Text, StyleSheet, Pressable, Modal, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { COLORS } from "@/constants/colors";
-import type { MessageAttachment } from "@/types/chat";
+import { COLORS } from "../constants/colors";
+import type { MessageAttachment } from "../types/chat";
 
 interface Props {
   onAttach: (attachment: MessageAttachment) => void;

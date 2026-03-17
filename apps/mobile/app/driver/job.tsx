@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, Pressable, ScrollView, Alert, Linking, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { COLORS, BRAND } from "@/constants/colors";
+import { COLORS, BRAND } from "@cityos/mobile-core";
 import { useDriver } from "@/context/DriverContext";
 import { DeliveryMap } from "@/components/driver/DeliveryMap";
 import { ProofOfDelivery } from "@/components/driver/ProofOfDelivery";

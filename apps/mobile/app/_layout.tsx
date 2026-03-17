@@ -12,10 +12,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { AuthProvider } from "@/context/AuthContext";
-import { ChatProvider } from "@/context/ChatContext";
-import { ThemeProvider } from "@/context/ThemeContext";
+import { ErrorBoundary, AuthProvider, ChatProvider, ThemeProvider } from "@cityos/mobile-core";
 
 SplashScreen.preventAutoHideAsync();
 

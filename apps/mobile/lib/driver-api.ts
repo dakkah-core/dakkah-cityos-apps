@@ -1,5 +1,5 @@
 import type { DriverJob, DriverStatus, DriverEarnings, InspectionCheck, InspectionResult, SOSReport, OfflineAction } from "@/types/driver";
-import { apiClient } from "./gateway";
+import { apiClient } from "@cityos/mobile-core";
 
 export async function getDriverStatus(_accessToken?: string): Promise<{
   driverId: string;

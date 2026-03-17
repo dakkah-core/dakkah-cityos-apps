@@ -1,9 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { View, Text, StyleSheet, Pressable, TextInput, Platform } from "react-native";
 import { useRouter } from "expo-router";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, BRAND } from "@cityos/mobile-core";
 import * as SecureStore from "expo-secure-store";
-import { BRAND } from "@/constants/colors";
 
 const POS_ROLES = ["cashier", "pos_operator", "store_manager", "merchant"];
 const PIN_STORAGE_KEY = "dakkah_pos_pin";

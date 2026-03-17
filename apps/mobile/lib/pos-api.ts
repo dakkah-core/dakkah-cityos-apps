@@ -7,7 +7,7 @@ import type {
   DailySalesReport,
   PaymentDetails,
 } from "@/types/pos";
-import { apiClient } from "./gateway";
+import { apiClient } from "@cityos/mobile-core";
 
 async function posRequest<T>(
   path: string,

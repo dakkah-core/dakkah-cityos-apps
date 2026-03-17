@@ -25,6 +25,7 @@
     "@cityos/api-client-react": "workspace:*",
     "@cityos/auth": "workspace:*",
     "@cityos/design-tokens": "workspace:*",
+    "@cityos/mobile-core": "workspace:*",
     "@cityos/sdui-protocol": "workspace:*",
     "@cityos/sdui-renderer-native": "workspace:*",
     "babel-plugin-react-compiler": "^19.0.0-beta-e993439-20250117",

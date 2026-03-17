@@ -2,9 +2,8 @@ import React, { useCallback } from "react";
 import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, Switch } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS, BRAND } from "@/constants/colors";
+import { COLORS, BRAND, DynamicScreen } from "@cityos/mobile-core";
 import { useMerchant } from "@/context/MerchantContext";
-import { DynamicScreen } from "@/components/artifacts/DynamicScreen";
 import { configureActionHandler } from "@cityos/sdui-renderer-native";
 
 export default function MerchantHomeScreen() {

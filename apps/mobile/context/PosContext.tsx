@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useReducer, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useAuth } from "./AuthContext";
+import { useAuth, generateId } from "@cityos/mobile-core";
 import { PosApi } from "@/lib/pos-api";
 import type {
   PosProduct,
@@ -13,7 +13,6 @@ import type {
   PaymentDetails,
   DailySalesReport,
 } from "@/types/pos";
-import { generateId } from "@/lib/id";
 import NetInfo from "@react-native-community/netinfo";
 
 const OFFLINE_QUEUE_KEY = "dakkah_pos_offline_queue";

@@ -1,8 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { useRouter, usePathname } from "expo-router";
-import { useAuth } from "@/context/AuthContext";
-import { COLORS, BRAND } from "@/constants/colors";
+import { useAuth, COLORS, BRAND } from "@cityos/mobile-core";
 
 const MERCHANT_ROLES = ["merchant", "vendor", "store_manager", "store_staff"];
 

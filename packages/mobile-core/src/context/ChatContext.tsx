@@ -1,11 +1,11 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import type { Message, ChatThread, MessageReaction, MessageAttachment } from "@/types/chat";
-import { generateId } from "@/lib/id";
-import { processUserMessage } from "@/lib/copilot-brain";
-import { aiChat, aiExecute, syncThread, deleteServerThread } from "@/lib/ai-client";
-import type { Artifact } from "@/types/chat";
-import { useAuth } from "@/context/AuthContext";
+import type { Message, ChatThread, MessageReaction, MessageAttachment } from "../types/chat";
+import { generateId } from "../lib/id";
+import { processUserMessage } from "../lib/copilot-brain";
+import { aiChat, aiExecute, syncThread, deleteServerThread } from "../lib/ai-client";
+import type { Artifact } from "../types/chat";
+import { useAuth } from "../context/AuthContext";
 
 const THREADS_KEY = "dakkah_threads";
 const MESSAGES_KEY = "dakkah_copilot_msgs";

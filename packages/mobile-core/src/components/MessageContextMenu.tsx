@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Pressable, Modal, StyleSheet } from "react-native";
-import { COLORS } from "@/constants/colors";
-import { REACTION_EMOJIS } from "@/lib/contacts";
+import { COLORS } from "../constants/colors";
+import { REACTION_EMOJIS } from "../lib/contacts";
 
 interface Props {
   visible: boolean;

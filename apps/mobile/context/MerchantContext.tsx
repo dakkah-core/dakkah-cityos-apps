@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "@cityos/mobile-core";
 import type {
   MerchantOrder,
   OrderStatus,

@@ -1,4 +1,4 @@
-import type { Contact } from "@/types/chat";
+import type { Contact } from "../types/chat";
 
 export const CONTACTS: Contact[] = [
   { id: "user_sarah", name: "Sarah Al-Rashid", role: "City Planner", department: "Urban Development", isOnline: true },

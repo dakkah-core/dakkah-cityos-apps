@@ -50,8 +50,9 @@ The project uses a pnpm monorepo with `apps/` for deployable applications, `pack
 
 ### Mobile Application (`apps/mobile`)
 - **Conversational AI Copilot**: Central interaction model with "copilot brain" for intent matching and dynamic UI artifact rendering.
-- **Context Management**: `ChatContext`, `AuthContext` (Keycloak OIDC PKCE), `ThemeContext`.
-- **Artifact Renderer**: Modular system rendering 49 distinct artifact types dynamically.
+- **Shared Core**: All cross-app components, contexts, libs, and artifact renderers are imported from `@cityos/mobile-core`. Role-specific code (driver, merchant, POS components/contexts/APIs) remains local.
+- **Context Management**: `ChatContext`, `AuthContext` (Keycloak OIDC PKCE), `ThemeContext` (from `@cityos/mobile-core`). Role contexts (`DriverContext`, `MerchantContext`, `PosContext`) remain local.
+- **Artifact Renderer**: Modular system rendering 49 distinct artifact types dynamically (from `@cityos/mobile-core`).
 - **Interactive Chat Features**: Message reactions, pinning, reply-to, inline editing, `@mention` system, `/slash commands`, in-chat search.
 - **Voice & Media Input**: Microphone for speech-to-text, media picker for attachments.
 - **Scenario Engine**: Local engine with 189 scenarios for intelligent responses, with OpenAI fallback.
@@ -101,6 +102,7 @@ The project uses a pnpm monorepo with `apps/` for deployable applications, `pack
 - **Vite Proxy**: All dashboard `vite.config.ts` files proxy `${basePath}api` to `http://localhost:8080` (BFF gateway) with path rewriting.
 
 ### Shared Packages (`packages/`)
+- **Mobile Core (`packages/mobile-core`)**: `@cityos/mobile-core` — shared React Native package containing all cross-app mobile components (25 shared components + 51 artifact renderers), core contexts (Auth, Chat, Theme), shared libs (ai-client, gateway, contacts, copilot-brain, discovery-data, i18n, id, notifications, storage), constants (colors/BRAND), types (chat types), and scenario data. Role-specific code (driver, merchant, POS) stays in `apps/mobile`. All mobile apps import shared code from this package.
 - **UI Component Library (`packages/ui`)**: `@cityos/ui` — shared shadcn/ui component library with 55 components (Button, Card, Dialog, Input, etc.), `cn()` utility, `useToast`, `useIsMobile` hooks. Used by all web apps. All Radix UI primitives and shared dependencies centralized here.
 - **Database (`packages/db`)**: Drizzle ORM for PostgreSQL schema and connections.
 - **API Specification (`packages/api-spec`)**: OpenAPI 3.1 specification and Orval configuration for client/schema generation.
