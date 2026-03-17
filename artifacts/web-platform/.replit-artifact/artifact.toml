@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/web-platform/"
+title = "Dakkah CityOS Web Platform"
+version = "1.0.0"
+id = "artifacts/web-platform"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+localPort = 21596
+name = "web"
+paths = ["/web-platform/"]
+
+[services.development]
+run = "pnpm --filter @workspace/web-platform run dev"
+
+[services.env]
+PORT = "21596"
+BASE_PATH = "/web-platform/"
+
+[services.production]
+build = ["pnpm", "--filter", "@workspace/web-platform", "run", "build"]
+publicDir = "artifacts/web-platform/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"

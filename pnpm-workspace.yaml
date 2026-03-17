@@ -1,5 +1,6 @@
 packages:
   - apps/*
+  - artifacts/*
   - packages/*
   - packages/integrations/*
   - services/*

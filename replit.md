@@ -53,10 +53,11 @@ The project uses a pnpm monorepo with `apps/` for deployable applications, `pack
 - **SDUI Renderer**: `@cityos/sdui-renderer-native` for recursive rendering of 8 SDUI node types.
 
 ### Specialized Mobile Applications
-- **Driver App (`apps/mobile-driver`)**: Standalone Expo app with features for driver dashboard, delivery flow, earnings, vehicle inspection, SOS, and offline tolerance.
-- **Merchant App (`apps/mobile-merchant`)**: Standalone Expo app with features for store dashboard, order management, catalog, inventory, bookings, and sales analytics.
-- **POS App (`apps/mobile-pos`)**: Standalone Expo app with features for shift management, product grid, cart & checkout, receipt generation, kitchen display, returns, and end-of-day reports.
+- **Driver App (`apps/mobile-driver`)**: Standalone Expo app with features for driver dashboard, delivery flow, earnings, vehicle inspection, SOS, and offline tolerance. Runs on port 3001.
+- **Merchant App (`apps/mobile-merchant`)**: Standalone Expo app with features for store dashboard, order management, catalog, inventory, bookings, and sales analytics. Runs on port 3002.
+- **POS App (`apps/mobile-pos`)**: Standalone Expo app with features for shift management, product grid, cart & checkout, receipt generation, kitchen display, returns, and end-of-day reports. Runs on port 3003.
 - All three apps import shared UI/contexts/libs from `@cityos/mobile-core`.
+- **Note**: Only one Expo app can be registered as a preview artifact (apps/mobile). Driver/Merchant/POS run as workflow-only apps and cannot appear in the preview dropdown.
 
 ### Consumer Web Platform & PWA (`apps/web-platform`)
 - **AI Copilot Web Interface**: Full conversational AI copilot for web/desktop, mirroring the mobile app's AI-first paradigm. Single chat interface for all city services.
