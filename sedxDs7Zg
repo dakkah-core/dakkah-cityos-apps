@@ -1,0 +1,82 @@
+modules = ["nodejs-24", "javascript"]
+
+[[artifacts]]
+id = "services/bff-gateway"
+
+[[artifacts]]
+id = "artifacts/mockup-sandbox"
+
+[deployment]
+router = "application"
+deploymentTarget = "autoscale"
+
+[deployment.postBuild]
+args = ["pnpm", "store", "prune"]
+env = { "CI" = "true" }
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "apps/web-platform: web"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "services/bff-gateway: API Server"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "apps/mobile: expo"
+
+[[workflows.workflow]]
+name = "apps/web-platform: web"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "PORT=5000 BASE_PATH=/web-platform/ pnpm --filter @cityos/web-platform run dev"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow]]
+name = "services/bff-gateway: API Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "PORT=8080 pnpm --filter @cityos/bff-gateway run dev"
+waitForPort = 8080
+
+[[workflows.workflow]]
+name = "apps/mobile: expo"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @cityos/mobile run dev"
+waitForPort = 8081
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[agent]
+stack = "PNPM_WORKSPACE"
+expertMode = true
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 20000
+
+[nix]
+channel = "stable-25_05"
