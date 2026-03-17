@@ -1,0 +1,15 @@
+packages:
+  "framer-motion": "For smooth chat and component animations"
+  "clsx": "For conditional class merging"
+  "tailwind-merge": "For merging tailwind classes safely"
+  "react-markdown": "For rendering markdown in the AI copilot responses"
+
+images:
+  - path: "apps/dev-portal/public/images/auth-bg.png"
+    description: "Abstract dark mode tech background with glowing teal and blue geometric code patterns"
+    aspect_ratio: "16:9"
+
+notes:
+  - Mock authentication implemented via Context for demo purposes.
+  - SDUI fetches from /api/sdui/:screenId as specified in backend.
+  - AI Copilot is mocked to respond to typical developer queries.

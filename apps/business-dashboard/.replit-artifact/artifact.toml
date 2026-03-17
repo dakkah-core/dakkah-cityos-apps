@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/business-dashboard/"
+title = "Business Dashboard"
+version = "1.0.0"
+id = "artifacts/business-dashboard"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+localPort = 26079
+name = "web"
+paths = ["/business-dashboard/"]
+
+[services.development]
+run = "pnpm --filter @cityos/business-dashboard run dev"
+
+[services.env]
+PORT = "26079"
+BASE_PATH = "/business-dashboard/"
+
+[services.production]
+build = ["pnpm", "--filter", "@cityos/business-dashboard", "run", "build"]
+publicDir = "apps/business-dashboard/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"

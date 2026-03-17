@@ -15,7 +15,7 @@ Do not make changes to the file `Y`.
 # System Architecture
 
 ## Monorepo Structure
-The project uses a pnpm monorepo with `artifacts/` for deployable applications and `lib/` for shared libraries. It employs TypeScript composite projects for efficient build and type-checking.
+The project uses a pnpm monorepo with `apps/` for deployable applications, `packages/` for shared libraries, and `services/` for microservices (BFF gateway). Package scope is `@cityos/`. It employs TypeScript composite projects for efficient build and type-checking.
 
 ## Core Technologies
 - **Backend**: Node.js 24, Express 5
@@ -27,21 +27,28 @@ The project uses a pnpm monorepo with `artifacts/` for deployable applications a
 
 ## UI/UX and Design
 - **Mobile App**: Expo React Native "Super App" focused on a single AI copilot screen, prioritizing conversational AI over traditional navigation.
-- **Design System**: Centralized `lib/design-tokens` for consistent branding across applications (colors, spacing, typography, etc.), with React Native specific exports.
+- **Design System**: Centralized `packages/design-tokens` for consistent branding across applications (colors, spacing, typography, etc.), with React Native specific exports.
 - **Theming**: Supports light/dark mode with semantic colors and `AsyncStorage` persistence.
 - **Internationalization**: Full English/Arabic support with RTL detection.
 
 ## Technical Implementations & Features
 
-### API Server (`artifacts/api-server`)
-- **Gateway Architecture**: Express 5 server routing requests to 11 domain services (AI, Commerce, Payments, Identity, Logistics, Health, ERP, Content, Comms, Workflows, Storage).
+### BFF Gateway (`services/bff-gateway`)
+- **Gateway Architecture**: Express 5 server routing requests to 8 BFF domain services. Each domain uses proxy-then-fallback pattern: attempts real BFF service first, falls back to simulation data.
+- **8 BFF Domains**: Commerce (port 4001), Transport (4002), Healthcare (4003), Governance (4004), Events/Culture (4005), Platform (4006), IoT/Telemetry (4007), Social (4008).
 - **AI Integration**: Routes for AI chat (OpenAI gpt-5-mini with intent routing), intent execution (SDUI payload generation), and speech-to-text. Supports server-side thread persistence.
 - **Auth Middleware**: JWT verification (`jsonwebtoken` + `jwks-rsa`) with caching, audience validation, and role-based access control.
 - **SDUI Endpoint**: Proxies Server-Driven UI screens with fallback layouts for dynamic UI updates.
-- **Commerce API**: Full checkout orchestration flow.
+- **Commerce API**: Full checkout orchestration flow + merchant management + POS system.
+- **Healthcare API**: Practitioners, facilities, appointments (book/cancel).
+- **Governance API**: Government services catalog, public proposals (with voting), permits, citizen reports.
+- **Events/Culture API**: Events listing, venues, registrations (book/cancel).
+- **Platform API**: Multi-tenant config, feature flags, system status, app config.
+- **IoT/Telemetry API**: Devices, sensor readings (time-series), alerts (acknowledge), dashboard summary.
+- **Social API**: Feed, posts (create/like/comment), trending topics.
 - **Notifications API**: Push registration with category system.
 
-### Mobile Application (`artifacts/mobile`)
+### Mobile Application (`apps/mobile`)
 - **Conversational AI Copilot**: Central interaction model with "copilot brain" for intent matching and dynamic UI artifact rendering.
 - **Context Management**: `ChatContext`, `AuthContext` (Keycloak OIDC PKCE), `ThemeContext`.
 - **Artifact Renderer**: Modular system rendering 49 distinct artifact types dynamically.
@@ -50,7 +57,7 @@ The project uses a pnpm monorepo with `artifacts/` for deployable applications a
 - **Scenario Engine**: Local engine with 189 scenarios for intelligent responses, with OpenAI fallback.
 - **Auth System**: Keycloak PKCE authentication, token management with `expo-secure-store` and `AsyncStorage`.
 - **Push Notifications**: Expo Notifications integration with category system.
-- **SDUI Renderer**: `@workspace/sdui-renderer-native` for recursive rendering of 8 SDUI node types.
+- **SDUI Renderer**: `@cityos/sdui-renderer-native` for recursive rendering of 8 SDUI node types.
 
 ### Specialized Mobile Applications (Driver, Merchant, POS)
 - **Role-Based Experiences**: Built as route groups within the main Expo mobile artifact, sharing core auth, design tokens, and packages.
@@ -63,14 +70,14 @@ The project uses a pnpm monorepo with `artifacts/` for deployable applications a
 - **Commerce Merchant API (`/api/commerce/merchant/`)**: Handles merchant profiles, orders, products, inventory, bookings, tables, sales analytics, and campaigns.
 - **POS Commerce API (`/api/commerce/pos/`)**: Manages POS products, checkout processes, kitchen orders, shifts, returns, and reports.
 
-### Consumer Web Platform & PWA (`artifacts/web-platform`)
+### Consumer Web Platform & PWA (`apps/web-platform`)
 - **AI Copilot Web Interface**: Full conversational AI copilot for web/desktop, matching the mobile app's AI-first paradigm. No traditional navigation — single chat interface for all city services.
 - **PWA Support**: Service worker (`public/sw.js`) with cache-first for static assets, network-first for SDUI, offline fallback shell. PWA manifest (`public/manifest.json`) for standalone installation. Install prompt banner, update detection, offline indicator.
 - **IndexedDB Offline Store**: `offline-store.ts` with stores for messages, SDUI cache, and mutation queue (background sync).
 - **Chat Features**: Welcome message with suggestion chips, demo responses for weather/rides/restaurants/events, typing indicator, message timestamps, reply-to support, attachments UI.
-- **Artifact Renderer**: Renders selection chips, weather cards, ride status, POI carousels, event carousels, SDUI nodes (via `@workspace/sdui-renderer-web`), and generic JSON fallback.
+- **Artifact Renderer**: Renders selection chips, weather cards, ride status, POI carousels, event carousels, SDUI nodes (via `@cityos/sdui-renderer-web`), and generic JSON fallback.
 - **Discovery Sidebar**: 8 service categories (Transport, Healthcare, Commerce, Government, Events, Education, Smart City, Community) with expandable prompt lists and search.
-- **Auth**: Keycloak PKCE via `@workspace/auth` + guest demo mode (dev/demo only). Auth callback page with state/verifier validation.
+- **Auth**: Keycloak PKCE via `@cityos/auth` + guest demo mode (dev/demo only). Auth callback page with state/verifier validation.
 - **SEO Pages**: About, Contact, Privacy, Terms — all with back-to-copilot navigation.
 - **Layout**: Responsive with threads sidebar (left, collapsible), header with Dakkah branding, and discovery sidebar (right, slide-out).
 - **Port**: 5000, path `/web-platform/`. Vite proxy: `${basePath}api` → `http://localhost:8080`.
@@ -83,23 +90,23 @@ The project uses a pnpm monorepo with `artifacts/` for deployable applications a
 - All three surface apps are routes within `web-platform` (not separate artifacts due to 7-artifact limit). Each renders SDUI content adapted for its surface type via the `?surface=` query parameter.
 
 ### Web Dashboards & Portals (Phase 3)
-- **City Dashboard (`artifacts/city-dashboard`)**: Municipal operations center for city administrators. Dark mode command center with real-time city stats (incidents, traffic, air quality, energy), service request tracking, infrastructure health monitoring, and AI copilot chat panel. Port 20359, path `/city-dashboard/`.
-- **Business Dashboard (`artifacts/business-dashboard`)**: Multi-location business management portal for merchants. Clean professional theme with revenue/order tracking, inventory alerts, staff scheduling, marketing campaigns, customer insights, and AI copilot. Port 26079, path `/business-dashboard/`.
-- **Smart City Portal (`artifacts/smart-city-portal`)**: Citizen-facing portal for accessing city services. Accessible civic design with service directory (property, transport, health, education, waste), city announcements, issue reporting, community events, public consultations, and AI copilot. Port 21840, path `/smart-city-portal/`.
-- **Developer Portal (`artifacts/dev-portal`)**: API platform for third-party developers. Dark developer-focused theme with API catalog (Commerce, Transport, Healthcare, Governance, IoT), app registration, API usage metrics, playground, SDK downloads, webhook config, and AI copilot. Port 23288, path `/dev-portal/`.
+- **City Dashboard (`apps/city-dashboard`)**: Municipal operations center for city administrators. Dark mode command center with real-time city stats. Port configured via env, path `/city-dashboard/`.
+- **Business Dashboard (`apps/business-dashboard`)**: Multi-location business management portal for merchants. Port configured via env, path `/business-dashboard/`.
+- **Smart City Portal (`apps/smart-city-portal`)**: Citizen-facing portal for accessing city services. Port configured via env, path `/smart-city-portal/`.
+- **Developer Portal (`apps/dev-portal`)**: API platform for third-party developers. Port configured via env, path `/dev-portal/`.
 - All dashboards are AI copilot-first (conversational panel is primary interface), use SDUI widget rendering from the API server, and include auth guards with guest/demo access.
-- **Auth**: Each dashboard uses `@workspace/auth` (Keycloak PKCE with `generatePKCE`/`generateState`) for SSO login, plus guest/demo fallback for development. Role guards: city_admin (City), merchant_admin (Business), citizen (Smart City), developer (Dev Portal).
-- **SDUI Fetch**: Dashboards fetch SDUI screens with `?surface=` query params: `desktop_wide` (city), `dashboard` (business), `web` (smart-city, dev-portal). Screen IDs: `city_analytics`, `merchant_overview`, `citizen_home`, `dev_home`.
-- **Vite Proxy**: All 4 dashboard `vite.config.ts` files proxy `${basePath}api` to `http://localhost:8080` (API server) with path rewriting.
+- **Auth**: Each dashboard uses `@cityos/auth` (Keycloak PKCE with `generatePKCE`/`generateState`) for SSO login, plus guest/demo fallback for development.
+- **SDUI Fetch**: Dashboards fetch SDUI screens with `?surface=` query params. Screen IDs: `city_analytics`, `merchant_overview`, `citizen_home`, `dev_home`.
+- **Vite Proxy**: All dashboard `vite.config.ts` files proxy `${basePath}api` to `http://localhost:8080` (BFF gateway) with path rewriting.
 
-### Shared Libraries (`lib/`)
-- **Database (`lib/db`)**: Drizzle ORM for PostgreSQL schema and connections.
-- **API Specification (`lib/api-spec`)**: OpenAPI 3.1 specification and Orval configuration for client/schema generation.
-- **Generated Clients/Schemas**: `lib/api-zod` (Zod schemas), `lib/api-client-react` (React Query hooks), `lib/api-client` (generic CityOS client).
-- **SDUI Protocol (`lib/sdui-protocol`)**: Defines Zod schemas and TypeScript types for SDUI nodes, actions, modifiers, and capabilities.
-- **SDUI Renderers**: `lib/sdui-renderer-native` and `lib/sdui-renderer-web` map SDUI nodes to platform-specific UI components.
-- **Authentication (`lib/auth`)**: Keycloak PKCE SDK for `AuthProvider`, `useAuth()` hook, token management, and storage abstraction.
-- **AI Assistant Widget (`lib/ai-assistant-widget`)**: Embeddable `<DakkahAssistant />` React component for adding an AI copilot chat to any website. Features: floating action button with expand/collapse, text and voice input (Web Speech API), generative SDUI rendering inline in messages, context-aware (host screen/page awareness), customizable theme via CSS custom properties, message history with typing indicator, sandboxed action dispatch via `onAction` callback. Props: `apiEndpoint`, `authToken`, `theme`, `position`, `hostContext`, `greeting`, `placeholder`, `onAction`, `zIndex`, `defaultOpen`. Demo page at `/web-platform/widget-demo`.
+### Shared Packages (`packages/`)
+- **Database (`packages/db`)**: Drizzle ORM for PostgreSQL schema and connections.
+- **API Specification (`packages/api-spec`)**: OpenAPI 3.1 specification and Orval configuration for client/schema generation.
+- **Generated Clients/Schemas**: `packages/api-zod` (Zod schemas), `packages/api-client-react` (React Query hooks), `packages/api-client` (generic CityOS client).
+- **SDUI Protocol (`packages/sdui-protocol`)**: Defines Zod schemas and TypeScript types for SDUI nodes, actions, modifiers, and capabilities.
+- **SDUI Renderers**: `packages/sdui-renderer-native` and `packages/sdui-renderer-web` map SDUI nodes to platform-specific UI components.
+- **Authentication (`packages/auth`)**: Keycloak PKCE SDK for `AuthProvider`, `useAuth()` hook, token management, and storage abstraction.
+- **AI Assistant Widget (`packages/ai-assistant-widget`)**: Embeddable `<DakkahAssistant />` React component for adding an AI copilot chat to any website. Demo page at `/web-platform/widget-demo`.
 
 # External Dependencies
 
@@ -111,6 +118,6 @@ The project uses a pnpm monorepo with `artifacts/` for deployable applications a
 - **AI Integration**: OpenAI (via Replit AI Integrations)
 - **Mobile Development**: Expo (version 54), React Native (version 0.81)
 - **Push Notifications**: Expo Notifications
-- **Auth Libraries**: `expo-web-browser`, `@workspace/auth`
+- **Auth Libraries**: `expo-web-browser`, `@cityos/auth`
 - **Secure Storage**: `expo-secure-store`, `@react-native-async-storage/async-storage`
 - **JWT Verification**: `jsonwebtoken`, `jwks-rsa`

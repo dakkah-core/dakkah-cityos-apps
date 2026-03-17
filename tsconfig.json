@@ -4,34 +4,34 @@
   "files": [],
   "references": [
     {
-      "path": "./lib/db"
+      "path": "./packages/db"
     },
     {
-      "path": "./lib/api-client-react"
+      "path": "./packages/api-client-react"
     },
     {
-      "path": "./lib/api-zod"
+      "path": "./packages/api-zod"
     },
     {
-      "path": "./lib/design-tokens"
+      "path": "./packages/design-tokens"
     },
     {
-      "path": "./lib/sdui-protocol"
+      "path": "./packages/sdui-protocol"
     },
     {
-      "path": "./lib/sdui-renderer-native"
+      "path": "./packages/sdui-renderer-native"
     },
     {
-      "path": "./lib/sdui-renderer-web"
+      "path": "./packages/sdui-renderer-web"
     },
     {
-      "path": "./lib/auth"
+      "path": "./packages/auth"
     },
     {
-      "path": "./lib/api-client"
+      "path": "./packages/api-client"
     },
     {
-      "path": "./lib/ai-assistant-widget"
+      "path": "./packages/ai-assistant-widget"
     }
   ]
 }
