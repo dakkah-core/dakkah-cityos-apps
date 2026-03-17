@@ -14,7 +14,7 @@ export function MerchantRoleGate({ children }: MerchantRoleGateProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const isRegisterRoute = pathname === "/merchant/register";
+  const isRegisterRoute = pathname === "/register";
 
   const hasMerchantRole = user?.roles?.some((r) => MERCHANT_ROLES.includes(r));
   const isDev = process.env.NODE_ENV === "development" || process.env.EXPO_PUBLIC_ALLOW_DEV_MERCHANT === "true";
@@ -45,7 +45,7 @@ export function MerchantRoleGate({ children }: MerchantRoleGateProps) {
         <Text style={styles.icon}>🏪</Text>
         <Text style={styles.title}>Merchant Access Only</Text>
         <Text style={styles.subtitle}>This section is restricted to authorized merchants and vendors</Text>
-        <Pressable style={styles.registerBtn} onPress={() => router.push("/merchant/register" as never)}>
+        <Pressable style={styles.registerBtn} onPress={() => router.push("/register" as never)}>
           <Text style={styles.registerBtnText}>Register as Vendor</Text>
         </Pressable>
         <Pressable style={styles.backBtn} onPress={() => router.replace("/")}>
