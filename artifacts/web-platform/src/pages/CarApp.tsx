@@ -96,7 +96,7 @@ export default function CarApp() {
         case "menu":
           if (item.id === "deliveries") { setView("delivery"); setSelectedIdx(0); }
           else if (item.id === "navigate") { setView("navigate"); setSelectedIdx(0); }
-          else if (item.id === "status") { setView("status"); setSelectedIdx(0); setIsOnline(!isOnline); }
+          else if (item.id === "status") { setView("status"); setSelectedIdx(0); }
           else if (item.id === "voice") { setView("voice"); setSelectedIdx(0); }
           else if (item.id === "earnings") { setView("earnings"); setSelectedIdx(0); }
           break;

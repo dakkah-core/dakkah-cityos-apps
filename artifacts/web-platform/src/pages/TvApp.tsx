@@ -69,6 +69,16 @@ export default function TvApp() {
   const [sduiRoot, setSduiRoot] = useState<SdNode | null>(null);
   const autoRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [viewportScale, setViewportScale] = useState(() =>
+    Math.min(window.innerWidth / 1920, window.innerHeight / 1080)
+  );
+
+  useEffect(() => {
+    const onResize = () =>
+      setViewportScale(Math.min(window.innerWidth / 1920, window.innerHeight / 1080));
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   useEffect(() => {
     const t = setInterval(() => setCurrentTime(new Date()), 30_000);
@@ -157,6 +167,19 @@ export default function TvApp() {
       style={{
         width: "100vw",
         height: "100vh",
+        background: "#000",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+      }}
+    >
+    <div
+      style={{
+        width: 1920,
+        height: 1080,
+        transform: `scale(${viewportScale})`,
+        transformOrigin: "center center",
         background: "linear-gradient(135deg, #0a1628 0%, #1a2744 50%, #0a1628 100%)",
         color: "#ffffff",
         fontFamily: "system-ui, -apple-system, sans-serif",
@@ -164,6 +187,7 @@ export default function TvApp() {
         display: "flex",
         flexDirection: "column",
         userSelect: "none",
+        position: "relative",
       }}
     >
       <header
@@ -323,6 +347,7 @@ export default function TvApp() {
         <span>Dakkah CityOS · Powered by SDUI</span>
         <span>{isPassive ? "Auto-scrolling · Press any key to interact" : "Interactive Mode"}</span>
       </footer>
+    </div>
     </div>
   );
 }
