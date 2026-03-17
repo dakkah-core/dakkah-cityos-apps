@@ -11,6 +11,12 @@ import { SduiRenderer, configureActionHandler } from "@cityos/sdui-renderer-nati
 import type { SdNode } from "@cityos/sdui-protocol";
 import type { PosProduct } from "@/types/pos";
 
+interface SduiResponse {
+  screen?: SdNode;
+  data?: { screen?: SdNode } & Record<string, unknown>;
+  [key: string]: unknown;
+}
+
 function isSdNode(data: unknown): data is SdNode {
   return typeof data === "object" && data !== null && "type" in data &&
     typeof (data as Record<string, unknown>).type === "string";
@@ -23,11 +29,11 @@ function useSduiSurface(surface: string) {
     try {
       const isPost = !!action;
       if (isPost) {
-        const json = await apiClient.post<any>(`/sdui/${surface}?surface=tablet`, { action, payload });
+        const json = await apiClient.post<SduiResponse>(`/sdui/${surface}?surface=tablet`, { action, payload });
         const node = json?.data?.screen || json?.screen || json?.data || json;
         if (isSdNode(node)) setSduiTree(node);
       } else {
-        const json = await apiClient.get<any>(`/sdui/${surface}?surface=tablet`);
+        const json = await apiClient.get<SduiResponse>(`/sdui/${surface}?surface=tablet`);
         const node = json?.data?.screen || json?.screen || json?.data || json;
         if (isSdNode(node)) setSduiTree(node);
       }

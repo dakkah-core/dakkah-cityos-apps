@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Pressable, Platform, Modal, Alert } from "react-native";
+import type { CameraViewProps } from "expo-camera";
 import { COLORS, BRAND } from "@cityos/mobile-core";
 
 interface BarcodeScannerProps {
@@ -12,7 +13,7 @@ interface BarcodeScannerProps {
 
 export function BarcodeScanner({ expectedBarcodes, scannedBarcodes, onScan, onClose, visible }: BarcodeScannerProps) {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [CameraComponent, setCameraComponent] = useState<React.ComponentType<any> | null>(null);
+  const [CameraComponent, setCameraComponent] = useState<React.ComponentType<CameraViewProps> | null>(null);
 
   useEffect(() => {
     if (!visible) return;

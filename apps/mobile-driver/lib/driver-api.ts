@@ -1,6 +1,36 @@
 import type { DriverJob, DriverStatus, DriverEarnings, InspectionCheck, InspectionResult, SOSReport, OfflineAction } from "@/types/driver";
 import { apiClient } from "@cityos/mobile-core";
 
+interface DriverStatusResponse {
+  driverId: string;
+  status: DriverStatus;
+  activeJobs: DriverJob[];
+  completedToday: number;
+}
+
+interface StatusUpdateResponse {
+  driverId: string;
+  status: DriverStatus;
+  availableJobs: number;
+}
+
+interface PickupVerification {
+  job: DriverJob;
+  verification: { itemsVerified: number; totalItems: number; allVerified: boolean };
+}
+
+interface DeliveryCompletion {
+  job: DriverJob;
+  earnings: { amount: number; currency: string; paidAt: string };
+}
+
+interface SosResponse {
+  sosId: string;
+  status: string;
+  estimatedResponse: string;
+  emergencyContact: string;
+}
+
 export async function getDriverStatus(_accessToken?: string): Promise<{
   driverId: string;
   status: DriverStatus;
@@ -8,8 +38,8 @@ export async function getDriverStatus(_accessToken?: string): Promise<{
   completedToday: number;
 } | null> {
   try {
-    const data = await apiClient.get<{ success: boolean; data?: any }>("/transport/driver/status");
-    return data.success ? data.data : null;
+    const data = await apiClient.get<{ success: boolean; data?: DriverStatusResponse }>("/transport/driver/status");
+    return data.success ? data.data ?? null : null;
   } catch {
     return null;
   }
@@ -21,8 +51,8 @@ export async function setDriverStatus(status: DriverStatus, _accessToken?: strin
   availableJobs: number;
 } | null> {
   try {
-    const data = await apiClient.post<{ success: boolean; data?: any }>("/transport/driver/status", { status });
-    return data.success ? data.data : null;
+    const data = await apiClient.post<{ success: boolean; data?: StatusUpdateResponse }>("/transport/driver/status", { status });
+    return data.success ? data.data ?? null : null;
   } catch {
     return null;
   }
@@ -70,8 +100,8 @@ export async function confirmPickup(jobId: string, scannedBarcodes: string[], _a
   verification: { itemsVerified: number; totalItems: number; allVerified: boolean };
 } | null> {
   try {
-    const data = await apiClient.post<{ success: boolean; data?: any }>(`/transport/driver/jobs/${jobId}/pickup`, { scannedBarcodes });
-    return data.success ? data.data : null;
+    const data = await apiClient.post<{ success: boolean; data?: PickupVerification }>(`/transport/driver/jobs/${jobId}/pickup`, { scannedBarcodes });
+    return data.success ? data.data ?? null : null;
   } catch {
     return null;
   }
@@ -95,8 +125,8 @@ export async function completeDelivery(
   earnings: { amount: number; currency: string; paidAt: string };
 } | null> {
   try {
-    const data = await apiClient.post<{ success: boolean; data?: any }>(`/transport/driver/jobs/${jobId}/complete`, proof);
-    return data.success ? data.data : null;
+    const data = await apiClient.post<{ success: boolean; data?: DeliveryCompletion }>(`/transport/driver/jobs/${jobId}/complete`, proof);
+    return data.success ? data.data ?? null : null;
   } catch {
     return null;
   }
@@ -139,8 +169,8 @@ export async function sendSOS(report: SOSReport, _accessToken?: string): Promise
   emergencyContact: string;
 } | null> {
   try {
-    const data = await apiClient.post<{ success: boolean; data?: any }>("/transport/driver/sos", report);
-    return data.success ? data.data : null;
+    const data = await apiClient.post<{ success: boolean; data?: SosResponse }>("/transport/driver/sos", report);
+    return data.success ? data.data ?? null : null;
   } catch {
     return null;
   }

@@ -2,9 +2,9 @@ import React from "react";
 import { View, Text, StyleSheet, Pressable, Linking, Platform } from "react-native";
 import { COLORS, BRAND } from "@cityos/mobile-core";
 
-let MapView: React.ComponentType<any> | null = null;
-let Marker: React.ComponentType<any> | null = null;
-let Polyline: React.ComponentType<any> | null = null;
+let MapView: React.ComponentType<Record<string, unknown>> | null = null;
+let Marker: React.ComponentType<Record<string, unknown>> | null = null;
+let Polyline: React.ComponentType<Record<string, unknown>> | null = null;
 
 try {
   if (Platform.OS !== "web") {
