@@ -1,8 +1,5 @@
 import { Platform } from "react-native";
-
-const API_BASE = process.env.EXPO_PUBLIC_DOMAIN
-  ? `https://${process.env.EXPO_PUBLIC_DOMAIN}/api`
-  : "http://localhost:8080/api";
+import { apiClient } from "./gateway";
 
 export type NotificationCategory = "order" | "delivery" | "city_alert" | "event" | "chat" | "health" | "transport" | "general";
 
@@ -11,7 +8,7 @@ let pushToken: string | null = null;
 export async function registerForPushNotifications(
   userId?: string,
   categories?: NotificationCategory[],
-  accessToken?: string
+  _accessToken?: string
 ): Promise<string | null> {
   try {
     let Notifications: { getPermissionsAsync: () => Promise<{ status: string }>; requestPermissionsAsync: () => Promise<{ status: string }>; getExpoPushTokenAsync: () => Promise<{ data: string }>; setNotificationCategoryAsync?: (id: string, actions: unknown[]) => Promise<void> };
@@ -41,19 +38,10 @@ export async function registerForPushNotifications(
     const tokenData = await Notifications.getExpoPushTokenAsync();
     pushToken = tokenData.data;
 
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (accessToken) {
-      headers["Authorization"] = `Bearer ${accessToken}`;
-    }
-
-    await fetch(`${API_BASE}/notifications/register`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        token: pushToken,
-        platform: Platform.OS === "ios" ? "ios" : Platform.OS === "android" ? "android" : "web",
-        categories: categories || ["order", "delivery", "city_alert", "event", "chat", "health", "transport", "general"],
-      }),
+    await apiClient.post("/notifications/register", {
+      token: pushToken,
+      platform: Platform.OS === "ios" ? "ios" : Platform.OS === "android" ? "android" : "web",
+      categories: categories || ["order", "delivery", "city_alert", "event", "chat", "health", "transport", "general"],
     }).catch(() => {});
 
     return pushToken;
@@ -90,36 +78,22 @@ async function setupNotificationCategories(
   ]);
 }
 
-export async function updateNotificationCategories(categories: NotificationCategory[], accessToken?: string): Promise<boolean> {
+export async function updateNotificationCategories(categories: NotificationCategory[], _accessToken?: string): Promise<boolean> {
   if (!pushToken) return false;
   try {
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (accessToken) {
-      headers["Authorization"] = `Bearer ${accessToken}`;
-    }
-    const res = await fetch(`${API_BASE}/notifications/categories`, {
-      method: "PUT",
-      headers,
-      body: JSON.stringify({ token: pushToken, categories }),
-    });
-    const data = await res.json();
+    const data = await apiClient.put<{ success: boolean }>("/notifications/categories", { token: pushToken, categories });
     return data.success;
   } catch {
     return false;
   }
 }
 
-export async function unregisterPushNotifications(accessToken?: string): Promise<void> {
+export async function unregisterPushNotifications(_accessToken?: string): Promise<void> {
   if (!pushToken) return;
   try {
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (accessToken) {
-      headers["Authorization"] = `Bearer ${accessToken}`;
-    }
-    await fetch(`${API_BASE}/notifications/unregister`, {
+    await apiClient.request("/notifications/unregister", {
       method: "DELETE",
-      headers,
-      body: JSON.stringify({ token: pushToken }),
+      body: { token: pushToken },
     });
     pushToken = null;
   } catch {}

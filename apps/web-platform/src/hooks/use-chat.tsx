@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from "react";
 import type { Message, Thread, MessageAttachment } from "@/types/chat";
 import { saveMessages, loadMessages } from "@/lib/offline-store";
-import { CityOSClient } from "@cityos/api-client";
+import { apiClient } from "@/lib/api-client";
 
 interface ChatContextValue {
   messages: Message[];
@@ -13,23 +13,6 @@ interface ChatContextValue {
 }
 
 const ChatContext = createContext<ChatContextValue | null>(null);
-
-const API_BASE = `${import.meta.env.BASE_URL}api`;
-
-const apiClient = new CityOSClient({
-  baseUrl: `${window.location.origin}${import.meta.env.BASE_URL}api`.replace(/\/$/, ""),
-  getToken: async () => {
-    try {
-      const tokenJson = localStorage.getItem("cityos_tokens");
-      if (tokenJson) {
-        const tokens = JSON.parse(tokenJson);
-        return tokens.accessToken || null;
-      }
-    } catch {}
-    return null;
-  },
-  surface: "desktop",
-});
 
 const DEMO_RESPONSES: Record<string, { content: string; artifacts?: Message["artifacts"] }> = {
   default: {

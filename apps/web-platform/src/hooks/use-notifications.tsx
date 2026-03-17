@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
+import { apiClient } from "@/lib/api-client";
 
 interface NotificationContextValue {
   permission: NotificationPermission;
@@ -8,8 +9,6 @@ interface NotificationContextValue {
 }
 
 const NotificationContext = createContext<NotificationContextValue | null>(null);
-
-const API_BASE = `${import.meta.env.BASE_URL}api`;
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const [permission, setPermission] = useState<NotificationPermission>(
@@ -60,14 +59,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         applicationServerKey: keyBytes.buffer as ArrayBuffer,
       });
 
-      await fetch(`${API_BASE}/notifications/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token: sub.endpoint,
-          platform: "web",
-          subscription: sub.toJSON(),
-        }),
+      await apiClient.post("/notifications/register", {
+        token: sub.endpoint,
+        platform: "web",
+        subscription: sub.toJSON(),
       });
 
       setIsSubscribed(true);
@@ -85,10 +80,9 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       if (sub) {
         const endpoint = sub.endpoint;
         await sub.unsubscribe();
-        await fetch(`${API_BASE}/notifications/unregister`, {
+        await apiClient.request("/notifications/unregister", {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token: endpoint }),
+          body: { token: endpoint },
         });
       }
       setIsSubscribed(false);

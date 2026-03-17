@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { SduiRenderer } from "@cityos/sdui-renderer-web";
 import type { SdNode } from "@cityos/sdui-protocol";
-
-const API_BASE = `${import.meta.env.BASE_URL}api`;
+import { apiClient } from "@/lib/api-client";
 
 interface ContentSlide {
   id: string;
@@ -86,8 +85,7 @@ export default function TvApp() {
   }, []);
 
   useEffect(() => {
-    fetch(`${API_BASE}/sdui/tv_home?surface=tv_1080p`)
-      .then((r) => r.json())
+    apiClient.get<{ success: boolean; data?: { screen?: { root?: SdNode } } }>("/sdui/tv_home?surface=tv_1080p")
       .then((json) => {
         if (json.success && json.data?.screen?.root) {
           setSduiRoot(json.data.screen.root);

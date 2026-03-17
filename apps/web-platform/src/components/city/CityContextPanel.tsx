@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Cloud, Thermometer, Wind, Droplets, AlertTriangle, Clock, MapPin } from "lucide-react";
 import { cacheSduiScreen, getCachedSduiScreen } from "@/lib/offline-store";
+import { apiClient } from "@/lib/api-client";
 
 interface CityData {
   weather: { temp: number; condition: string; humidity: number; wind: string; aqi: number };
@@ -21,8 +22,6 @@ const DEMO_CITY_DATA: CityData = {
     { label: "Open Issues", value: "342" },
   ],
 };
-
-const API_BASE = `${import.meta.env.BASE_URL}api`;
 
 function extractCityDataFromSdui(screen: Record<string, unknown>): CityData | null {
   try {
@@ -62,16 +61,11 @@ function extractCityDataFromSdui(screen: Record<string, unknown>): CityData | nu
 
 async function fetchCityContext(): Promise<CityData> {
   try {
-    const res = await fetch(`${API_BASE}/sdui/citizen_home?surface=web`, {
-      signal: AbortSignal.timeout(3000),
-    });
-    if (res.ok) {
-      const json = await res.json();
-      await cacheSduiScreen("citizen_home_web", json);
-      if (json.success && json.data?.screen) {
-        const extracted = extractCityDataFromSdui(json.data.screen as Record<string, unknown>);
-        if (extracted) return extracted;
-      }
+    const json = await apiClient.get<{ success: boolean; data?: { screen?: Record<string, unknown> } }>("/sdui/citizen_home?surface=web");
+    await cacheSduiScreen("citizen_home_web", json);
+    if (json.success && json.data?.screen) {
+      const extracted = extractCityDataFromSdui(json.data.screen as Record<string, unknown>);
+      if (extracted) return extracted;
     }
   } catch {
     const cached = await getCachedSduiScreen("citizen_home_web");

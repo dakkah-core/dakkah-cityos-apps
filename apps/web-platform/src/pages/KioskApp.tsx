@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { SduiRenderer } from "@cityos/sdui-renderer-web";
 import type { SdNode } from "@cityos/sdui-protocol";
+import { apiClient } from "@/lib/api-client";
 
 const INACTIVITY_TIMEOUT = 60_000;
-const API_BASE = `${import.meta.env.BASE_URL}api`;
 
 interface QueueTicket {
   id: string;
@@ -76,8 +76,7 @@ export default function KioskApp() {
 
   useEffect(() => {
     setSduiLoading(true);
-    fetch(`${API_BASE}/sdui/kiosk_home?surface=kiosk`)
-      .then((r) => r.json())
+    apiClient.get<{ success: boolean; data?: { screen?: { root?: SdNode } } }>("/sdui/kiosk_home?surface=kiosk")
       .then((json) => {
         if (json.success && json.data?.screen?.root) {
           setSduiRoot(json.data.screen.root);

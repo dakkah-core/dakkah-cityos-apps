@@ -9,48 +9,31 @@ import type {
   Campaign,
   MerchantProfile,
 } from "@/types/merchant";
+import { apiClient } from "./gateway";
 
-const API_BASE = process.env.EXPO_PUBLIC_DOMAIN
-  ? `https://${process.env.EXPO_PUBLIC_DOMAIN}/api`
-  : "http://localhost:8080/api";
-
-function authHeaders(accessToken?: string): Record<string, string> {
-  const h: Record<string, string> = { "Content-Type": "application/json" };
-  if (accessToken) h["Authorization"] = `Bearer ${accessToken}`;
-  return h;
-}
-
-export async function getMerchantProfile(accessToken?: string): Promise<MerchantProfile | null> {
+export async function getMerchantProfile(_accessToken?: string): Promise<MerchantProfile | null> {
   try {
-    const res = await fetch(`${API_BASE}/commerce/merchant/profile`, { headers: authHeaders(accessToken) });
-    const data = await res.json();
-    return data.success ? data.data : null;
+    const data = await apiClient.get<{ success: boolean; data?: MerchantProfile }>("/commerce/merchant/profile");
+    return data.success ? data.data ?? null : null;
   } catch {
     return null;
   }
 }
 
-export async function updateStoreStatus(isOpen: boolean, accessToken?: string): Promise<MerchantProfile | null> {
+export async function updateStoreStatus(isOpen: boolean, _accessToken?: string): Promise<MerchantProfile | null> {
   try {
-    const res = await fetch(`${API_BASE}/commerce/merchant/store-status`, {
-      method: "POST",
-      headers: authHeaders(accessToken),
-      body: JSON.stringify({ isOpen }),
-    });
-    const data = await res.json();
-    return data.success ? data.data : null;
+    const data = await apiClient.post<{ success: boolean; data?: MerchantProfile }>("/commerce/merchant/store-status", { isOpen });
+    return data.success ? data.data ?? null : null;
   } catch {
     return null;
   }
 }
 
-export async function getMerchantOrders(status?: OrderStatus, accessToken?: string): Promise<MerchantOrder[]> {
+export async function getMerchantOrders(status?: OrderStatus, _accessToken?: string): Promise<MerchantOrder[]> {
   try {
-    const url = new URL(`${API_BASE}/commerce/merchant/orders`);
-    if (status) url.searchParams.set("status", status);
-    const res = await fetch(url.toString(), { headers: authHeaders(accessToken) });
-    const data = await res.json();
-    return data.success ? data.data.orders : [];
+    const query = status ? `?status=${status}` : "";
+    const data = await apiClient.get<{ success: boolean; data?: { orders: MerchantOrder[] } }>(`/commerce/merchant/orders${query}`);
+    return data.success ? data.data?.orders ?? [] : [];
   } catch {
     return [];
   }
@@ -60,26 +43,20 @@ export async function updateOrderStatus(
   orderId: string,
   status: OrderStatus,
   reason?: string,
-  accessToken?: string
+  _accessToken?: string,
 ): Promise<MerchantOrder | null> {
   try {
-    const res = await fetch(`${API_BASE}/commerce/merchant/orders/${orderId}/status`, {
-      method: "POST",
-      headers: authHeaders(accessToken),
-      body: JSON.stringify({ status, reason }),
-    });
-    const data = await res.json();
-    return data.success ? data.data.order : null;
+    const data = await apiClient.post<{ success: boolean; data?: { order: MerchantOrder } }>(`/commerce/merchant/orders/${orderId}/status`, { status, reason });
+    return data.success ? data.data?.order ?? null : null;
   } catch {
     return null;
   }
 }
 
-export async function getMerchantProducts(accessToken?: string): Promise<MerchantProduct[]> {
+export async function getMerchantProducts(_accessToken?: string): Promise<MerchantProduct[]> {
   try {
-    const res = await fetch(`${API_BASE}/commerce/merchant/products`, { headers: authHeaders(accessToken) });
-    const data = await res.json();
-    return data.success ? data.data.products : [];
+    const data = await apiClient.get<{ success: boolean; data?: { products: MerchantProduct[] } }>("/commerce/merchant/products");
+    return data.success ? data.data?.products ?? [] : [];
   } catch {
     return [];
   }
@@ -87,16 +64,11 @@ export async function getMerchantProducts(accessToken?: string): Promise<Merchan
 
 export async function createProduct(
   product: Omit<MerchantProduct, "id">,
-  accessToken?: string
+  _accessToken?: string,
 ): Promise<MerchantProduct | null> {
   try {
-    const res = await fetch(`${API_BASE}/commerce/merchant/products`, {
-      method: "POST",
-      headers: authHeaders(accessToken),
-      body: JSON.stringify(product),
-    });
-    const data = await res.json();
-    return data.success ? data.data.product : null;
+    const data = await apiClient.post<{ success: boolean; data?: { product: MerchantProduct } }>("/commerce/merchant/products", product);
+    return data.success ? data.data?.product ?? null : null;
   } catch {
     return null;
   }
@@ -105,39 +77,29 @@ export async function createProduct(
 export async function updateProduct(
   productId: string,
   updates: Partial<MerchantProduct>,
-  accessToken?: string
+  _accessToken?: string,
 ): Promise<MerchantProduct | null> {
   try {
-    const res = await fetch(`${API_BASE}/commerce/merchant/products/${productId}`, {
-      method: "PUT",
-      headers: authHeaders(accessToken),
-      body: JSON.stringify(updates),
-    });
-    const data = await res.json();
-    return data.success ? data.data.product : null;
+    const data = await apiClient.put<{ success: boolean; data?: { product: MerchantProduct } }>(`/commerce/merchant/products/${productId}`, updates);
+    return data.success ? data.data?.product ?? null : null;
   } catch {
     return null;
   }
 }
 
-export async function deleteProduct(productId: string, accessToken?: string): Promise<boolean> {
+export async function deleteProduct(productId: string, _accessToken?: string): Promise<boolean> {
   try {
-    const res = await fetch(`${API_BASE}/commerce/merchant/products/${productId}`, {
-      method: "DELETE",
-      headers: authHeaders(accessToken),
-    });
-    const data = await res.json();
+    const data = await apiClient.delete<{ success: boolean }>(`/commerce/merchant/products/${productId}`);
     return data.success;
   } catch {
     return false;
   }
 }
 
-export async function getInventory(accessToken?: string): Promise<InventoryItem[]> {
+export async function getInventory(_accessToken?: string): Promise<InventoryItem[]> {
   try {
-    const res = await fetch(`${API_BASE}/commerce/merchant/inventory`, { headers: authHeaders(accessToken) });
-    const data = await res.json();
-    return data.success ? data.data.items : [];
+    const data = await apiClient.get<{ success: boolean; data?: { items: InventoryItem[] } }>("/commerce/merchant/inventory");
+    return data.success ? data.data?.items ?? [] : [];
   } catch {
     return [];
   }
@@ -146,28 +108,21 @@ export async function getInventory(accessToken?: string): Promise<InventoryItem[
 export async function updateStock(
   productId: string,
   stockLevel: number,
-  accessToken?: string
+  _accessToken?: string,
 ): Promise<InventoryItem | null> {
   try {
-    const res = await fetch(`${API_BASE}/commerce/merchant/inventory/${productId}`, {
-      method: "POST",
-      headers: authHeaders(accessToken),
-      body: JSON.stringify({ stockLevel }),
-    });
-    const data = await res.json();
-    return data.success ? data.data : null;
+    const data = await apiClient.post<{ success: boolean; data?: InventoryItem }>(`/commerce/merchant/inventory/${productId}`, { stockLevel });
+    return data.success ? data.data ?? null : null;
   } catch {
     return null;
   }
 }
 
-export async function getBookings(date?: string, accessToken?: string): Promise<Booking[]> {
+export async function getBookings(date?: string, _accessToken?: string): Promise<Booking[]> {
   try {
-    const url = new URL(`${API_BASE}/commerce/merchant/bookings`);
-    if (date) url.searchParams.set("date", date);
-    const res = await fetch(url.toString(), { headers: authHeaders(accessToken) });
-    const data = await res.json();
-    return data.success ? data.data.bookings : [];
+    const query = date ? `?date=${date}` : "";
+    const data = await apiClient.get<{ success: boolean; data?: { bookings: Booking[] } }>(`/commerce/merchant/bookings${query}`);
+    return data.success ? data.data?.bookings ?? [] : [];
   } catch {
     return [];
   }
@@ -176,26 +131,20 @@ export async function getBookings(date?: string, accessToken?: string): Promise<
 export async function updateBookingStatus(
   bookingId: string,
   status: Booking["status"],
-  accessToken?: string
+  _accessToken?: string,
 ): Promise<Booking | null> {
   try {
-    const res = await fetch(`${API_BASE}/commerce/merchant/bookings/${bookingId}/status`, {
-      method: "POST",
-      headers: authHeaders(accessToken),
-      body: JSON.stringify({ status }),
-    });
-    const data = await res.json();
-    return data.success ? data.data.booking : null;
+    const data = await apiClient.post<{ success: boolean; data?: { booking: Booking } }>(`/commerce/merchant/bookings/${bookingId}/status`, { status });
+    return data.success ? data.data?.booking ?? null : null;
   } catch {
     return null;
   }
 }
 
-export async function getTables(accessToken?: string): Promise<TableInfo[]> {
+export async function getTables(_accessToken?: string): Promise<TableInfo[]> {
   try {
-    const res = await fetch(`${API_BASE}/commerce/merchant/tables`, { headers: authHeaders(accessToken) });
-    const data = await res.json();
-    return data.success ? data.data.tables : [];
+    const data = await apiClient.get<{ success: boolean; data?: { tables: TableInfo[] } }>("/commerce/merchant/tables");
+    return data.success ? data.data?.tables ?? [] : [];
   } catch {
     return [];
   }
@@ -203,24 +152,20 @@ export async function getTables(accessToken?: string): Promise<TableInfo[]> {
 
 export async function getSalesAnalytics(
   period: "today" | "week" | "month" = "week",
-  accessToken?: string
+  _accessToken?: string,
 ): Promise<SalesAnalytics | null> {
   try {
-    const res = await fetch(`${API_BASE}/commerce/merchant/analytics?period=${period}`, {
-      headers: authHeaders(accessToken),
-    });
-    const data = await res.json();
-    return data.success ? data.data : null;
+    const data = await apiClient.get<{ success: boolean; data?: SalesAnalytics }>(`/commerce/merchant/analytics?period=${period}`);
+    return data.success ? data.data ?? null : null;
   } catch {
     return null;
   }
 }
 
-export async function getCampaigns(accessToken?: string): Promise<Campaign[]> {
+export async function getCampaigns(_accessToken?: string): Promise<Campaign[]> {
   try {
-    const res = await fetch(`${API_BASE}/commerce/merchant/campaigns`, { headers: authHeaders(accessToken) });
-    const data = await res.json();
-    return data.success ? data.data.campaigns : [];
+    const data = await apiClient.get<{ success: boolean; data?: { campaigns: Campaign[] } }>("/commerce/merchant/campaigns");
+    return data.success ? data.data?.campaigns ?? [] : [];
   } catch {
     return [];
   }
@@ -228,16 +173,11 @@ export async function getCampaigns(accessToken?: string): Promise<Campaign[]> {
 
 export async function createCampaign(
   campaign: Omit<Campaign, "id" | "redemptions">,
-  accessToken?: string
+  _accessToken?: string,
 ): Promise<Campaign | null> {
   try {
-    const res = await fetch(`${API_BASE}/commerce/merchant/campaigns`, {
-      method: "POST",
-      headers: authHeaders(accessToken),
-      body: JSON.stringify(campaign),
-    });
-    const data = await res.json();
-    return data.success ? data.data.campaign : null;
+    const data = await apiClient.post<{ success: boolean; data?: { campaign: Campaign } }>("/commerce/merchant/campaigns", campaign);
+    return data.success ? data.data?.campaign ?? null : null;
   } catch {
     return null;
   }
@@ -246,16 +186,11 @@ export async function createCampaign(
 export async function updateCampaignStatus(
   campaignId: string,
   status: Campaign["status"],
-  accessToken?: string
+  _accessToken?: string,
 ): Promise<Campaign | null> {
   try {
-    const res = await fetch(`${API_BASE}/commerce/merchant/campaigns/${campaignId}/status`, {
-      method: "POST",
-      headers: authHeaders(accessToken),
-      body: JSON.stringify({ status }),
-    });
-    const data = await res.json();
-    return data.success ? data.data.campaign : null;
+    const data = await apiClient.post<{ success: boolean; data?: { campaign: Campaign } }>(`/commerce/merchant/campaigns/${campaignId}/status`, { status });
+    return data.success ? data.data?.campaign ?? null : null;
   } catch {
     return null;
   }

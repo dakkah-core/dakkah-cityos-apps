@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { SduiRenderer } from "@cityos/sdui-renderer-web";
 import type { SdNode } from "@cityos/sdui-protocol";
-
-const API_BASE = `${import.meta.env.BASE_URL}api`;
+import { apiClient } from "@/lib/api-client";
 
 interface CarListItem {
   id: string;
@@ -66,8 +65,7 @@ export default function CarApp() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetch(`${API_BASE}/sdui/carplay_home?surface=carplay`)
-      .then((r) => r.json())
+    apiClient.get<{ success: boolean; data?: { screen?: { root?: SdNode } } }>("/sdui/carplay_home?surface=carplay")
       .then((json) => {
         if (json.success && json.data?.screen?.root) {
           setSduiRoot(json.data.screen.root);

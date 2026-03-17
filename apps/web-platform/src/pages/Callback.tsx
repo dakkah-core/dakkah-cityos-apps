@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { extractUser, isTokenExpired } from "@cityos/auth";
+import { SESSION_KEY } from "@/hooks/use-auth";
 
 export default function AuthCallback() {
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +31,21 @@ export default function AuthCallback() {
       .then((res) => res.json())
       .then((tokens) => {
         if (tokens.error) { setError(tokens.error_description || tokens.error); return; }
-        localStorage.setItem("cityos_tokens", JSON.stringify({ accessToken: tokens.access_token, refreshToken: tokens.refresh_token, idToken: tokens.id_token, expiresAt: Date.now() + tokens.expires_in * 1000 }));
+        const authTokens = { accessToken: tokens.access_token, refreshToken: tokens.refresh_token, idToken: tokens.id_token, expiresAt: Date.now() + tokens.expires_in * 1000 };
+        localStorage.setItem("cityos_tokens", JSON.stringify(authTokens));
+
+        if (!isTokenExpired(authTokens)) {
+          const authUser = extractUser(authTokens.accessToken);
+          const sessionUser = {
+            id: authUser.id,
+            name: authUser.name,
+            email: authUser.email,
+            roles: authUser.roles,
+            isAuthenticated: true,
+          };
+          sessionStorage.setItem(SESSION_KEY, JSON.stringify(sessionUser));
+        }
+
         sessionStorage.removeItem("pkce_state");
         sessionStorage.removeItem("pkce_code_verifier");
         window.location.assign(import.meta.env.BASE_URL || "/");
@@ -43,7 +59,7 @@ export default function AuthCallback() {
         <div className="text-center space-y-4">
           <h2 className="text-xl font-bold text-red-500">Authentication Error</h2>
           <p className="text-muted-foreground">{error}</p>
-          <a href={`${import.meta.env.BASE_URL}login`} className="inline-block px-4 py-2 bg-[var(--navy)] text-white rounded-lg">Back to Login</a>
+          <a href={`${import.meta.env.BASE_URL}login`} className="inline-block px-4 py-2 bg-[var(--dt-primary-navy)] text-white rounded-lg">Back to Login</a>
         </div>
       </div>
     );

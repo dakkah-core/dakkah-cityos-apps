@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Mail, MapPin, Phone, Globe, Loader2, Check } from "lucide-react";
 import { queueMutation } from "@/lib/offline-store";
-
-const API_BASE = `${import.meta.env.BASE_URL}api`;
+import { apiClient } from "@/lib/api-client";
 
 export default function Contact() {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
@@ -15,22 +14,12 @@ export default function Contact() {
     setStatus("sending");
 
     try {
-      const res = await fetch(`${API_BASE}/contact`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-        signal: AbortSignal.timeout(5000),
-      });
-
-      if (res.ok) {
-        setStatus("sent");
-        setForm({ name: "", email: "", subject: "", message: "" });
-      } else {
-        throw new Error("Failed to send");
-      }
+      await apiClient.post("/contact", form);
+      setStatus("sent");
+      setForm({ name: "", email: "", subject: "", message: "" });
     } catch {
       await queueMutation({
-        endpoint: `${API_BASE}/contact`,
+        endpoint: `${import.meta.env.BASE_URL}api/contact`,
         method: "POST",
         body: form,
       });
