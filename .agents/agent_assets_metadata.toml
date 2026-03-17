@@ -12,3 +12,9 @@ id = "HOWf8MrxwnkbVQ4iSrWlF"
 uri = "file://IMPLEMENTATION_PLAN.md"
 type = "text"
 title = "Dakkah CityOS — Detailed Implementation Plan (14 Apps)"
+
+[[outputs]]
+id = "_d9rKhX844217_OJ0HtJd"
+uri = "file://REPLIT_SETUP_PROMPTS.md"
+type = "text"
+title = "Replit Setup Prompts for Mobile & Web Repos"
