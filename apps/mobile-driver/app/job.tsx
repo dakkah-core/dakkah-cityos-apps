@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, Pressable, ScrollView, Alert, Linking, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, Pressable, ScrollView, Alert, Linking, ActivityIndicator, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { COLORS, BRAND } from "@cityos/mobile-core";
@@ -9,6 +9,7 @@ import { ProofOfDelivery } from "@/components/driver/ProofOfDelivery";
 import { BarcodeScanner } from "@/components/driver/BarcodeScanner";
 import { DeliveryTimeline } from "@/components/driver/DeliveryTimeline";
 import { JobDetailSkeleton } from "@/components/driver/Skeleton";
+import { hapticLight, hapticMedium, hapticSuccess, hapticError, hapticWarning } from "@/lib/haptics";
 import type { DriverJob, DeliveryStep, TimelineEntry } from "@/types/driver";
 
 function getStepForJob(job: DriverJob): DeliveryStep {
@@ -73,17 +74,47 @@ function deliveryStepToUI(step: DeliveryStep): UIStep {
   }
 }
 
+type NavApp = "google" | "apple" | "waze";
+
+function buildNavUrl(app: NavApp, lat: number, lng: number): string {
+  switch (app) {
+    case "waze":
+      return `https://www.waze.com/ul?ll=${lat},${lng}&navigate=yes`;
+    case "apple":
+      return `http://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`;
+    case "google":
+    default:
+      return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
+  }
+}
+
+const NAV_APP_LABELS: Record<NavApp, string> = {
+  google: "Google Maps",
+  apple: "Apple Maps",
+  waze: "Waze",
+};
+
+const TURN_DIRECTIONS: Array<{ instruction: string; distance: string }> = [
+  { instruction: "Head north on current road", distance: "200m" },
+  { instruction: "Turn right onto King Fahd Road", distance: "1.2km" },
+  { instruction: "Continue straight through roundabout", distance: "800m" },
+  { instruction: "Turn left onto destination street", distance: "400m" },
+  { instruction: "Arrive at destination on the right", distance: "50m" },
+];
+
 export default function JobScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { jobId } = useLocalSearchParams<{ jobId: string }>();
-  const { jobs, acceptJob, rejectJob, pickupJob, arriveAtCustomer, completeJob } = useDriver();
+  const { jobs, acceptJob, rejectJob, pickupJob, arriveAtCustomer, completeJob, profile } = useDriver();
 
   const job = jobs.find((j) => j.id === jobId);
   const [step, setStep] = useState<UIStep>("details");
   const [scannedBarcodes, setScannedBarcodes] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [scannerVisible, setScannerVisible] = useState(false);
+  const [showDirections, setShowDirections] = useState(false);
+  const [selectedNavApp, setSelectedNavApp] = useState<NavApp>(profile?.preferences.navigationApp || "google");
 
   const deliveryStep = job ? getStepForJob(job) : "pending";
   const timeline = job ? buildTimeline(job, deliveryStep) : [];
@@ -92,69 +123,102 @@ export default function JobScreen() {
     if (job) setStep(deliveryStepToUI(getStepForJob(job)));
   }, [job?.status]);
 
+  useEffect(() => {
+    if (profile?.preferences.navigationApp) {
+      setSelectedNavApp(profile.preferences.navigationApp);
+    }
+  }, [profile?.preferences.navigationApp]);
+
   const openMaps = useCallback((lat: number, lng: number, _label: string) => {
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
-    Linking.openURL(url).catch(() => {});
-  }, []);
+    hapticLight();
+    const url = buildNavUrl(selectedNavApp, lat, lng);
+    Linking.openURL(url).catch(() => {
+      const fallback = buildNavUrl("google", lat, lng);
+      Linking.openURL(fallback).catch(() => {});
+    });
+  }, [selectedNavApp]);
 
   const handleAccept = async () => {
     if (!jobId) return;
+    hapticMedium();
     setIsSubmitting(true);
-    await acceptJob(jobId);
+    const success = await acceptJob(jobId);
+    if (success) hapticSuccess();
+    else hapticError();
     setIsSubmitting(false);
   };
 
   const handleReject = async () => {
     if (!jobId) return;
+    hapticWarning();
     Alert.alert("Reject Job", "Are you sure you want to reject this delivery?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Reject", style: "destructive", onPress: async () => { await rejectJob(jobId); router.back(); } },
+      { text: "Reject", style: "destructive", onPress: async () => { await rejectJob(jobId); hapticLight(); router.back(); } },
     ]);
   };
 
   const handleScanBarcode = (barcode: string) => {
     if (!scannedBarcodes.includes(barcode)) {
+      hapticSuccess();
       setScannedBarcodes((prev) => [...prev, barcode]);
     }
   };
 
   const handleConfirmPickup = async () => {
     if (!jobId) return;
+    hapticMedium();
     setIsSubmitting(true);
     await pickupJob(jobId, scannedBarcodes);
+    hapticSuccess();
     setIsSubmitting(false);
   };
 
   const handleArrived = async () => {
     if (!jobId) return;
+    hapticMedium();
     setIsSubmitting(true);
     await arriveAtCustomer(jobId);
+    hapticSuccess();
     setIsSubmitting(false);
   };
 
   const handleComplete = async (proof: { proofType: "signature" | "photo" | "both"; signatureData?: string; photoUri?: string; recipientName?: string }) => {
     if (!jobId) return;
+    hapticMedium();
     setIsSubmitting(true);
     await completeJob(jobId, proof);
+    hapticSuccess();
     setIsSubmitting(false);
   };
 
   const handleCallCustomer = () => {
+    hapticLight();
     if (job?.customer.phone) {
       Linking.openURL(`tel:${job.customer.phone}`).catch(() => {});
     }
   };
 
   const handleMessageCustomer = () => {
+    hapticLight();
     if (job?.customer.phone) {
       Linking.openURL(`sms:${job.customer.phone}`).catch(() => {});
     }
   };
 
   const handleCallPickup = () => {
+    hapticLight();
     if (job?.pickup.contactPhone) {
       Linking.openURL(`tel:${job.pickup.contactPhone}`).catch(() => {});
     }
+  };
+
+  const handleContactDispatch = () => {
+    hapticLight();
+    Alert.alert("Contact Dispatch", "How would you like to reach dispatch?", [
+      { text: "Call", onPress: () => Linking.openURL("tel:+966-11-000-0000").catch(() => {}) },
+      { text: "Message", onPress: () => Linking.openURL("sms:+966-11-000-0000").catch(() => {}) },
+      { text: "Cancel", style: "cancel" },
+    ]);
   };
 
   if (!job) {
@@ -216,6 +280,47 @@ export default function JobScreen() {
 
         <DeliveryTimeline entries={timeline} />
 
+        {(step === "navigate_pickup" || step === "navigate_deliver") && (
+          <View style={styles.navSection}>
+            <View style={styles.navSectionHeader}>
+              <Text style={styles.navSectionTitle}>Navigation</Text>
+              <Pressable onPress={() => setShowDirections(!showDirections)}>
+                <Text style={styles.navToggle}>{showDirections ? "Hide Directions" : "Show Directions"}</Text>
+              </Pressable>
+            </View>
+
+            <View style={styles.navAppSelector}>
+              {(["google", "apple", "waze"] as NavApp[]).map((app) => (
+                <Pressable
+                  key={app}
+                  style={[styles.navAppBtn, selectedNavApp === app && styles.navAppBtnActive]}
+                  onPress={() => { hapticLight(); setSelectedNavApp(app); }}
+                >
+                  <Text style={[styles.navAppBtnText, selectedNavApp === app && styles.navAppBtnTextActive]}>
+                    {NAV_APP_LABELS[app]}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+
+            {showDirections && (
+              <View style={styles.directionsList}>
+                {TURN_DIRECTIONS.map((dir, i) => (
+                  <View key={i} style={styles.directionRow}>
+                    <View style={styles.directionNum}>
+                      <Text style={styles.directionNumText}>{i + 1}</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.directionInstruction}>{dir.instruction}</Text>
+                      <Text style={styles.directionDistance}>{dir.distance}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        )}
+
         <View style={styles.contactSection}>
           <Text style={styles.contactSectionTitle}>Customer</Text>
           <View style={styles.contactCard}>
@@ -260,6 +365,17 @@ export default function JobScreen() {
             </View>
           </View>
         )}
+
+        <View style={styles.contactSection}>
+          <Pressable style={styles.dispatchCard} onPress={handleContactDispatch}>
+            <Text style={styles.dispatchIcon}>🎧</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.dispatchTitle}>Contact Dispatch</Text>
+              <Text style={styles.dispatchSubtitle}>Get help with this delivery</Text>
+            </View>
+            <Text style={styles.dispatchArrow}>→</Text>
+          </Pressable>
+        </View>
 
         {job.deliveryInstructions && (
           <View style={styles.instructionsCard}>
@@ -349,7 +465,7 @@ export default function JobScreen() {
         ) : step === "navigate_pickup" ? (
           <View style={styles.actionRow}>
             <Pressable style={[styles.actionBtn, styles.navActionBtn]} onPress={() => openMaps(job.pickup.lat, job.pickup.lng, job.pickup.name)}>
-              <Text style={styles.navActionBtnText}>📍 Navigate</Text>
+              <Text style={styles.navActionBtnText}>📍 {NAV_APP_LABELS[selectedNavApp]}</Text>
             </Pressable>
             <Pressable style={[styles.actionBtn, styles.acceptBtn]} onPress={handleConfirmPickup}>
               <Text style={styles.acceptBtnText}>Confirm Pickup</Text>
@@ -358,7 +474,7 @@ export default function JobScreen() {
         ) : step === "navigate_deliver" ? (
           <View style={styles.actionRow}>
             <Pressable style={[styles.actionBtn, styles.navActionBtn]} onPress={() => openMaps(job.customer.lat, job.customer.lng, job.customer.name)}>
-              <Text style={styles.navActionBtnText}>📍 Navigate</Text>
+              <Text style={styles.navActionBtnText}>📍 {NAV_APP_LABELS[selectedNavApp]}</Text>
             </Pressable>
             <Pressable style={[styles.actionBtn, styles.acceptBtn]} onPress={handleArrived}>
               <Text style={styles.acceptBtnText}>I've Arrived</Text>
@@ -403,6 +519,21 @@ const styles = StyleSheet.create({
   infoChip: { flex: 1, backgroundColor: COLORS.surfaceWhite, borderRadius: 10, padding: 12, alignItems: "center", borderWidth: 1, borderColor: COLORS.border },
   infoLabel: { fontSize: 10, color: COLORS.textSecondary, fontWeight: "500" },
   infoValue: { fontSize: 16, fontWeight: "700", color: COLORS.text, marginTop: 2 },
+  navSection: { marginHorizontal: 16, marginTop: 12, backgroundColor: COLORS.surfaceWhite, borderRadius: 14, padding: 16, borderWidth: 1, borderColor: COLORS.border },
+  navSectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 },
+  navSectionTitle: { fontSize: 14, fontWeight: "700", color: COLORS.text },
+  navToggle: { fontSize: 12, fontWeight: "600", color: BRAND.blue },
+  navAppSelector: { flexDirection: "row", gap: 6, marginBottom: 8 },
+  navAppBtn: { flex: 1, paddingVertical: 8, borderRadius: 8, backgroundColor: COLORS.surface, alignItems: "center", borderWidth: 1, borderColor: COLORS.border },
+  navAppBtnActive: { backgroundColor: BRAND.blue, borderColor: BRAND.blue },
+  navAppBtnText: { fontSize: 12, fontWeight: "600", color: COLORS.textSecondary },
+  navAppBtnTextActive: { color: "#fff" },
+  directionsList: { marginTop: 8, borderTopWidth: 1, borderTopColor: COLORS.border, paddingTop: 10 },
+  directionRow: { flexDirection: "row", gap: 10, alignItems: "flex-start", paddingVertical: 8 },
+  directionNum: { width: 24, height: 24, borderRadius: 12, backgroundColor: BRAND.blue, alignItems: "center", justifyContent: "center" },
+  directionNumText: { color: "#fff", fontSize: 12, fontWeight: "700" },
+  directionInstruction: { fontSize: 13, fontWeight: "500", color: COLORS.text },
+  directionDistance: { fontSize: 11, color: COLORS.textSecondary, marginTop: 1 },
   contactSection: { paddingHorizontal: 16, paddingTop: 12 },
   contactSectionTitle: { fontSize: 14, fontWeight: "700", color: COLORS.text, marginBottom: 8 },
   contactCard: { flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: COLORS.surfaceWhite, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: COLORS.border },
@@ -415,6 +546,11 @@ const styles = StyleSheet.create({
   customerNotes: { marginTop: 8, backgroundColor: "#fef3c7", borderRadius: 8, padding: 10 },
   customerNotesLabel: { fontSize: 11, fontWeight: "600", color: "#92400e", marginBottom: 2 },
   customerNotesText: { fontSize: 13, color: "#78350f" },
+  dispatchCard: { flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: BRAND.navy + "08", borderRadius: 12, padding: 14, borderWidth: 1, borderColor: BRAND.navy + "20" },
+  dispatchIcon: { fontSize: 24 },
+  dispatchTitle: { fontSize: 14, fontWeight: "700", color: COLORS.text },
+  dispatchSubtitle: { fontSize: 12, color: COLORS.textSecondary, marginTop: 1 },
+  dispatchArrow: { fontSize: 18, color: COLORS.textSecondary },
   instructionsCard: { marginHorizontal: 16, marginTop: 12, backgroundColor: "#eff6ff", borderRadius: 12, padding: 14, borderWidth: 1, borderColor: "#93c5fd" },
   instructionsLabel: { fontSize: 12, fontWeight: "600", color: "#1e40af", marginBottom: 4 },
   instructionsText: { fontSize: 13, color: "#1e3a5f", lineHeight: 18 },
@@ -451,5 +587,5 @@ const styles = StyleSheet.create({
   rejectBtn: { flex: 0.5, backgroundColor: COLORS.surface, borderWidth: 1, borderColor: BRAND.rose },
   rejectBtnText: { color: BRAND.rose, fontSize: 15, fontWeight: "600" },
   navActionBtn: { flex: 0.5, backgroundColor: BRAND.blue },
-  navActionBtnText: { color: "#fff", fontSize: 14, fontWeight: "600" },
+  navActionBtnText: { color: "#fff", fontSize: 13, fontWeight: "600" },
 });

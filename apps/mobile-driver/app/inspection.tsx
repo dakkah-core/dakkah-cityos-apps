@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, Pressable, ScrollView, Alert, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, Pressable, ScrollView, Alert, ActivityIndicator, Image, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
 import { COLORS, BRAND } from "@cityos/mobile-core";
 import { useDriver } from "@/context/DriverContext";
+import { hapticLight, hapticSuccess, hapticError, hapticWarning } from "@/lib/haptics";
 import type { InspectionCheck, InspectionResult, InspectionHistoryEntry, Vehicle } from "@/types/driver";
 
 const INSPECTION_ITEMS = [
@@ -29,6 +31,7 @@ export default function InspectionScreen() {
   const { submitInspection, getVehicles, getInspectionHistory } = useDriver();
   const [checks, setChecks] = useState<Record<string, boolean | null>>({});
   const [notes, setNotes] = useState<Record<string, string>>({});
+  const [photos, setPhotos] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<InspectionResult | null>(null);
   const [tab, setTab] = useState<Tab>("inspect");
@@ -54,34 +57,110 @@ export default function InspectionScreen() {
   }, [getInspectionHistory]);
 
   const toggleCheck = (id: string, passed: boolean) => {
+    hapticLight();
     setChecks((prev) => ({ ...prev, [id]: passed }));
+  };
+
+  const takePhoto = useCallback(async (itemId: string) => {
+    try {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permission Required", "Camera access is needed to take inspection photos.");
+        return;
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: "images",
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.7,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        hapticSuccess();
+        setPhotos((prev) => ({ ...prev, [itemId]: result.assets[0].uri }));
+      }
+    } catch {
+      if (Platform.OS === "web") {
+        const pickerResult = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: "images",
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 0.7,
+        });
+        if (!pickerResult.canceled && pickerResult.assets[0]) {
+          hapticSuccess();
+          setPhotos((prev) => ({ ...prev, [itemId]: pickerResult.assets[0].uri }));
+        }
+      }
+    }
+  }, []);
+
+  const removePhoto = (itemId: string) => {
+    hapticLight();
+    setPhotos((prev) => {
+      const next = { ...prev };
+      delete next[itemId];
+      return next;
+    });
   };
 
   const passedCount = INSPECTION_ITEMS.filter((item) => checks[item.id] === true).length;
   const failedCount = INSPECTION_ITEMS.filter((item) => checks[item.id] === false).length;
+  const photosCount = Object.keys(photos).length;
   const allChecked = INSPECTION_ITEMS.every((item) => checks[item.id] !== undefined && checks[item.id] !== null);
 
   const handleSubmit = async () => {
     if (!allChecked) {
+      hapticWarning();
       Alert.alert("Incomplete", "Please check all items before submitting.");
       return;
     }
 
+    const failedWithoutPhoto = INSPECTION_ITEMS.filter(
+      (item) => checks[item.id] === false && !photos[item.id]
+    );
+    if (failedWithoutPhoto.length > 0) {
+      hapticWarning();
+      Alert.alert(
+        "Photos Required",
+        `Please take a photo of failed items: ${failedWithoutPhoto.map((i) => i.label.split(" —")[0]).join(", ")}`,
+        [
+          { text: "Skip Photos", style: "destructive", onPress: () => doSubmit() },
+          { text: "Add Photos", style: "cancel" },
+        ]
+      );
+      return;
+    }
+
+    await doSubmit();
+  };
+
+  const doSubmit = async () => {
     setIsSubmitting(true);
+    hapticMedium();
     const inspectionChecks: InspectionCheck[] = INSPECTION_ITEMS.map((item) => ({
       item: item.label,
       passed: checks[item.id] === true,
       notes: notes[item.id],
+      photoUri: photos[item.id],
     }));
 
     const inspResult = await submitInspection(selectedVehicle, inspectionChecks);
+    if (inspResult?.allPassed) {
+      hapticSuccess();
+    } else {
+      hapticError();
+    }
     setResult(inspResult);
     setIsSubmitting(false);
   };
 
   const handleReset = () => {
+    hapticLight();
     setChecks({});
     setNotes({});
+    setPhotos({});
     setResult(null);
   };
 
@@ -115,8 +194,8 @@ export default function InspectionScreen() {
                 <Text style={styles.resultStatLabel}>Failed</Text>
               </View>
               <View style={styles.resultStat}>
-                <Text style={styles.resultStatValue}>{result.checkedItems}</Text>
-                <Text style={styles.resultStatLabel}>Total</Text>
+                <Text style={styles.resultStatValue}>{photosCount}</Text>
+                <Text style={styles.resultStatLabel}>Photos</Text>
               </View>
             </View>
 
@@ -201,7 +280,7 @@ export default function InspectionScreen() {
 
           <View style={styles.progressSummary}>
             <Text style={styles.progressText}>
-              {Object.keys(checks).length}/{INSPECTION_ITEMS.length} checked
+              {Object.keys(checks).length}/{INSPECTION_ITEMS.length} checked • {photosCount} photos
             </Text>
             <View style={styles.progressBarBg}>
               <View style={[styles.progressBarFill, { width: `${(Object.keys(checks).length / INSPECTION_ITEMS.length) * 100}%` }]} />
@@ -211,21 +290,43 @@ export default function InspectionScreen() {
           <ScrollView style={styles.content}>
             {INSPECTION_ITEMS.map((item) => (
               <View key={item.id} style={styles.checkRow}>
-                <Text style={styles.checkIcon}>{item.icon}</Text>
-                <Text style={styles.checkLabel}>{item.label}</Text>
-                <View style={styles.checkButtons}>
-                  <Pressable
-                    style={[styles.checkBtn, checks[item.id] === true && styles.checkBtnPass]}
-                    onPress={() => toggleCheck(item.id, true)}
-                  >
-                    <Text style={[styles.checkBtnText, checks[item.id] === true && styles.checkBtnTextActive]}>✓</Text>
-                  </Pressable>
-                  <Pressable
-                    style={[styles.checkBtn, checks[item.id] === false && styles.checkBtnFail]}
-                    onPress={() => toggleCheck(item.id, false)}
-                  >
-                    <Text style={[styles.checkBtnText, checks[item.id] === false && styles.checkBtnTextActive]}>✗</Text>
-                  </Pressable>
+                <View style={styles.checkRowTop}>
+                  <Text style={styles.checkIcon}>{item.icon}</Text>
+                  <Text style={styles.checkLabel}>{item.label}</Text>
+                  <View style={styles.checkButtons}>
+                    <Pressable
+                      style={[styles.checkBtn, checks[item.id] === true && styles.checkBtnPass]}
+                      onPress={() => toggleCheck(item.id, true)}
+                    >
+                      <Text style={[styles.checkBtnText, checks[item.id] === true && styles.checkBtnTextActive]}>✓</Text>
+                    </Pressable>
+                    <Pressable
+                      style={[styles.checkBtn, checks[item.id] === false && styles.checkBtnFail]}
+                      onPress={() => toggleCheck(item.id, false)}
+                    >
+                      <Text style={[styles.checkBtnText, checks[item.id] === false && styles.checkBtnTextActive]}>✗</Text>
+                    </Pressable>
+                  </View>
+                </View>
+
+                <View style={styles.checkRowBottom}>
+                  {photos[item.id] ? (
+                    <View style={styles.photoPreviewRow}>
+                      <Image source={{ uri: photos[item.id] }} style={styles.photoThumb} />
+                      <View style={styles.photoActions}>
+                        <Pressable style={styles.photoActionBtn} onPress={() => takePhoto(item.id)}>
+                          <Text style={styles.photoActionText}>📷 Retake</Text>
+                        </Pressable>
+                        <Pressable style={styles.photoRemoveBtn} onPress={() => removePhoto(item.id)}>
+                          <Text style={styles.photoRemoveText}>✕</Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  ) : (
+                    <Pressable style={styles.addPhotoBtn} onPress={() => takePhoto(item.id)}>
+                      <Text style={styles.addPhotoBtnText}>📷 Add Photo</Text>
+                    </Pressable>
+                  )}
                 </View>
               </View>
             ))}
@@ -279,6 +380,12 @@ export default function InspectionScreen() {
   );
 }
 
+function hapticMedium() {
+  if (Platform.OS !== "web") {
+    import("expo-haptics").then((H) => H.impactAsync(H.ImpactFeedbackStyle.Medium)).catch(() => {});
+  }
+}
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.surface },
   header: { backgroundColor: BRAND.navy, paddingBottom: 12, paddingHorizontal: 16, flexDirection: "row", alignItems: "center" },
@@ -305,7 +412,8 @@ const styles = StyleSheet.create({
   progressBarBg: { height: 6, borderRadius: 3, backgroundColor: COLORS.border },
   progressBarFill: { height: 6, borderRadius: 3, backgroundColor: BRAND.teal },
   content: { flex: 1 },
-  checkRow: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 14, backgroundColor: COLORS.surfaceWhite, borderBottomWidth: 1, borderBottomColor: COLORS.border, gap: 10 },
+  checkRow: { paddingHorizontal: 16, paddingVertical: 12, backgroundColor: COLORS.surfaceWhite, borderBottomWidth: 1, borderBottomColor: COLORS.border },
+  checkRowTop: { flexDirection: "row", alignItems: "center", gap: 10 },
   checkIcon: { fontSize: 18, width: 28 },
   checkLabel: { flex: 1, fontSize: 14, color: COLORS.text },
   checkButtons: { flexDirection: "row", gap: 8 },
@@ -314,6 +422,16 @@ const styles = StyleSheet.create({
   checkBtnFail: { backgroundColor: BRAND.rose, borderColor: BRAND.rose },
   checkBtnText: { fontSize: 16, fontWeight: "700", color: COLORS.textSecondary },
   checkBtnTextActive: { color: "#fff" },
+  checkRowBottom: { marginTop: 8, marginLeft: 38 },
+  addPhotoBtn: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 8, backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border, borderStyle: "dashed", alignSelf: "flex-start" },
+  addPhotoBtnText: { fontSize: 12, fontWeight: "500", color: COLORS.textSecondary },
+  photoPreviewRow: { flexDirection: "row", alignItems: "center", gap: 10 },
+  photoThumb: { width: 56, height: 42, borderRadius: 6, backgroundColor: COLORS.border },
+  photoActions: { flexDirection: "row", gap: 6 },
+  photoActionBtn: { paddingVertical: 4, paddingHorizontal: 10, borderRadius: 6, backgroundColor: BRAND.blue + "15" },
+  photoActionText: { fontSize: 12, fontWeight: "500", color: BRAND.blue },
+  photoRemoveBtn: { width: 28, height: 28, borderRadius: 14, backgroundColor: BRAND.rose + "15", alignItems: "center", justifyContent: "center" },
+  photoRemoveText: { fontSize: 14, fontWeight: "700", color: BRAND.rose },
   actionBar: { paddingHorizontal: 16, paddingTop: 12, backgroundColor: COLORS.surfaceWhite, borderTopWidth: 1, borderTopColor: COLORS.border },
   submitBtn: { backgroundColor: BRAND.teal, paddingVertical: 14, borderRadius: 12, alignItems: "center" },
   submitBtnDisabled: { opacity: 0.4 },

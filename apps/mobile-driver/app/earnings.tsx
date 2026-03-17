@@ -7,9 +7,11 @@ import { useDriver } from "@/context/DriverContext";
 import { EarningsChart, TipsBreakdown } from "@/components/driver/EarningsChart";
 import { GoalRing } from "@/components/driver/GoalRing";
 import { EarningsSkeleton } from "@/components/driver/Skeleton";
-import type { DriverEarnings } from "@/types/driver";
+import { hapticLight } from "@/lib/haptics";
+import type { DriverEarnings, TripEarning } from "@/types/driver";
 
 type Period = "today" | "week" | "month";
+type TripFilter = "all" | "delivery" | "pickup" | "return";
 
 export default function EarningsScreen() {
   const insets = useSafeAreaInsets();
@@ -18,6 +20,7 @@ export default function EarningsScreen() {
   const [period, setPeriod] = useState<Period>("today");
   const [earnings, setEarnings] = useState<DriverEarnings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [tripFilter, setTripFilter] = useState<TripFilter>("all");
 
   const loadEarnings = useCallback(async (p: Period) => {
     setIsLoading(true);
@@ -29,6 +32,21 @@ export default function EarningsScreen() {
   useEffect(() => {
     loadEarnings(period);
   }, [period, loadEarnings]);
+
+  const handlePeriodChange = (p: Period) => {
+    hapticLight();
+    setPeriod(p);
+    setTripFilter("all");
+  };
+
+  const filteredTrips: TripEarning[] = earnings
+    ? tripFilter === "all"
+      ? earnings.recentTrips
+      : earnings.recentTrips.filter((t) => t.type === tripFilter)
+    : [];
+
+  const filteredTotal = filteredTrips.reduce((sum, t) => sum + t.amount, 0);
+  const filteredTips = filteredTrips.reduce((sum, t) => sum + t.tip, 0);
 
   return (
     <View style={styles.container}>
@@ -42,7 +60,7 @@ export default function EarningsScreen() {
 
       <View style={styles.periodRow}>
         {(["today", "week", "month"] as Period[]).map((p) => (
-          <Pressable key={p} style={[styles.periodBtn, period === p && styles.periodBtnActive]} onPress={() => setPeriod(p)}>
+          <Pressable key={p} style={[styles.periodBtn, period === p && styles.periodBtnActive]} onPress={() => handlePeriodChange(p)}>
             <Text style={[styles.periodText, period === p && styles.periodTextActive]}>{p.charAt(0).toUpperCase() + p.slice(1)}</Text>
           </Pressable>
         ))}
@@ -94,13 +112,40 @@ export default function EarningsScreen() {
             currency={earnings.currency}
           />
 
-          <Text style={styles.tripsTitle}>Recent Trips</Text>
-          {earnings.recentTrips.length === 0 ? (
+          <View style={styles.tripsSection}>
+            <View style={styles.tripsSectionHeader}>
+              <Text style={styles.tripsTitle}>Payout History</Text>
+              {tripFilter !== "all" && (
+                <Text style={styles.filterSummary}>
+                  {filteredTrips.length} trips • {filteredTotal.toFixed(2)} SAR
+                  {filteredTips > 0 ? ` + ${filteredTips.toFixed(2)} tips` : ""}
+                </Text>
+              )}
+            </View>
+
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterRow} contentContainerStyle={styles.filterRowContent}>
+              {(["all", "delivery", "pickup", "return"] as TripFilter[]).map((f) => (
+                <Pressable
+                  key={f}
+                  style={[styles.filterBtn, tripFilter === f && styles.filterBtnActive]}
+                  onPress={() => { hapticLight(); setTripFilter(f); }}
+                >
+                  <Text style={[styles.filterBtnText, tripFilter === f && styles.filterBtnTextActive]}>
+                    {f === "all" ? "All" : f === "delivery" ? "📦 Deliveries" : f === "pickup" ? "📥 Pickups" : "↩️ Returns"}
+                  </Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
+
+          {filteredTrips.length === 0 ? (
             <View style={styles.emptyTrips}>
-              <Text style={styles.emptyTripsText}>No trips for this period</Text>
+              <Text style={styles.emptyTripsText}>
+                {tripFilter === "all" ? "No trips for this period" : `No ${tripFilter} trips for this period`}
+              </Text>
             </View>
           ) : (
-            earnings.recentTrips.map((trip) => (
+            filteredTrips.map((trip) => (
               <View key={trip.id} style={styles.tripRow}>
                 <View style={[styles.tripIcon, {
                   backgroundColor: trip.type === "delivery" ? BRAND.blue + "15" :
@@ -178,7 +223,16 @@ const styles = StyleSheet.create({
   earningsStatLabel: { fontSize: 11, color: "#94a3b8", marginTop: 2 },
   earningsDivider: { width: 1, backgroundColor: "rgba(255,255,255,0.2)" },
   goalSection: { alignItems: "center", paddingVertical: 16 },
-  tripsTitle: { fontSize: 16, fontWeight: "700", color: COLORS.text, paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 },
+  tripsSection: { paddingHorizontal: 16, paddingTop: 16 },
+  tripsSectionHeader: { marginBottom: 8 },
+  tripsTitle: { fontSize: 16, fontWeight: "700", color: COLORS.text },
+  filterSummary: { fontSize: 12, color: COLORS.textSecondary, marginTop: 2 },
+  filterRow: { marginBottom: 8, maxHeight: 40 },
+  filterRowContent: { gap: 6, paddingRight: 16 },
+  filterBtn: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8, backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border },
+  filterBtnActive: { backgroundColor: BRAND.blue, borderColor: BRAND.blue },
+  filterBtnText: { fontSize: 12, fontWeight: "600", color: COLORS.textSecondary },
+  filterBtnTextActive: { color: "#fff" },
   tripRow: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 16, paddingVertical: 12, backgroundColor: COLORS.surfaceWhite, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   tripIcon: { width: 40, height: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },
   tripIconText: { fontSize: 18 },

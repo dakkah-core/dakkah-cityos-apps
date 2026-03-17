@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { View, Text, StyleSheet, Pressable, Animated, Modal } from "react-native";
 import { BRAND, COLORS } from "@cityos/mobile-core";
+import { hapticHeavy, hapticSuccess, hapticWarning } from "@/lib/haptics";
 import type { JobOffer } from "@/types/driver";
 
 interface JobOfferOverlayProps {
@@ -24,6 +25,7 @@ export function JobOfferOverlay({ offer, onAccept, onDecline }: JobOfferOverlayP
     setTimeLeft(remaining);
 
     Animated.spring(slideAnim, { toValue: 0, friction: 8, tension: 40, useNativeDriver: true }).start();
+    hapticHeavy();
 
     const pulse = Animated.loop(
       Animated.sequence([
@@ -117,10 +119,10 @@ export function JobOfferOverlay({ offer, onAccept, onDecline }: JobOfferOverlayP
           </Animated.View>
 
           <View style={styles.actionRow}>
-            <Pressable style={styles.declineBtn} onPress={onDecline}>
+            <Pressable style={styles.declineBtn} onPress={() => { hapticWarning(); onDecline(); }}>
               <Text style={styles.declineBtnText}>Decline</Text>
             </Pressable>
-            <Pressable style={styles.acceptBtn} onPress={onAccept}>
+            <Pressable style={styles.acceptBtn} onPress={() => { hapticSuccess(); onAccept(); }}>
               <Text style={styles.acceptBtnText}>Accept Job</Text>
             </Pressable>
           </View>

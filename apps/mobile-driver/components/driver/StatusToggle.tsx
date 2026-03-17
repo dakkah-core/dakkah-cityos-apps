@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { COLORS, BRAND } from "@cityos/mobile-core";
 import { useDriver } from "@/context/DriverContext";
+import { hapticMedium } from "@/lib/haptics";
 import type { DriverStatus } from "@/types/driver";
 
 const STATUS_CONFIG: Record<DriverStatus, { label: string; color: string; bg: string }> = {
@@ -26,7 +27,7 @@ export function StatusToggle() {
             <Pressable
               key={s}
               style={[styles.toggleBtn, isActive && { backgroundColor: c.bg }]}
-              onPress={() => setStatus(s)}
+              onPress={() => { hapticMedium(); setStatus(s); }}
             >
               <Text style={[styles.toggleText, isActive && { color: c.color }]}>{c.label}</Text>
             </Pressable>

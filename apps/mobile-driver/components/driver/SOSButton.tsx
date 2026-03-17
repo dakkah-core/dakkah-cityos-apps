@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Pressable, Modal, Alert } from "react-native";
 import { useDriver } from "@/context/DriverContext";
+import { hapticHeavy, hapticError } from "@/lib/haptics";
 import type { SOSReport } from "@/types/driver";
 import { BRAND } from "@cityos/mobile-core";
 
@@ -18,6 +19,7 @@ export function SOSButton() {
   const [isSending, setIsSending] = useState(false);
 
   const handleSOS = async (type: SOSReport["type"]) => {
+    hapticError();
     setIsSending(true);
     const result = await triggerSOS({ type });
     setIsSending(false);
@@ -36,7 +38,7 @@ export function SOSButton() {
     <>
       <Pressable
         style={styles.sosButton}
-        onPress={() => setShowModal(true)}
+        onPress={() => { hapticHeavy(); setShowModal(true); }}
         onLongPress={() => handleSOS("accident")}
       >
         <Text style={styles.sosText}>SOS</Text>

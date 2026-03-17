@@ -9,6 +9,7 @@ import { JobCard } from "@/components/driver/JobCard";
 import { SOSButton } from "@/components/driver/SOSButton";
 import { JobOfferOverlay } from "@/components/driver/JobOfferOverlay";
 import { DashboardSkeleton } from "@/components/driver/Skeleton";
+import { hapticLight, hapticSuccess } from "@/lib/haptics";
 import type { DriverJob } from "@/types/driver";
 
 function AnimatedCounter({ value, prefix, suffix }: { value: number; prefix?: string; suffix?: string }) {
@@ -59,6 +60,7 @@ export default function DriverHomeScreen() {
   };
 
   const handleJobPress = (job: DriverJob) => {
+    hapticLight();
     router.push({ pathname: "/job", params: { jobId: job.id } });
   };
 
