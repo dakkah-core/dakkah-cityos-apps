@@ -1086,6 +1086,9 @@ importers:
 
   packages/sdui-renderer-web:
     dependencies:
+      '@cityos/api-client':
+        specifier: workspace:*
+        version: link:../api-client
       '@cityos/design-tokens':
         specifier: workspace:*
         version: link:../design-tokens

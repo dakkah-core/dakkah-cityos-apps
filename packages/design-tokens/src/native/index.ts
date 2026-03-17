@@ -1,4 +1,4 @@
-export { colors } from "../tokens/colors";
+export { colors, categoryColors } from "../tokens/colors";
 export { spacing, containerWidths, sectionPadding, gridGaps } from "../tokens/spacing";
 export { fontSize, fontWeight, lineHeight } from "../tokens/typography";
 export { borderRadius, borderWidth } from "../tokens/borders";

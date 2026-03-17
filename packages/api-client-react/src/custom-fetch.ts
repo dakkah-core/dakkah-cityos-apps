@@ -271,6 +271,24 @@ async function parseSuccessBody(
   }
 }
 
+let _baseUrl = "";
+
+export function setApiBaseUrl(baseUrl: string): void {
+  _baseUrl = baseUrl.replace(/\/+$/, "");
+}
+
+export function getApiBaseUrl(): string {
+  return _baseUrl;
+}
+
+function resolveWithBase(input: RequestInfo | URL): RequestInfo | URL {
+  if (!_baseUrl) return input;
+  if (typeof input === "string" && input.startsWith("/")) {
+    return `${_baseUrl}${input}`;
+  }
+  return input;
+}
+
 export async function customFetch<T = unknown>(
   input: RequestInfo | URL,
   options: CustomFetchOptions = {},
@@ -297,9 +315,10 @@ export async function customFetch<T = unknown>(
     headers.set("accept", DEFAULT_JSON_ACCEPT);
   }
 
-  const requestInfo = { method, url: resolveUrl(input) };
+  const resolved = resolveWithBase(input);
+  const requestInfo = { method, url: resolveUrl(resolved) };
 
-  const response = await fetch(input, { ...init, method, headers });
+  const response = await fetch(resolved, { ...init, method, headers });
 
   if (!response.ok) {
     const errorData = await parseErrorBody(response, method);

@@ -1,3 +1,4 @@
+import { categoryColors } from "@cityos/design-tokens/native";
 import placesData from "../data/scenarios/places.json";
 import cultureData from "../data/scenarios/culture.json";
 import eventsData from "../data/scenarios/events.json";
@@ -42,26 +43,26 @@ interface ScenarioEntry {
 }
 
 export const CATEGORIES: ActionCategory[] = [
-  { id: "all", label: "All", icon: "🔲", color: "#78716C", bgColor: "#F5F5F4" },
-  { id: "food", label: "Food & Drink", icon: "🍽️", color: "#EA580C", bgColor: "#FFF7ED" },
-  { id: "nightlife", label: "Nightlife", icon: "🌙", color: "#4F46E5", bgColor: "#EEF2FF" },
-  { id: "culture", label: "Culture", icon: "🏛️", color: "#E11D48", bgColor: "#FFF1F2" },
-  { id: "wellness", label: "Wellness", icon: "🍃", color: "#059669", bgColor: "#ECFDF5" },
-  { id: "shopping", label: "Shopping", icon: "🛍️", color: "#2563EB", bgColor: "#EFF6FF" },
-  { id: "services", label: "Services", icon: "🔧", color: "#475569", bgColor: "#F8FAFC" },
-  { id: "transit", label: "Transit", icon: "🚗", color: "#0891B2", bgColor: "#ECFEFF" },
-  { id: "family", label: "Family", icon: "👶", color: "#CA8A04", bgColor: "#FEFCE8" },
-  { id: "work", label: "Work", icon: "💼", color: "#6366F1", bgColor: "#EEF2FF" },
-  { id: "education", label: "Education", icon: "📚", color: "#7C3AED", bgColor: "#F5F3FF" },
-  { id: "home", label: "Home", icon: "🏠", color: "#92400E", bgColor: "#FFFBEB" },
-  { id: "social", label: "Social", icon: "👥", color: "#DB2777", bgColor: "#FDF2F8" },
-  { id: "intel", label: "Intel", icon: "📈", color: "#0D9488", bgColor: "#F0FDFA" },
-  { id: "planning", label: "Planning", icon: "🗺️", color: "#65A30D", bgColor: "#F7FEE7" },
-  { id: "outdoor", label: "Outdoor", icon: "⛰️", color: "#16A34A", bgColor: "#F0FDF4" },
-  { id: "beauty", label: "Beauty", icon: "✨", color: "#EC4899", bgColor: "#FDF2F8" },
-  { id: "health", label: "Health", icon: "❤️", color: "#DC2626", bgColor: "#FEF2F2" },
-  { id: "my-activity", label: "My Activity", icon: "📊", color: "#0EA5E9", bgColor: "#F0F9FF" },
-  { id: "utility", label: "Utility", icon: "🛠️", color: "#64748B", bgColor: "#F8FAFC" },
+  { id: "all", label: "All", icon: "🔲", color: categoryColors.all.fg, bgColor: categoryColors.all.bg },
+  { id: "food", label: "Food & Drink", icon: "🍽️", color: categoryColors.food.fg, bgColor: categoryColors.food.bg },
+  { id: "nightlife", label: "Nightlife", icon: "🌙", color: categoryColors.nightlife.fg, bgColor: categoryColors.nightlife.bg },
+  { id: "culture", label: "Culture", icon: "🏛️", color: categoryColors.culture.fg, bgColor: categoryColors.culture.bg },
+  { id: "wellness", label: "Wellness", icon: "🍃", color: categoryColors.wellness.fg, bgColor: categoryColors.wellness.bg },
+  { id: "shopping", label: "Shopping", icon: "🛍️", color: categoryColors.shopping.fg, bgColor: categoryColors.shopping.bg },
+  { id: "services", label: "Services", icon: "🔧", color: categoryColors.services.fg, bgColor: categoryColors.services.bg },
+  { id: "transit", label: "Transit", icon: "🚗", color: categoryColors.transit.fg, bgColor: categoryColors.transit.bg },
+  { id: "family", label: "Family", icon: "👶", color: categoryColors.family.fg, bgColor: categoryColors.family.bg },
+  { id: "work", label: "Work", icon: "💼", color: categoryColors.work.fg, bgColor: categoryColors.work.bg },
+  { id: "education", label: "Education", icon: "📚", color: categoryColors.education.fg, bgColor: categoryColors.education.bg },
+  { id: "home", label: "Home", icon: "🏠", color: categoryColors.home.fg, bgColor: categoryColors.home.bg },
+  { id: "social", label: "Social", icon: "👥", color: categoryColors.social.fg, bgColor: categoryColors.social.bg },
+  { id: "intel", label: "Intel", icon: "📈", color: categoryColors.intel.fg, bgColor: categoryColors.intel.bg },
+  { id: "planning", label: "Planning", icon: "🗺️", color: categoryColors.planning.fg, bgColor: categoryColors.planning.bg },
+  { id: "outdoor", label: "Outdoor", icon: "⛰️", color: categoryColors.outdoor.fg, bgColor: categoryColors.outdoor.bg },
+  { id: "beauty", label: "Beauty", icon: "✨", color: categoryColors.beauty.fg, bgColor: categoryColors.beauty.bg },
+  { id: "health", label: "Health", icon: "❤️", color: categoryColors.health.fg, bgColor: categoryColors.health.bg },
+  { id: "my-activity", label: "My Activity", icon: "📊", color: categoryColors.myActivity.fg, bgColor: categoryColors.myActivity.bg },
+  { id: "utility", label: "Utility", icon: "🛠️", color: categoryColors.utility.fg, bgColor: categoryColors.utility.bg },
 ];
 
 function titleFromKeywords(keywords: string[]): string {

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import { COLORS } from "../../constants/colors";
+import { categoryColors, colors } from "@cityos/design-tokens/native";
 import type { ItineraryDay } from "../../types/chat";
 
 interface Props {
@@ -9,13 +10,13 @@ interface Props {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  culture: "#E11D48",
-  food: "#EA580C",
-  shopping: "#2563EB",
-  nature: "#16A34A",
-  landmark: "#7C3AED",
-  arts: "#DB2777",
-  leisure: "#0891B2",
+  culture: categoryColors.culture.fg,
+  food: categoryColors.food.fg,
+  shopping: categoryColors.shopping.fg,
+  nature: categoryColors.nature.fg,
+  landmark: categoryColors.landmark.fg,
+  arts: categoryColors.arts.fg,
+  leisure: categoryColors.leisure.fg,
 };
 
 export function ItineraryTimeline({ data, onAction }: Props) {
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
   tab: { paddingHorizontal: 16, paddingVertical: 6, borderRadius: 20, backgroundColor: COLORS.chipBg, borderWidth: 1, borderColor: COLORS.chipBorder },
   tabActive: { backgroundColor: COLORS.darkNavy, borderColor: COLORS.darkNavy },
   tabText: { fontSize: 12, fontWeight: "600", color: COLORS.textSecondary },
-  tabTextActive: { color: "#fff" },
+  tabTextActive: { color: colors.text.light.inverse },
   dayTitle: { fontSize: 16, fontWeight: "700", color: COLORS.text, marginBottom: 12 },
   timeline: { gap: 0 },
   timelineItem: { flexDirection: "row", gap: 12, minHeight: 60 },

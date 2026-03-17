@@ -78,4 +78,32 @@ export const colors = {
   },
 } as const;
 
+export const categoryColors = {
+  all: { fg: "#78716C", bg: "#F5F5F4" },
+  food: { fg: "#EA580C", bg: "#FFF7ED" },
+  nightlife: { fg: "#4F46E5", bg: "#EEF2FF" },
+  culture: { fg: "#E11D48", bg: "#FFF1F2" },
+  wellness: { fg: "#059669", bg: "#ECFDF5" },
+  shopping: { fg: "#2563EB", bg: "#EFF6FF" },
+  services: { fg: "#475569", bg: "#F8FAFC" },
+  transit: { fg: "#0891B2", bg: "#ECFEFF" },
+  family: { fg: "#CA8A04", bg: "#FEFCE8" },
+  work: { fg: "#6366F1", bg: "#EEF2FF" },
+  education: { fg: "#7C3AED", bg: "#F5F3FF" },
+  home: { fg: "#92400E", bg: "#FFFBEB" },
+  social: { fg: "#DB2777", bg: "#FDF2F8" },
+  intel: { fg: "#0D9488", bg: "#F0FDFA" },
+  planning: { fg: "#65A30D", bg: "#F7FEE7" },
+  outdoor: { fg: "#16A34A", bg: "#F0FDF4" },
+  beauty: { fg: "#EC4899", bg: "#FDF2F8" },
+  health: { fg: "#DC2626", bg: "#FEF2F2" },
+  myActivity: { fg: "#0EA5E9", bg: "#F0F9FF" },
+  utility: { fg: "#64748B", bg: "#F8FAFC" },
+  nature: { fg: "#16A34A", bg: "#F0FDF4" },
+  landmark: { fg: "#7C3AED", bg: "#F5F3FF" },
+  arts: { fg: "#DB2777", bg: "#FDF2F8" },
+  leisure: { fg: "#0891B2", bg: "#ECFEFF" },
+} as const;
+
 export type Colors = typeof colors;
+export type CategoryColors = typeof categoryColors;

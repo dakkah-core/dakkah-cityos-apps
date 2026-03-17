@@ -1,9 +1,7 @@
 import { Menu, Search, Compass, LogOut, User, MapPin } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { NotificationBell } from "./NotificationBell";
-import { useQuery } from "@tanstack/react-query";
-import type { HealthStatus } from "@cityos/api-client-react";
-import { apiClient } from "@/lib/api-client";
+import { useHealthCheck } from "@cityos/api-client-react";
 
 interface Props {
   onToggleThreads: () => void;
@@ -14,12 +12,7 @@ interface Props {
 
 export function Header({ onToggleThreads, onToggleDiscovery, onToggleSearch, onToggleCityContext }: Props) {
   const { user, logout } = useAuth();
-  const { data: health } = useQuery<HealthStatus>({
-    queryKey: ["/api/healthz"],
-    queryFn: () => apiClient.get<HealthStatus>("/healthz"),
-    refetchInterval: 30_000,
-    retry: false,
-  });
+  const { data: health } = useHealthCheck();
   const apiOnline = health?.status === "ok";
 
   return (

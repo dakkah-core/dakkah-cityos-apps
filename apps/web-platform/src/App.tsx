@@ -1,5 +1,6 @@
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { setApiBaseUrl } from "@cityos/api-client-react";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { ChatProvider } from "@/hooks/use-chat";
 import { NotificationProvider } from "@/hooks/use-notifications";
@@ -14,6 +15,8 @@ import WidgetDemo from "@/pages/WidgetDemo";
 import KioskApp from "@/pages/KioskApp";
 import TvApp from "@/pages/TvApp";
 import CarApp from "@/pages/CarApp";
+
+setApiBaseUrl(`${window.location.origin}${import.meta.env.BASE_URL.replace(/\/$/, "")}`);
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false, retry: 1 } },

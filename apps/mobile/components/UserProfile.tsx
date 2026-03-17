@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { COLORS } from "../constants/colors";
+import { colors } from "@cityos/design-tokens/native";
 
 const MOCK_USER = {
   name: "Ahmed Al-Rashid",
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   avatarText: {
-    color: "#fff",
+    color: colors.text.light.inverse,
     fontSize: 16,
     fontWeight: "700",
   },
@@ -121,19 +122,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "#FEF3C7",
+    backgroundColor: colors.extended.amberLight + "33",
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
   },
   tierIcon: {
     fontSize: 12,
-    color: "#D97706",
+    color: colors.extended.amber,
   },
   tierText: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#92400E",
+    color: colors.extended.amber,
   },
   xpText: {
     fontSize: 11,
@@ -196,12 +197,12 @@ const styles = StyleSheet.create({
   },
   walletLabel: {
     fontSize: 12,
-    color: "rgba(255,255,255,0.7)",
+    color: colors.text.dark.secondary,
     fontWeight: "500",
   },
   walletAmount: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#fff",
+    color: colors.text.light.inverse,
   },
 });
