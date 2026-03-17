@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, Pressable, ScrollView, Alert, Linking, ActivityIndicator, Platform } from "react-native";
+import { View, Text, StyleSheet, Pressable, ScrollView, Alert, Linking, ActivityIndicator, Platform, Image, LayoutAnimation, UIManager } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { COLORS, BRAND } from "@cityos/mobile-core";
@@ -11,6 +11,10 @@ import { DeliveryTimeline } from "@/components/driver/DeliveryTimeline";
 import { JobDetailSkeleton } from "@/components/driver/Skeleton";
 import { hapticLight, hapticMedium, hapticSuccess, hapticError, hapticWarning } from "@/lib/haptics";
 import type { DriverJob, DeliveryStep, TimelineEntry } from "@/types/driver";
+
+if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 function getStepForJob(job: DriverJob): DeliveryStep {
   switch (job.status) {
@@ -114,13 +118,21 @@ export default function JobScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [scannerVisible, setScannerVisible] = useState(false);
   const [showDirections, setShowDirections] = useState(false);
+  const [isLoading, setIsLoading] = useState(!job);
   const [selectedNavApp, setSelectedNavApp] = useState<NavApp>(profile?.preferences.navigationApp || "google");
 
   const deliveryStep = job ? getStepForJob(job) : "pending";
   const timeline = job ? buildTimeline(job, deliveryStep) : [];
 
   useEffect(() => {
-    if (job) setStep(deliveryStepToUI(getStepForJob(job)));
+    if (job) {
+      setIsLoading(false);
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setStep(deliveryStepToUI(getStepForJob(job)));
+    } else {
+      const timeout = setTimeout(() => setIsLoading(false), 2000);
+      return () => clearTimeout(timeout);
+    }
   }, [job?.status]);
 
   useEffect(() => {
@@ -221,12 +233,19 @@ export default function JobScreen() {
     ]);
   };
 
+  if (isLoading) {
+    return <JobDetailSkeleton />;
+  }
+
   if (!job) {
     return (
       <View style={[styles.container, styles.center]}>
         <Text style={styles.errorIcon}>🔍</Text>
         <Text style={styles.errorText}>Job not found</Text>
         <Text style={styles.errorSubtext}>This delivery may have been removed or reassigned</Text>
+        <Pressable style={styles.retryBtn} onPress={() => { setIsLoading(true); }}>
+          <Text style={styles.retryBtnText}>Retry</Text>
+        </Pressable>
         <Pressable style={styles.backBtn} onPress={() => router.back()}>
           <Text style={styles.backBtnText}>Go Back</Text>
         </Pressable>
@@ -405,6 +424,11 @@ export default function JobScreen() {
               <View style={[styles.itemStatusDot, scannedBarcodes.includes(item.barcode) && styles.itemStatusDotScanned]}>
                 <Text style={styles.itemStatusDotText}>{scannedBarcodes.includes(item.barcode) ? "✓" : (i + 1).toString()}</Text>
               </View>
+              {item.imageUrl && (
+                <View style={styles.itemImageWrap}>
+                  <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
+                </View>
+              )}
               <View style={{ flex: 1 }}>
                 <Text style={styles.itemName}>{item.name}</Text>
                 {item.description && <Text style={styles.itemDesc}>{item.description}</Text>}
@@ -500,6 +524,8 @@ const styles = StyleSheet.create({
   errorIcon: { fontSize: 48, marginBottom: 12 },
   errorText: { fontSize: 18, fontWeight: "700", color: COLORS.text, marginBottom: 4 },
   errorSubtext: { fontSize: 14, color: COLORS.textSecondary, textAlign: "center", marginBottom: 16 },
+  retryBtn: { paddingHorizontal: 20, paddingVertical: 10, backgroundColor: BRAND.blue, borderRadius: 8, marginBottom: 10 },
+  retryBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
   backBtn: { paddingHorizontal: 20, paddingVertical: 10, backgroundColor: COLORS.primary, borderRadius: 8 },
   backBtnText: { color: "#fff", fontWeight: "600" },
   header: { backgroundColor: BRAND.navy, paddingBottom: 12, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", gap: 10 },
@@ -560,6 +586,8 @@ const styles = StyleSheet.create({
   itemsCard: { marginHorizontal: 16, backgroundColor: COLORS.surfaceWhite, borderRadius: 14, padding: 16, borderWidth: 1, borderColor: COLORS.border },
   itemsTitle: { fontSize: 14, fontWeight: "700", color: COLORS.text },
   itemRow: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: COLORS.border },
+  itemImageWrap: { width: 36, height: 36, borderRadius: 6, overflow: "hidden", marginRight: 4, backgroundColor: COLORS.surface },
+  itemImage: { width: 36, height: 36, resizeMode: "cover" as const },
   itemName: { fontSize: 14, fontWeight: "600", color: COLORS.text },
   itemDesc: { fontSize: 11, color: COLORS.textSecondary, marginTop: 1 },
   itemMetaRow: { flexDirection: "row", gap: 8, marginTop: 2 },

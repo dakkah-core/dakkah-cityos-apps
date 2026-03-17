@@ -54,8 +54,10 @@ export default function DriverHomeScreen() {
   const inProgressJobs = jobs.filter((j) => ["accepted", "in_transit", "arrived"].includes(j.status));
 
   const onRefresh = async () => {
+    hapticLight();
     setRefreshing(true);
     await refreshJobs();
+    hapticSuccess();
     setRefreshing(false);
   };
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { COLORS, BRAND } from "@cityos/mobile-core";
-import type { TimelineEntry } from "@/types/driver";
+import type { TimelineEntry, DeliveryStep } from "@/types/driver";
 
 interface DeliveryTimelineProps {
   entries: TimelineEntry[];
@@ -19,6 +19,18 @@ const STEP_ICONS: Record<string, string> = {
   completed: "🎉",
 };
 
+const STEP_ACTIONS: Partial<Record<DeliveryStep, string>> = {
+  pending: "Accept or decline this job",
+  accepted: "Navigate to pickup location",
+  en_route_pickup: "Open maps for directions",
+  at_pickup: "Verify items with barcode scan",
+  scanning: "Scan remaining items",
+  en_route_customer: "Open maps for directions",
+  arrived: "Complete proof of delivery",
+  proof_of_delivery: "Capture signature or photo",
+  completed: "View earnings summary",
+};
+
 export function DeliveryTimeline({ entries }: DeliveryTimelineProps) {
   return (
     <View style={styles.container}>
@@ -29,6 +41,7 @@ export function DeliveryTimeline({ entries }: DeliveryTimelineProps) {
           entry.status === "done" ? BRAND.teal :
           entry.status === "active" ? BRAND.blue :
           COLORS.border;
+        const actionText = entry.status === "active" ? STEP_ACTIONS[entry.step] : undefined;
 
         return (
           <View key={entry.step} style={styles.entryRow}>
@@ -58,6 +71,11 @@ export function DeliveryTimeline({ entries }: DeliveryTimelineProps) {
               {entry.timestamp && (
                 <Text style={styles.timestamp}>{entry.timestamp}</Text>
               )}
+              {actionText && (
+                <View style={styles.actionHint}>
+                  <Text style={styles.actionHintText}>→ {actionText}</Text>
+                </View>
+              )}
             </View>
           </View>
         );
@@ -81,4 +99,6 @@ const styles = StyleSheet.create({
   labelDone: { color: BRAND.teal, fontWeight: "600" },
   labelActive: { color: BRAND.blue, fontWeight: "700" },
   timestamp: { fontSize: 11, color: COLORS.textSecondary, marginTop: 2 },
+  actionHint: { marginTop: 4, backgroundColor: BRAND.blue + "12", paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, alignSelf: "flex-start" },
+  actionHintText: { fontSize: 11, fontWeight: "600", color: BRAND.blue },
 });

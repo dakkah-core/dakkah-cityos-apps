@@ -37,8 +37,16 @@ function formatTimeAgo(iso: string): string {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
+function getAvatarColor(name: string): string {
+  const colors = [BRAND.blue, BRAND.teal, "#7c3aed", BRAND.amber, BRAND.rose];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return colors[Math.abs(hash) % colors.length];
+}
+
 export function JobCard({ job, onPress, isActive }: JobCardProps) {
   const statusColor = STATUS_COLORS[job.status] || COLORS.textSecondary;
+  const avatarBg = getAvatarColor(job.customer.name);
 
   return (
     <Pressable style={[styles.card, isActive && styles.cardActive]} onPress={onPress}>
@@ -67,9 +75,14 @@ export function JobCard({ job, onPress, isActive }: JobCardProps) {
         <View style={styles.routeConnector} />
         <View style={styles.locationLine}>
           <View style={styles.dropDot} />
-          <View style={{ flex: 1 }}>
-            <Text style={styles.locationText} numberOfLines={1}>{job.customer.name}</Text>
-            <Text style={styles.locationAddr} numberOfLines={1}>{job.customer.address}</Text>
+          <View style={styles.customerRow}>
+            <View style={[styles.customerAvatar, { backgroundColor: avatarBg }]}>
+              <Text style={styles.customerAvatarText}>{job.customer.name[0]}</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.locationText} numberOfLines={1}>{job.customer.name}</Text>
+              <Text style={styles.locationAddr} numberOfLines={1}>{job.customer.address}</Text>
+            </View>
           </View>
         </View>
       </View>
@@ -117,6 +130,9 @@ const styles = StyleSheet.create({
   pickupDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: BRAND.blue },
   dropDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: BRAND.rose },
   routeConnector: { width: 1, height: 12, backgroundColor: COLORS.border, marginLeft: 4.5 },
+  customerRow: { flex: 1, flexDirection: "row", alignItems: "center", gap: 8 },
+  customerAvatar: { width: 28, height: 28, borderRadius: 14, alignItems: "center", justifyContent: "center" },
+  customerAvatarText: { color: "#fff", fontSize: 12, fontWeight: "700" },
   locationText: { fontSize: 13, fontWeight: "600", color: COLORS.text, flex: 1 },
   locationAddr: { fontSize: 11, color: COLORS.textSecondary, marginTop: 1 },
   bottomRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
