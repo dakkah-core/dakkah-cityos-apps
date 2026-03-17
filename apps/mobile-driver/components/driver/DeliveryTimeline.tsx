@@ -1,10 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import { COLORS, BRAND } from "@cityos/mobile-core";
 import type { TimelineEntry, DeliveryStep } from "@/types/driver";
 
 interface DeliveryTimelineProps {
   entries: TimelineEntry[];
+  onStepAction?: (step: DeliveryStep) => void;
 }
 
 const STEP_ICONS: Record<string, string> = {
@@ -31,7 +32,7 @@ const STEP_ACTIONS: Partial<Record<DeliveryStep, string>> = {
   completed: "View earnings summary",
 };
 
-export function DeliveryTimeline({ entries }: DeliveryTimelineProps) {
+export function DeliveryTimeline({ entries, onStepAction }: DeliveryTimelineProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Delivery Timeline</Text>
@@ -71,7 +72,12 @@ export function DeliveryTimeline({ entries }: DeliveryTimelineProps) {
               {entry.timestamp && (
                 <Text style={styles.timestamp}>{entry.timestamp}</Text>
               )}
-              {actionText && (
+              {actionText && onStepAction && (
+                <Pressable style={styles.actionBtn} onPress={() => onStepAction(entry.step)}>
+                  <Text style={styles.actionBtnText}>→ {actionText}</Text>
+                </Pressable>
+              )}
+              {actionText && !onStepAction && (
                 <View style={styles.actionHint}>
                   <Text style={styles.actionHintText}>→ {actionText}</Text>
                 </View>
@@ -99,6 +105,8 @@ const styles = StyleSheet.create({
   labelDone: { color: BRAND.teal, fontWeight: "600" },
   labelActive: { color: BRAND.blue, fontWeight: "700" },
   timestamp: { fontSize: 11, color: COLORS.textSecondary, marginTop: 2 },
+  actionBtn: { marginTop: 4, backgroundColor: BRAND.blue, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6, alignSelf: "flex-start" },
+  actionBtnText: { fontSize: 11, fontWeight: "700", color: "#fff" },
   actionHint: { marginTop: 4, backgroundColor: BRAND.blue + "12", paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, alignSelf: "flex-start" },
   actionHintText: { fontSize: 11, fontWeight: "600", color: BRAND.blue },
 });

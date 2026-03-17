@@ -11,7 +11,7 @@ import type { DriverProfile, ShiftSummary, DriverPreferences } from "@/types/dri
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { profile, getProfile, getShiftHistory } = useDriver();
+  const { profile, getProfile, getShiftHistory, updatePreferences: updateContextPrefs } = useDriver();
   const [shifts, setShifts] = useState<ShiftSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [prefs, setPrefs] = useState<DriverPreferences>({
@@ -32,16 +32,18 @@ export default function ProfileScreen() {
 
   const handleTogglePref = useCallback(async (key: keyof DriverPreferences, value: boolean) => {
     setPrefs((prev) => ({ ...prev, [key]: value }));
+    updateContextPrefs({ [key]: value });
     await updatePreferences({ [key]: value });
-  }, []);
+  }, [updateContextPrefs]);
 
   const handleNavAppChange = useCallback(async () => {
     const apps: Array<"google" | "apple" | "waze"> = ["google", "apple", "waze"];
     const currentIndex = apps.indexOf(prefs.navigationApp);
     const nextApp = apps[(currentIndex + 1) % apps.length];
     setPrefs((prev) => ({ ...prev, navigationApp: nextApp }));
+    updateContextPrefs({ navigationApp: nextApp });
     await updatePreferences({ navigationApp: nextApp });
-  }, [prefs.navigationApp]);
+  }, [prefs.navigationApp, updateContextPrefs]);
 
   const navAppLabels: Record<string, string> = { google: "Google Maps", apple: "Apple Maps", waze: "Waze" };
 

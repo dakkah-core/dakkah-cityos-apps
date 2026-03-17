@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { COLORS, BRAND } from "@cityos/mobile-core";
 import { useDriver } from "@/context/DriverContext";
-import { hapticLight, hapticSuccess, hapticError, hapticWarning } from "@/lib/haptics";
+import { hapticLight, hapticMedium, hapticSuccess, hapticError, hapticWarning } from "@/lib/haptics";
 import type { InspectionCheck, InspectionResult, InspectionHistoryEntry, Vehicle } from "@/types/driver";
 
 const INSPECTION_ITEMS = [
@@ -380,11 +380,6 @@ export default function InspectionScreen() {
   );
 }
 
-function hapticMedium() {
-  if (Platform.OS !== "web") {
-    import("expo-haptics").then((H) => H.impactAsync(H.ImpactFeedbackStyle.Medium)).catch(() => {});
-  }
-}
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.surface },

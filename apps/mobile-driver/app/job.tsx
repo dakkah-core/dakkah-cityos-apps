@@ -150,6 +150,27 @@ export default function JobScreen() {
     });
   }, [selectedNavApp]);
 
+  const handleTimelineAction = useCallback((step: DeliveryStep) => {
+    hapticLight();
+    switch (step) {
+      case "en_route_pickup":
+      case "en_route_customer": {
+        const target = step === "en_route_pickup" ? job?.pickup : job?.customer;
+        if (target) openMaps(target.lat, target.lng, target.name || "Destination");
+        break;
+      }
+      case "at_pickup":
+      case "scanning":
+        setScannerVisible(true);
+        break;
+      case "proof_of_delivery":
+      case "arrived":
+        break;
+      default:
+        break;
+    }
+  }, [job, openMaps]);
+
   const handleAccept = async () => {
     if (!jobId) return;
     hapticMedium();
@@ -297,7 +318,7 @@ export default function JobScreen() {
           </View>
         </View>
 
-        <DeliveryTimeline entries={timeline} />
+        <DeliveryTimeline entries={timeline} onStepAction={handleTimelineAction} />
 
         {(step === "navigate_pickup" || step === "navigate_deliver") && (
           <View style={styles.navSection}>

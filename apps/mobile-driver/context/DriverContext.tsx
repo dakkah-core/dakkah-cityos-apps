@@ -62,6 +62,7 @@ interface DriverContextValue {
   dismissJobOffer: () => void;
   acceptJobOffer: () => Promise<boolean>;
   clearNotifications: () => void;
+  updatePreferences: (prefs: Partial<DriverProfile["preferences"]>) => void;
 }
 
 const DriverContext = createContext<DriverContextValue>({
@@ -95,6 +96,7 @@ const DriverContext = createContext<DriverContextValue>({
   dismissJobOffer: () => {},
   acceptJobOffer: async () => false,
   clearNotifications: () => {},
+  updatePreferences: () => {},
 });
 
 export function DriverProvider({ children }: { children: React.ReactNode }) {
@@ -400,6 +402,13 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
     setNotificationCount(0);
   }, []);
 
+  const updatePreferences = useCallback((prefs: Partial<DriverProfile["preferences"]>) => {
+    setProfile((prev) => {
+      if (!prev) return prev;
+      return { ...prev, preferences: { ...prev.preferences, ...prefs } };
+    });
+  }, []);
+
   const acceptJobOfferFn = useCallback(async () => {
     if (!jobOffer) return false;
     const success = await acceptJobFn(jobOffer.job.id);
@@ -439,6 +448,7 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
       dismissJobOffer,
       acceptJobOffer: acceptJobOfferFn,
       clearNotifications,
+      updatePreferences,
     }}>
       {children}
     </DriverContext.Provider>
