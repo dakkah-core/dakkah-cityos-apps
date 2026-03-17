@@ -61,10 +61,10 @@ The project uses a pnpm monorepo with `apps/` for deployable applications, `pack
 - **SDUI Renderer**: `@cityos/sdui-renderer-native` for recursive rendering of 8 SDUI node types.
 
 ### Specialized Mobile Applications (Separate Expo Apps)
-- **Driver App (`apps/mobile-driver`)**: `@cityos/mobile-driver` — Standalone Expo app with bundle ID `city.dakkah.driver`. Features Driver Dashboard (status, job tracking), Delivery Flow (accept, pickup, complete), Earnings Dashboard, Vehicle Inspection checklist, SOS/Emergency, Offline Tolerance with sync, Position Reporting. Own DriverContext, driver-api, driver components (DeliveryMap, BarcodeScanner, SignaturePad, SOSButton, etc.).
-- **Merchant App (`apps/mobile-merchant`)**: `@cityos/mobile-merchant` — Standalone Expo app with bundle ID `city.dakkah.merchant`. SDUI Home with Store Dashboard, Order Management, Catalog Management, Inventory Tracking, Bookings & Tables, Sales Analytics, Campaigns. Own MerchantContext, merchant-api.
-- **POS App (`apps/mobile-pos`)**: `@cityos/mobile-pos` — Standalone Expo app with bundle ID `city.dakkah.pos`. Shift Management, Product Grid, Cart & Checkout, Receipt Generation, Barcode Scanner, Kitchen Display, Returns & Exchanges, End-of-Day Reports. Own PosContext, pos-api. Offline tolerance for sales.
-- All three apps import shared UI/contexts/libs from `@cityos/mobile-core`. Only the consumer app (`apps/mobile`) has a workflow slot; other apps can be started manually.
+- **Driver App (`apps/mobile-driver`)**: `@cityos/mobile-driver` — Standalone Expo app with bundle ID `city.dakkah.driver`. Features Driver Dashboard (status, job tracking), Delivery Flow (accept, pickup, complete), Earnings Dashboard, Vehicle Inspection checklist, SOS/Emergency, Offline Tolerance with sync, Position Reporting. Own DriverContext, driver-api, driver components (DeliveryMap, BarcodeScanner, SignaturePad, SOSButton, etc.). Workflow: `apps/mobile-driver: expo` (port 3001).
+- **Merchant App (`apps/mobile-merchant`)**: `@cityos/mobile-merchant` — Standalone Expo app with bundle ID `city.dakkah.merchant`. SDUI Home with Store Dashboard, Order Management, Catalog Management, Inventory Tracking, Bookings & Tables, Sales Analytics, Campaigns. Own MerchantContext, merchant-api. Workflow: `apps/mobile-merchant: expo` (port 3002).
+- **POS App (`apps/mobile-pos`)**: `@cityos/mobile-pos` — Standalone Expo app with bundle ID `city.dakkah.pos`. Shift Management, Product Grid, Cart & Checkout, Receipt Generation, Barcode Scanner, Kitchen Display, Returns & Exchanges, End-of-Day Reports. Own PosContext, pos-api. Offline tolerance for sales. Workflow: `apps/mobile-pos: expo` (port 3003).
+- All three apps import shared UI/contexts/libs from `@cityos/mobile-core`. Each has its own workflow. Only the consumer app (`apps/mobile`) is registered as the Replit mobile artifact (platform limit: 1 mobile artifact per project). The other 3 mobile apps run via their workflows and can be accessed via Expo web mode.
 
 ### API Services for Specialized Apps
 - **Transport API (`/api/transport/driver/`)**: Manages driver status, job lifecycle, position tracking, earnings, vehicle inspections, SOS alerts, and offline sync.
@@ -92,10 +92,10 @@ The project uses a pnpm monorepo with `apps/` for deployable applications, `pack
 - All three surface apps are routes within `web-platform` (not separate artifacts due to 7-artifact limit). Each renders SDUI content adapted for its surface type via the `?surface=` query parameter.
 
 ### Web Dashboards & Portals (Phase 3)
-- **City Dashboard (`apps/city-dashboard`)**: Municipal operations center for city administrators. Dark mode command center with real-time city stats. Port configured via env, path `/city-dashboard/`.
-- **Business Dashboard (`apps/business-dashboard`)**: Multi-location business management portal for merchants. Port configured via env, path `/business-dashboard/`.
-- **Smart City Portal (`apps/smart-city-portal`)**: Citizen-facing portal for accessing city services. Port configured via env, path `/smart-city-portal/`.
-- **Developer Portal (`apps/dev-portal`)**: API platform for third-party developers. Port configured via env, path `/dev-portal/`.
+- **Business Dashboard (`apps/business-dashboard`)**: Multi-location business management portal for merchants. Port configured via env, path `/business-dashboard/`. Registered as Replit artifact.
+- **City Dashboard (`apps/city-dashboard`)**: Municipal operations center for city administrators. Dark mode command center with real-time city stats. Code exists but artifact registration removed (can be re-registered later).
+- **Smart City Portal (`apps/smart-city-portal`)**: Citizen-facing portal for accessing city services. Code exists but artifact registration removed.
+- **Developer Portal (`apps/dev-portal`)**: API platform for third-party developers. Code exists but artifact registration removed.
 - All dashboards are AI copilot-first (conversational panel is primary interface), use SDUI widget rendering from the API server, and include auth guards with guest/demo access.
 - **Auth**: Each dashboard uses `createDashboardAuth()` from `@cityos/auth` — a factory that generates `AuthProvider` + `useAuth` with configurable role, client ID, session key, and guest persona. Eliminates PKCE code duplication across dashboards.
 - **SDUI Fetch**: Dashboards use `useSduiScreen()` from `@cityos/sdui-renderer-web` — a shared React Query hook that handles fetch, response parsing, fallbacks, and refetch intervals. Screen IDs: `city_analytics`, `merchant_overview`, `citizen_home`, `dev_home`.

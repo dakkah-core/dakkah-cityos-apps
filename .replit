@@ -34,6 +34,18 @@ args = "services/bff-gateway: API Server"
 task = "workflow.run"
 args = "apps/mobile: expo"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "apps/mobile-driver: expo"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "apps/mobile-merchant: expo"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "apps/mobile-pos: expo"
+
 [[workflows.workflow]]
 name = "apps/web-platform: web"
 author = "agent"
@@ -66,6 +78,42 @@ author = "agent"
 task = "shell.exec"
 args = "pnpm --filter @cityos/mobile run dev"
 waitForPort = 8081
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "apps/mobile-driver: expo"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "PORT=3001 pnpm --filter @cityos/mobile-driver run dev"
+waitForPort = 3001
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "apps/mobile-merchant: expo"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "PORT=3002 pnpm --filter @cityos/mobile-merchant run dev"
+waitForPort = 3002
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "apps/mobile-pos: expo"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "PORT=3003 pnpm --filter @cityos/mobile-pos run dev"
+waitForPort = 3003
 
 [workflows.workflow.metadata]
 outputType = "console"
