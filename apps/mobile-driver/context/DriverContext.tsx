@@ -3,7 +3,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import * as Notifications from "expo-notifications";
 import { useAuth, generateId } from "@cityos/mobile-core";
-import type { DriverJob, DriverStatus, DriverEarnings, OfflineAction, InspectionCheck, InspectionResult, SOSReport } from "@/types/driver";
+import type {
+  DriverJob, DriverStatus, DriverEarnings, OfflineAction,
+  InspectionCheck, InspectionResult, SOSReport, DriverProfile,
+  ShiftSummary, InspectionHistoryEntry, Vehicle, JobOffer,
+} from "@/types/driver";
 import {
   getDriverStatus,
   setDriverStatus as apiSetStatus,
@@ -18,6 +22,10 @@ import {
   submitInspection as apiSubmitInspection,
   sendSOS as apiSendSOS,
   syncOfflineActions,
+  getDriverProfile as apiGetProfile,
+  getVehicles as apiGetVehicles,
+  getInspectionHistory as apiGetInspectionHistory,
+  getShiftHistory as apiGetShiftHistory,
 } from "@/lib/driver-api";
 
 const OFFLINE_QUEUE_KEY = "dakkah_driver_offline_queue";
@@ -28,9 +36,15 @@ interface DriverContextValue {
   jobs: DriverJob[];
   activeJob: DriverJob | null;
   completedToday: number;
+  todayEarnings: number;
+  todayTips: number;
+  currency: string;
   isLoading: boolean;
   isOnline: boolean;
   offlineQueueCount: number;
+  profile: DriverProfile | null;
+  jobOffer: JobOffer | null;
+  notificationCount: number;
   setStatus: (status: DriverStatus) => Promise<void>;
   refreshJobs: () => Promise<void>;
   acceptJob: (jobId: string) => Promise<boolean>;
@@ -41,6 +55,13 @@ interface DriverContextValue {
   getEarnings: (period: "today" | "week" | "month") => Promise<DriverEarnings | null>;
   submitInspection: (vehicleId: string, checks: InspectionCheck[]) => Promise<InspectionResult | null>;
   triggerSOS: (report: SOSReport) => Promise<{ sosId: string; estimatedResponse: string } | null>;
+  getProfile: () => Promise<DriverProfile | null>;
+  getVehicles: () => Promise<Vehicle[]>;
+  getInspectionHistory: () => Promise<InspectionHistoryEntry[]>;
+  getShiftHistory: () => Promise<ShiftSummary[]>;
+  dismissJobOffer: () => void;
+  acceptJobOffer: () => Promise<boolean>;
+  clearNotifications: () => void;
 }
 
 const DriverContext = createContext<DriverContextValue>({
@@ -48,9 +69,15 @@ const DriverContext = createContext<DriverContextValue>({
   jobs: [],
   activeJob: null,
   completedToday: 0,
+  todayEarnings: 0,
+  todayTips: 0,
+  currency: "SAR",
   isLoading: true,
   isOnline: true,
   offlineQueueCount: 0,
+  profile: null,
+  jobOffer: null,
+  notificationCount: 0,
   setStatus: async () => {},
   refreshJobs: async () => {},
   acceptJob: async () => false,
@@ -61,6 +88,13 @@ const DriverContext = createContext<DriverContextValue>({
   getEarnings: async () => null,
   submitInspection: async () => null,
   triggerSOS: async () => null,
+  getProfile: async () => null,
+  getVehicles: async () => [],
+  getInspectionHistory: async () => [],
+  getShiftHistory: async () => [],
+  dismissJobOffer: () => {},
+  acceptJobOffer: async () => false,
+  clearNotifications: () => {},
 });
 
 export function DriverProvider({ children }: { children: React.ReactNode }) {
@@ -68,10 +102,17 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
   const [status, setStatusState] = useState<DriverStatus>("offline");
   const [jobs, setJobs] = useState<DriverJob[]>([]);
   const [completedToday, setCompletedToday] = useState(0);
+  const [todayEarnings, setTodayEarnings] = useState(0);
+  const [todayTips, setTodayTips] = useState(0);
+  const [currency, setCurrency] = useState("SAR");
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(true);
   const [offlineQueue, setOfflineQueue] = useState<OfflineAction[]>([]);
+  const [profile, setProfile] = useState<DriverProfile | null>(null);
+  const [jobOffer, setJobOffer] = useState<JobOffer | null>(null);
+  const [notificationCount, setNotificationCount] = useState(2);
   const positionIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const jobOfferTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const activeJob = jobs.find((j) =>
     j.status === "accepted" || j.status === "in_transit" || j.status === "arrived"
@@ -111,8 +152,14 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
           setStatusState(data.status);
           setJobs(data.activeJobs);
           setCompletedToday(data.completedToday);
+          setTodayEarnings(data.todayEarnings ?? 0);
+          setTodayTips(data.todayTips ?? 0);
+          setCurrency(data.currency ?? "SAR");
           await AsyncStorage.setItem(CACHED_JOBS_KEY, JSON.stringify(data.activeJobs)).catch(() => {});
         }
+
+        const profileData = await apiGetProfile(token || undefined);
+        if (profileData) setProfile(profileData);
       } catch {
         setIsOnline(false);
       } finally {
@@ -130,17 +177,37 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
           token || undefined
         );
       }, 15000);
+
+      const offerDelay = 8000 + Math.random() * 12000;
+      jobOfferTimerRef.current = setTimeout(() => {
+        if (!activeJob) {
+          const pendingJobs = jobs.filter((j) => j.status === "pending");
+          if (pendingJobs.length > 0) {
+            setJobOffer({
+              job: pendingJobs[0],
+              expiresAt: Date.now() + 30000,
+              bonusMultiplier: Math.random() > 0.5 ? 1.5 : undefined,
+            });
+            setNotificationCount((prev) => prev + 1);
+          }
+        }
+      }, offerDelay);
     } else {
       if (positionIntervalRef.current) {
         clearInterval(positionIntervalRef.current);
         positionIntervalRef.current = null;
       }
+      if (jobOfferTimerRef.current) {
+        clearTimeout(jobOfferTimerRef.current);
+        jobOfferTimerRef.current = null;
+      }
     }
 
     return () => {
       if (positionIntervalRef.current) clearInterval(positionIntervalRef.current);
+      if (jobOfferTimerRef.current) clearTimeout(jobOfferTimerRef.current);
     };
-  }, [status, getAccessToken]);
+  }, [status, getAccessToken, activeJob, jobs]);
 
   useEffect(() => {
     if (isOnline) trySyncQueue();
@@ -199,6 +266,7 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
             if (prev.some((j) => j.id === newJob.id)) return prev;
             return [...prev, newJob];
           });
+          setNotificationCount((prev) => prev + 1);
         } else if (action === "job_cancelled" && data.jobId) {
           setJobs((prev) => prev.map((j) =>
             j.id === data.jobId ? { ...j, status: "cancelled" as const } : j
@@ -225,7 +293,7 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
       return true;
     }
     await enqueueOffline("acceptJob", { jobId });
-    setJobs((prev) => prev.map((j) => (j.id === jobId ? { ...j, status: "accepted" as const } : j)));
+    setJobs((prev) => prev.map((j) => (j.id === jobId ? { ...j, status: "accepted" as const, acceptedAt: new Date().toISOString() } : j)));
     return true;
   }, [getAccessToken, enqueueOffline]);
 
@@ -249,7 +317,7 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
       return true;
     }
     await enqueueOffline("pickup", { jobId, scannedBarcodes });
-    setJobs((prev) => prev.map((j) => (j.id === jobId ? { ...j, status: "in_transit" as const } : j)));
+    setJobs((prev) => prev.map((j) => (j.id === jobId ? { ...j, status: "in_transit" as const, pickedUpAt: new Date().toISOString() } : j)));
     return true;
   }, [getAccessToken, enqueueOffline]);
 
@@ -271,13 +339,18 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
     if (result) {
       setJobs((prev) => prev.map((j) => (j.id === jobId ? result.job : j)));
       setCompletedToday((prev) => prev + 1);
+      setTodayEarnings((prev) => prev + result.earnings.amount);
+      const completedJob = jobs.find((j) => j.id === jobId);
+      if (completedJob?.tip) setTodayTips((prev) => prev + completedJob.tip!);
       return true;
     }
     await enqueueOffline("complete", { jobId, ...proof });
-    setJobs((prev) => prev.map((j) => (j.id === jobId ? { ...j, status: "completed" as const } : j)));
+    setJobs((prev) => prev.map((j) => (j.id === jobId ? { ...j, status: "completed" as const, deliveredAt: new Date().toISOString() } : j)));
     setCompletedToday((prev) => prev + 1);
+    const completedJob = jobs.find((j) => j.id === jobId);
+    if (completedJob?.tip) setTodayTips((prev) => prev + completedJob.tip!);
     return true;
-  }, [getAccessToken, enqueueOffline]);
+  }, [getAccessToken, enqueueOffline, jobs]);
 
   const getEarningsFn = useCallback(async (period: "today" | "week" | "month") => {
     const token = await getAccessToken();
@@ -297,25 +370,75 @@ export function DriverProvider({ children }: { children: React.ReactNode }) {
     return { sosId: "sos_offline", estimatedResponse: "Queued — will send when online" };
   }, [getAccessToken, enqueueOffline]);
 
+  const getProfileFn = useCallback(async () => {
+    const token = await getAccessToken();
+    const data = await apiGetProfile(token || undefined);
+    if (data) setProfile(data);
+    return data;
+  }, [getAccessToken]);
+
+  const getVehiclesFn = useCallback(async () => {
+    const token = await getAccessToken();
+    return apiGetVehicles(token || undefined);
+  }, [getAccessToken]);
+
+  const getInspectionHistoryFn = useCallback(async () => {
+    const token = await getAccessToken();
+    return apiGetInspectionHistory(token || undefined);
+  }, [getAccessToken]);
+
+  const getShiftHistoryFn = useCallback(async () => {
+    const token = await getAccessToken();
+    return apiGetShiftHistory(token || undefined);
+  }, [getAccessToken]);
+
+  const dismissJobOffer = useCallback(() => {
+    setJobOffer(null);
+  }, []);
+
+  const clearNotifications = useCallback(() => {
+    setNotificationCount(0);
+  }, []);
+
+  const acceptJobOfferFn = useCallback(async () => {
+    if (!jobOffer) return false;
+    const success = await acceptJobFn(jobOffer.job.id);
+    setJobOffer(null);
+    return success;
+  }, [jobOffer, acceptJobFn]);
+
   return (
     <DriverContext.Provider value={{
       status,
       jobs,
       activeJob,
       completedToday,
+      todayEarnings,
+      todayTips,
+      currency,
       isLoading,
       isOnline,
       offlineQueueCount: offlineQueue.length,
+      profile,
+      jobOffer,
+      notificationCount,
       setStatus,
       refreshJobs,
       acceptJob: acceptJobFn,
       rejectJob: rejectJobFn,
       pickupJob,
       arriveAtCustomer,
-      completeJob: completeJob,
+      completeJob,
       getEarnings: getEarningsFn,
       submitInspection: submitInspectionFn,
       triggerSOS,
+      getProfile: getProfileFn,
+      getVehicles: getVehiclesFn,
+      getInspectionHistory: getInspectionHistoryFn,
+      getShiftHistory: getShiftHistoryFn,
+      dismissJobOffer,
+      acceptJobOffer: acceptJobOfferFn,
+      clearNotifications,
     }}>
       {children}
     </DriverContext.Provider>
