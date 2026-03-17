@@ -16,6 +16,8 @@
     "@tanstack/react-query": "catalog:",
     "@types/node": "^20.0.0",
     "@types/react": "~19.1.10",
+    "@cityos/api-client": "workspace:*",
+    "@cityos/auth": "workspace:*",
     "@cityos/design-tokens": "workspace:*",
     "@cityos/mobile-core": "workspace:*",
     "@cityos/sdui-protocol": "workspace:*",

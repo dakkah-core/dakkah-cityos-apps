@@ -621,6 +621,12 @@ importers:
       '@babel/core':
         specifier: ^7.25.2
         version: 7.29.0
+      '@cityos/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
+      '@cityos/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@cityos/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
@@ -745,6 +751,12 @@ importers:
       '@babel/core':
         specifier: ^7.25.2
         version: 7.29.0
+      '@cityos/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
+      '@cityos/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@cityos/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
@@ -869,6 +881,12 @@ importers:
       '@babel/core':
         specifier: ^7.25.2
         version: 7.29.0
+      '@cityos/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
+      '@cityos/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@cityos/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens

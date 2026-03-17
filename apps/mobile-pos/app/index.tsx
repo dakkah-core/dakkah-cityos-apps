@@ -68,12 +68,15 @@ export default function PosTerminalScreen() {
 
   useEffect(() => {
     configureActionHandler({
-      onNavigate: (screen) => {
+      onNavigate: (screen: string) => {
         const route = screen.startsWith("pos/") ? screen.replace("pos/", "") : screen;
-          router.push(`/${route}` as never);
+        router.push(`/${route}` as never);
+      },
+      onMutation: async (endpoint: string, method: string, payload?: Record<string, unknown>) => {
+        dispatchSduiAction(method, { endpoint, ...payload });
       },
     });
-  }, [router]);
+  }, [dispatchSduiAction, router]);
 
   const filteredProducts = useMemo(() => {
     let filtered = products;
@@ -88,17 +91,6 @@ export default function PosTerminalScreen() {
     }
     return filtered;
   }, [products, selectedCategory, search]);
-
-  useEffect(() => {
-    configureActionHandler({
-      onNavigate: (screen: string) => {
-        router.push(`/${screen}` as never);
-      },
-      onMutation: async (endpoint: string, method: string, payload?: Record<string, unknown>) => {
-        dispatchSduiAction(method, { endpoint, ...payload });
-      },
-    });
-  }, [dispatchSduiAction, router]);
 
   useEffect(() => {
     if (cart.items.length > 0) {
