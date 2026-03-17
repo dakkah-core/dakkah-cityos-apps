@@ -4,10 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { COLORS, BRAND } from "@/constants/colors";
 import { useAuth } from "@/context/AuthContext";
-
-const API_BASE = process.env.EXPO_PUBLIC_DOMAIN
-  ? `https://${process.env.EXPO_PUBLIC_DOMAIN}/api`
-  : "http://localhost:8080/api";
+import { apiClient } from "@/lib/gateway";
 
 const CATEGORIES = [
   "Restaurant",
@@ -48,28 +45,18 @@ export default function MerchantRegisterScreen() {
   const handleSubmit = useCallback(async () => {
     setSubmitting(true);
     try {
-      const token = await getAccessToken();
-      const res = await fetch(`${API_BASE}/commerce/merchant/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          storeName,
-          category,
-          ownerName,
-          phone,
-          email,
-          address,
-          city,
-          crNumber,
-          operatingHours: { open: openTime, close: closeTime },
-          description,
-        }),
+      const data = await apiClient.post<{ success: boolean; error?: { message: string } }>("/commerce/merchant/register", {
+        storeName,
+        category,
+        ownerName,
+        phone,
+        email,
+        address,
+        city,
+        crNumber,
+        operatingHours: { open: openTime, close: closeTime },
+        description,
       });
-
-      const data = await res.json();
       if (data.success) {
         Alert.alert(
           "Application Submitted",

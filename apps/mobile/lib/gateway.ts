@@ -1,22 +1,33 @@
 import { CityOSClient } from "@cityos/api-client";
+import { Platform } from "react-native";
 
 const API_BASE = process.env.EXPO_PUBLIC_DOMAIN
   ? `https://${process.env.EXPO_PUBLIC_DOMAIN}/api`
   : "http://localhost:8080/api";
 
+const TOKENS_KEY = "dakkah_auth_tokens";
+
+async function getStoredToken(): Promise<string | null> {
+  try {
+    let tokenJson: string | null = null;
+    if (Platform.OS === "web") {
+      const { default: AsyncStorage } = await import("@react-native-async-storage/async-storage");
+      tokenJson = await AsyncStorage.getItem(TOKENS_KEY);
+    } else {
+      const SecureStore = await import("expo-secure-store");
+      tokenJson = await SecureStore.getItemAsync(TOKENS_KEY);
+    }
+    if (tokenJson) {
+      const tokens = JSON.parse(tokenJson);
+      return tokens.accessToken || null;
+    }
+  } catch {}
+  return null;
+}
+
 const client = new CityOSClient({
   baseUrl: API_BASE,
-  getToken: async () => {
-    try {
-      const { default: AsyncStorage } = await import("@react-native-async-storage/async-storage");
-      const tokenJson = await AsyncStorage.getItem("dakkah_auth_tokens");
-      if (tokenJson) {
-        const tokens = JSON.parse(tokenJson);
-        return tokens.accessToken || null;
-      }
-    } catch {}
-    return null;
-  },
+  getToken: getStoredToken,
   surface: "mobile",
 });
 

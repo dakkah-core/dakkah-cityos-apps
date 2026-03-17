@@ -1,6 +1,9 @@
 import { Menu, Search, Compass, LogOut, User, MapPin } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { NotificationBell } from "./NotificationBell";
+import { useQuery } from "@tanstack/react-query";
+import type { HealthStatus } from "@cityos/api-client-react";
+import { apiClient } from "@/lib/api-client";
 
 interface Props {
   onToggleThreads: () => void;
@@ -11,6 +14,13 @@ interface Props {
 
 export function Header({ onToggleThreads, onToggleDiscovery, onToggleSearch, onToggleCityContext }: Props) {
   const { user, logout } = useAuth();
+  const { data: health } = useQuery<HealthStatus>({
+    queryKey: ["/api/healthz"],
+    queryFn: () => apiClient.get<HealthStatus>("/healthz"),
+    refetchInterval: 30_000,
+    retry: false,
+  });
+  const apiOnline = health?.status === "ok";
 
   return (
     <header className="h-14 border-b border-border bg-card flex items-center px-4 gap-3 flex-shrink-0">
@@ -19,8 +29,9 @@ export function Header({ onToggleThreads, onToggleDiscovery, onToggleSearch, onT
       </button>
 
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-[var(--navy)] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-lg bg-[var(--navy)] flex items-center justify-center relative">
           <span className="text-[var(--primary)] text-sm font-bold">✦</span>
+          <span className={`absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border border-card ${apiOnline ? "bg-green-500" : "bg-muted-foreground"}`} title={apiOnline ? "API Online" : "API Status Unknown"} />
         </div>
         <div className="hidden sm:block">
           <div className="text-sm font-bold leading-none">Dakkah</div>

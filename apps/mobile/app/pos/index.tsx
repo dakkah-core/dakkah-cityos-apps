@@ -10,7 +10,7 @@ import { usePos } from "@/context/PosContext";
 import { SduiRenderer, configureActionHandler } from "@cityos/sdui-renderer-native";
 import type { SdNode } from "@cityos/sdui-protocol";
 import type { PosProduct } from "@/types/pos";
-import { useAuth } from "@/context/AuthContext";
+import { apiClient } from "@/lib/gateway";
 
 function isSdNode(data: unknown): data is SdNode {
   return typeof data === "object" && data !== null && "type" in data &&
@@ -19,33 +19,21 @@ function isSdNode(data: unknown): data is SdNode {
 
 function useSduiSurface(surface: string) {
   const [sduiTree, setSduiTree] = useState<SdNode | null>(null);
-  const { getAccessToken } = useAuth();
 
   const fetchSdui = useCallback(async (action?: string, payload?: Record<string, unknown>) => {
     try {
-      const token = await getAccessToken();
-      const baseUrl = process.env.EXPO_PUBLIC_DOMAIN
-        ? `https://${process.env.EXPO_PUBLIC_DOMAIN}`
-        : (process.env.EXPO_PUBLIC_API_URL || "");
-      const url = `${baseUrl}/api/sdui/${surface}?surface=tablet`;
       const isPost = !!action;
-      const res = await fetch(url, {
-        method: isPost ? "POST" : "GET",
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          ...(isPost ? { "Content-Type": "application/json" } : {}),
-        },
-        ...(isPost ? { body: JSON.stringify({ action, payload }) } : {}),
-      });
-      if (res.ok) {
-        const json = await res.json();
+      if (isPost) {
+        const json = await apiClient.post<any>(`/sdui/${surface}?surface=tablet`, { action, payload });
         const node = json?.data?.screen || json?.screen || json?.data || json;
-        if (isSdNode(node)) {
-          setSduiTree(node);
-        }
+        if (isSdNode(node)) setSduiTree(node);
+      } else {
+        const json = await apiClient.get<any>(`/sdui/${surface}?surface=tablet`);
+        const node = json?.data?.screen || json?.screen || json?.data || json;
+        if (isSdNode(node)) setSduiTree(node);
       }
     } catch {}
-  }, [surface, getAccessToken]);
+  }, [surface]);
 
   useEffect(() => {
     let cancelled = false;

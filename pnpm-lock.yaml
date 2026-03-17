@@ -879,6 +879,9 @@ importers:
       '@cityos/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
+      '@cityos/api-client-react':
+        specifier: workspace:*
+        version: link:../../packages/api-client-react
       '@cityos/auth':
         specifier: workspace:*
         version: link:../../packages/auth
