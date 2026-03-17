@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@cityos/ui";
 import { ArtifactRenderer } from "@/components/artifacts/ArtifactRenderer";
 import type { Message } from "@/types/chat";
 

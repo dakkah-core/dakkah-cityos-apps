@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Send, Sparkles, User, Loader2 } from "lucide-react";
 import { useChat } from "@/hooks/use-chat";
-import { cn } from "@/lib/utils";
+import { cn } from "@cityos/ui";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function ChatPanel() {

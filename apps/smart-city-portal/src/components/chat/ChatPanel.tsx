@@ -3,9 +3,9 @@ import { Send, X, ShieldAlert, Sparkles, MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useChat } from "@/hooks/use-chat";
 import { ChatMessage } from "./ChatMessage";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Input } from "@cityos/ui";
+import { Button } from "@cityos/ui";
+import { cn } from "@cityos/ui";
 
 export function ChatPanel({ className }: { className?: string }) {
   const { messages, isTyping, isOpen, setIsOpen, sendMessage } = useChat();

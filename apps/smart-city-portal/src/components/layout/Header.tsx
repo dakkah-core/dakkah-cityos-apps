@@ -1,7 +1,7 @@
 import React from "react";
 import { Bell, UserCircle, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { Button } from "@/components/ui/button";
+import { Button } from "@cityos/ui";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -9,7 +9,7 @@ import {
   DropdownMenuLabel, 
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
+} from "@cityos/ui";
 
 export function Header() {
   const { user, logout } = useAuth();

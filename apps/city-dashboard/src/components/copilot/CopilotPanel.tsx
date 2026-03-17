@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send, Bot, User as UserIcon, Loader2, Maximize2, Minimize2 } from "lucide-react";
 import { useCopilot } from "@/hooks/use-copilot";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn } from "@cityos/ui";
 
 export function CopilotPanel() {
   const { messages, sendMessage, isTyping } = useCopilot();

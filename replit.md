@@ -101,6 +101,7 @@ The project uses a pnpm monorepo with `apps/` for deployable applications, `pack
 - **Vite Proxy**: All dashboard `vite.config.ts` files proxy `${basePath}api` to `http://localhost:8080` (BFF gateway) with path rewriting.
 
 ### Shared Packages (`packages/`)
+- **UI Component Library (`packages/ui`)**: `@cityos/ui` — shared shadcn/ui component library with 55 components (Button, Card, Dialog, Input, etc.), `cn()` utility, `useToast`, `useIsMobile` hooks. Used by all web apps. All Radix UI primitives and shared dependencies centralized here.
 - **Database (`packages/db`)**: Drizzle ORM for PostgreSQL schema and connections.
 - **API Specification (`packages/api-spec`)**: OpenAPI 3.1 specification and Orval configuration for client/schema generation.
 - **Generated Clients/Schemas**: `packages/api-zod` (Zod schemas), `packages/api-client-react` (React Query hooks), `packages/api-client` (generic CityOS client).

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Loader2, Paperclip, Mic } from "lucide-react";
 import { useChat } from "@/hooks/use-chat";
 import { MessageBubble } from "./MessageBubble";
-import { cn } from "@/lib/utils";
+import { cn } from "@cityos/ui";
 
 export function ChatPanel() {
   const { messages, isProcessing, sendMessage } = useChat();

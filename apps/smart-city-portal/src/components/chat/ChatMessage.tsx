@@ -1,7 +1,7 @@
 import React from "react";
 import { format } from "date-fns";
 import { Bot, User as UserIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@cityos/ui";
 import type { ChatMessage as ChatMessageType } from "@/hooks/use-chat";
 
 export function ChatMessage({ message }: { message: ChatMessageType }) {

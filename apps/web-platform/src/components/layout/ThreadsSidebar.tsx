@@ -1,6 +1,6 @@
 import { Plus, MessageSquare, X } from "lucide-react";
 import { useChat } from "@/hooks/use-chat";
-import { cn } from "@/lib/utils";
+import { cn } from "@cityos/ui";
 
 interface Props {
   isOpen: boolean;

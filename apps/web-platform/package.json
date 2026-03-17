@@ -31,7 +31,8 @@
     "vite": "catalog:",
     "wouter": "^3.3.5",
     "zod": "catalog:",
-    "idb-keyval": "^6.2.1"
+    "idb-keyval": "^6.2.1",
+    "@cityos/ui": "workspace:*"
   },
   "dependencies": {
     "@cityos/auth": "workspace:*",

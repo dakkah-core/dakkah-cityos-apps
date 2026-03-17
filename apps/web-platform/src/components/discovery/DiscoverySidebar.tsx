@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Search, X, MapPin, Car, Heart, Building2, Calendar, ShoppingBag, Cpu, Users, Utensils, BookOpen } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@cityos/ui";
 import type { DiscoveryCategory } from "@/types/chat";
 
 const CATEGORIES: DiscoveryCategory[] = [

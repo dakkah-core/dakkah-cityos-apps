@@ -3,8 +3,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import AuthCallback from "./pages/callback";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@cityos/ui";
+import { TooltipProvider } from "@cityos/ui";
 import { useAuth } from "@/hooks/use-auth";
 
 const queryClient = new QueryClient({

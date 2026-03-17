@@ -6,7 +6,7 @@ import { useDashboardSdui } from "@/hooks/use-sdui";
 import { Header } from "@/components/layout/Header";
 import { ChatPanel } from "@/components/chat/ChatPanel";
 import { SduiRenderer } from "@/components/sdui/SduiRenderer";
-import { Button } from "@/components/ui/button";
+import { Button } from "@cityos/ui";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();

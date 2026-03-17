@@ -3,9 +3,9 @@ import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { User, Shield, ArrowRight, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@cityos/ui";
+import { Input } from "@cityos/ui";
+import { Card, CardContent } from "@cityos/ui";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -83,7 +83,7 @@ export default function Login() {
                   <Input type="password" placeholder="••••••••" className="bg-background/80" />
                 </div>
                 
-                <Button className="w-full h-12 text-base mt-2" variant="civic" onClick={() => signInWithKeycloak()}>
+                <Button className="w-full h-12 text-base mt-2 bg-gradient-to-r from-primary to-accent text-white shadow-md hover:shadow-lg hover:opacity-90" onClick={() => signInWithKeycloak()}>
                   Sign In with Keycloak <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </form>

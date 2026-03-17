@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Search, X, ArrowRight, Clock, TrendingUp } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@cityos/ui";
 
 const TRENDING_SEARCHES = [
   "Book a ride to downtown",
